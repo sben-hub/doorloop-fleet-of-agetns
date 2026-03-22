@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DoorLoop – AI Agent (Simple)</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #fafaf9; color: #1c1917; min-height: 100vh; font-size: 15px; line-height: 1.6; }
+
+  /* Variation switcher */
+  .variation-bar { background: #292524; display: flex; align-items: center; justify-content: center; gap: 4px; padding: 8px 16px; flex-shrink: 0; }
+  .variation-bar a, .variation-bar span { padding: 6px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; text-decoration: none; transition: all 0.2s; }
+  .variation-bar a { color: #a8a29e; }
+  .variation-bar a:hover { color: white; background: rgba(255,255,255,0.1); }
+  .variation-bar span.active { color: white; background: #8b5cf6; }
+
+  /* Shell */
+  .shell { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+  /* Tab bar */
+  .tab-bar { display: flex; align-items: center; gap: 4px; padding: 20px 0 0; margin-bottom: 4px; }
+  .tab-bar .logo { font-size: 20px; font-weight: 800; color: #8b5cf6; margin-right: 24px; letter-spacing: -0.5px; }
+  .tab { padding: 10px 20px; border-radius: 12px 12px 0 0; font-size: 14px; font-weight: 600; color: #78716c; cursor: pointer; transition: all 0.2s; border: none; background: none; position: relative; }
+  .tab:hover { color: #8b5cf6; }
+  .tab.active { color: #8b5cf6; background: white; box-shadow: 0 -2px 8px rgba(0,0,0,0.04); }
+  .tab .tab-dot { width: 7px; height: 7px; background: #f97316; border-radius: 50%; display: inline-block; margin-left: 6px; vertical-align: middle; }
+
+  /* Content area */
+  .content-area { background: white; border-radius: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 32px rgba(0,0,0,0.04); min-height: 75vh; padding: 40px; position: relative; overflow: hidden; }
+
+  /* ===================== TAB 1: GET STARTED ===================== */
+  .hero-emoji { font-size: 64px; text-align: center; margin-bottom: 8px; line-height: 1.2; }
+  .hero-headline { font-size: 32px; font-weight: 800; text-align: center; color: #1c1917; letter-spacing: -0.5px; margin-bottom: 8px; }
+  .hero-sub { font-size: 16px; color: #78716c; text-align: center; margin-bottom: 32px; }
+
+  .drop-zone { border: 2.5px dashed #d6d3d1; border-radius: 20px; padding: 56px 40px; text-align: center; cursor: pointer; transition: all 0.3s ease; background: #fafaf9; margin-bottom: 32px; }
+  .drop-zone:hover { border-color: #8b5cf6; background: #faf5ff; transform: scale(1.005); }
+  .drop-zone.active { border-color: #8b5cf6; background: #f5f3ff; border-style: solid; }
+  .drop-zone .dz-icon { font-size: 48px; margin-bottom: 12px; }
+  .drop-zone .dz-main { font-size: 18px; font-weight: 700; color: #1c1917; margin-bottom: 4px; }
+  .drop-zone .dz-sub { font-size: 14px; color: #a8a29e; }
+
+  .drop-zone .progress-area { display: none; text-align: center; }
+  .drop-zone.uploading .dz-prompt { display: none; }
+  .drop-zone.uploading .progress-area { display: block; }
+
+  .progress-step { font-size: 16px; font-weight: 600; color: #8b5cf6; margin-bottom: 8px; opacity: 0; transform: translateY(8px); transition: all 0.4s ease; }
+  .progress-step.visible { opacity: 1; transform: translateY(0); }
+  .progress-step.done { color: #16a34a; }
+  .progress-bar-track { width: 280px; height: 6px; background: #e7e5e4; border-radius: 3px; margin: 16px auto 0; overflow: hidden; }
+  .progress-bar-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #8b5cf6, #a78bfa); border-radius: 3px; transition: width 0.6s ease; }
+  .progress-bar-fill.complete { background: linear-gradient(90deg, #16a34a, #22c55e); }
+
+  .agent-preview-row { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 12px; }
+  .agent-preview-card { background: #fafaf9; border-radius: 16px; padding: 20px 24px; text-align: center; flex: 1; min-width: 160px; max-width: 220px; transition: all 0.3s; }
+  .agent-preview-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+  .agent-preview-card .ap-emoji { font-size: 28px; margin-bottom: 8px; }
+  .agent-preview-card .ap-name { font-size: 14px; font-weight: 700; color: #1c1917; }
+  .agent-preview-card .ap-desc { font-size: 13px; color: #a8a29e; margin-top: 2px; }
+  .agent-hint { text-align: center; font-size: 13px; color: #a8a29e; font-style: italic; }
+
+  /* ===================== TAB 2: MY AGENTS ===================== */
+  .greeting { font-size: 28px; font-weight: 800; color: #1c1917; margin-bottom: 4px; }
+  .greeting-sub { font-size: 15px; color: #78716c; margin-bottom: 28px; }
+
+  .notif-card { background: #fafaf9; border-radius: 16px; padding: 20px 24px; margin-bottom: 12px; display: flex; align-items: center; gap: 16px; transition: all 0.3s; }
+  .notif-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+  .notif-emoji { font-size: 32px; flex-shrink: 0; }
+  .notif-text { flex: 1; }
+  .notif-text .nt-main { font-size: 15px; font-weight: 600; color: #1c1917; }
+  .notif-text .nt-sub { font-size: 13px; color: #78716c; margin-top: 2px; }
+  .notif-actions { display: flex; gap: 8px; flex-shrink: 0; }
+  .notif-actions button { padding: 8px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; transition: all 0.2s; }
+  .btn-approve { background: #8b5cf6; color: white; }
+  .btn-approve:hover { background: #7c3aed; transform: scale(1.03); }
+  .btn-deny { background: #fafaf9; color: #78716c; border: 1.5px solid #e7e5e4 !important; }
+  .btn-deny:hover { border-color: #ef4444 !important; color: #ef4444; }
+  .btn-alt { background: #fff7ed; color: #f97316; border: 1.5px solid #fed7aa !important; }
+  .btn-alt:hover { background: #f97316; color: white; }
+
+  .agent-status-row { display: flex; gap: 12px; margin: 28px 0 24px; flex-wrap: wrap; }
+  .status-pill { background: #fafaf9; border-radius: 16px; padding: 16px 24px; flex: 1; min-width: 180px; display: flex; align-items: center; gap: 12px; transition: all 0.3s; }
+  .status-pill:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); transform: translateY(-1px); }
+  .status-pill .sp-emoji { font-size: 24px; }
+  .status-pill .sp-name { font-size: 13px; font-weight: 700; color: #1c1917; }
+  .status-pill .sp-info { font-size: 13px; color: #78716c; }
+
+  .auto-section { margin-top: 8px; }
+  .auto-header { font-size: 14px; color: #a8a29e; margin-bottom: 12px; cursor: pointer; user-select: none; transition: color 0.2s; }
+  .auto-header:hover { color: #8b5cf6; }
+  .auto-list { list-style: none; }
+  .auto-list li { padding: 8px 0; font-size: 14px; color: #57534e; border-bottom: 1px solid #f5f5f4; display: flex; align-items: center; gap: 8px; }
+  .auto-list li:last-child { border-bottom: none; }
+  .auto-list .check { color: #16a34a; font-weight: 700; }
+
+  /* ===================== TAB 3: INBOX ===================== */
+  .inbox-layout { display: flex; gap: 0; height: 62vh; margin: -40px; margin-top: -20px; }
+  .conv-list { width: 300px; border-right: 1px solid #f5f5f4; overflow-y: auto; flex-shrink: 0; padding: 16px 0; }
+  .conv-item { display: flex; align-items: center; gap: 12px; padding: 14px 20px; cursor: pointer; transition: background 0.15s; }
+  .conv-item:hover { background: #fafaf9; }
+  .conv-item.active { background: #f5f3ff; }
+  .conv-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: white; flex-shrink: 0; }
+  .conv-meta { flex: 1; min-width: 0; }
+  .conv-meta .cm-name { font-size: 14px; font-weight: 600; color: #1c1917; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .conv-meta .cm-preview { font-size: 12px; color: #a8a29e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .conv-time { font-size: 11px; color: #d6d3d1; flex-shrink: 0; }
+  .conv-unread { width: 8px; height: 8px; background: #8b5cf6; border-radius: 50%; flex-shrink: 0; }
+
+  .chat-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .chat-header { padding: 16px 24px; border-bottom: 1px solid #f5f5f4; display: flex; align-items: center; justify-content: space-between; }
+  .chat-header-left { display: flex; align-items: center; gap: 12px; }
+  .chat-header-left .ch-name { font-size: 16px; font-weight: 700; }
+  .chat-header-left .ch-unit { font-size: 13px; color: #a8a29e; }
+
+  .chat-progress { background: #f5f3ff; border-radius: 10px; padding: 8px 16px; font-size: 13px; color: #7c3aed; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+  .chat-progress:hover { background: #ede9fe; }
+  .chat-progress .cp-bar { width: 60px; height: 4px; background: #e9e5fd; border-radius: 2px; overflow: hidden; }
+  .chat-progress .cp-bar-fill { width: 83%; height: 100%; background: #8b5cf6; border-radius: 2px; }
+
+  .chat-progress-expanded { display: none; background: #faf5ff; border-radius: 16px; padding: 16px 24px; margin: 12px 24px 0; }
+  .chat-progress-expanded.show { display: block; }
+  .mini-timeline { list-style: none; }
+  .mini-timeline li { padding: 6px 0; font-size: 13px; color: #57534e; display: flex; align-items: center; gap: 10px; }
+  .mini-timeline li .mt-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .mini-timeline li .mt-dot.done { background: #16a34a; }
+  .mini-timeline li .mt-dot.current { background: #8b5cf6; box-shadow: 0 0 0 3px rgba(139,92,246,0.2); }
+  .mini-timeline li .mt-dot.pending { background: #d6d3d1; }
+  .mini-timeline li.current-step { font-weight: 600; color: #8b5cf6; }
+
+  .chat-messages { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 10px; }
+  .msg { max-width: 75%; padding: 12px 16px; border-radius: 18px; font-size: 14px; line-height: 1.5; animation: msgIn 0.3s ease; }
+  @keyframes msgIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .msg.inbound { background: #f5f5f4; color: #1c1917; align-self: flex-start; border-bottom-left-radius: 4px; }
+  .msg.outbound { background: #8b5cf6; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+  .msg.agent { background: #f5f3ff; color: #44337a; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #e9e5fd; }
+  .msg-sender { font-size: 11px; font-weight: 700; color: #a8a29e; margin-bottom: 2px; }
+  .msg.agent .msg-sender { color: #8b5cf6; }
+
+  /* ===================== TAB 4: HISTORY ===================== */
+  .history-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+  .date-nav { display: flex; align-items: center; gap: 16px; }
+  .date-nav button { background: none; border: none; font-size: 18px; color: #a8a29e; cursor: pointer; padding: 4px 8px; border-radius: 8px; transition: all 0.2s; }
+  .date-nav button:hover { color: #8b5cf6; background: #f5f3ff; }
+  .date-nav .current-date { font-size: 16px; font-weight: 700; color: #1c1917; }
+  .history-search { padding: 10px 18px; border-radius: 12px; border: 1.5px solid #e7e5e4; font-size: 14px; width: 260px; outline: none; transition: border-color 0.2s; background: #fafaf9; }
+  .history-search:focus { border-color: #8b5cf6; background: white; }
+
+  .timeline { position: relative; padding-left: 32px; }
+  .timeline::before { content: ''; position: absolute; left: 11px; top: 8px; bottom: 8px; width: 2px; background: #e7e5e4; border-radius: 1px; }
+  .tl-item { position: relative; margin-bottom: 16px; }
+  .tl-dot { position: absolute; left: -32px; top: 14px; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; z-index: 1; }
+  .tl-card { background: #fafaf9; border-radius: 16px; padding: 16px 20px; transition: all 0.3s; }
+  .tl-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); transform: translateX(4px); }
+  .tl-time { font-size: 12px; color: #a8a29e; font-weight: 600; margin-bottom: 2px; }
+  .tl-desc { font-size: 14px; color: #1c1917; }
+
+  /* ===================== ANIMATIONS & UTILITIES ===================== */
+  .tab-content { display: none; animation: fadeIn 0.35s ease; }
+  .tab-content.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .checkmark-anim { display: inline-flex; width: 32px; height: 32px; border-radius: 50%; background: #16a34a; color: white; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+  @keyframes popIn { 0% { transform: scale(0); } 70% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(80px); background: #292524; color: white; padding: 14px 28px; border-radius: 16px; font-size: 14px; font-weight: 600; box-shadow: 0 8px 32px rgba(0,0,0,0.15); z-index: 100; transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.35s ease; opacity: 0; display: flex; align-items: center; gap: 10px; pointer-events: none; }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  .toast .toast-check { width: 22px; height: 22px; background: #16a34a; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #e7e5e4; border-radius: 3px; }
+
+  /* Responsive nudge */
+  @media (max-width: 768px) {
+    .content-area { padding: 24px; }
+    .inbox-layout { flex-direction: column; height: auto; margin: -24px; margin-top: -12px; }
+    .conv-list { width: 100%; border-right: none; border-bottom: 1px solid #f5f5f4; max-height: 200px; }
+    .notif-card { flex-direction: column; text-align: center; }
+    .notif-actions { justify-content: center; }
+    .agent-status-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Variation switcher -->
+<div class="variation-bar">
+  <a href="maintenance-agent-prototype.html">Variation 1: Standard</a>
+  <a href="variation-enterprise.html">Variation 2: Enterprise</a>
+  <span class="active">Variation 3: Simple</span>
+</div>
+
+<div class="shell">
+  <!-- Tab bar -->
+  <div class="tab-bar">
+    <div class="logo">DoorLoop</div>
+    <button class="tab active" data-tab="get-started">Get Started</button>
+    <button class="tab" data-tab="my-agents">My Agents<span class="tab-dot"></span></button>
+    <button class="tab" data-tab="inbox">Inbox<span class="tab-dot"></span></button>
+    <button class="tab" data-tab="history">History</button>
+  </div>
+
+  <div class="content-area">
+
+    <!-- ==================== TAB 1: GET STARTED ==================== -->
+    <div class="tab-content active" id="tab-get-started">
+      <div class="hero-emoji">&#x1F3E0;&#x2728;&#x1F916;</div>
+      <h1 class="hero-headline">Drop your policy and let AI do the rest</h1>
+      <p class="hero-sub">No setup. No forms. Just one file and you're live.</p>
+
+      <div class="drop-zone" id="dropZone" onclick="simulateUpload()">
+        <div class="dz-prompt">
+          <div class="dz-icon">&#x1F4C4;</div>
+          <div class="dz-main">Drop a PDF, Word doc, or just paste text</div>
+          <div class="dz-sub">We'll read it and set up your agents automatically</div>
+        </div>
+        <div class="progress-area" id="progressArea">
+          <div class="progress-step" id="ps1">&#x1F4D6; Reading your policy...</div>
+          <div class="progress-step" id="ps2">&#x1F50D; Found 12 rules...</div>
+          <div class="progress-step" id="ps3">&#x1F916; Creating 3 agents...</div>
+          <div class="progress-step" id="ps4" style="font-size: 20px;">&#x2705; Done! Your agents are live.</div>
+          <div class="progress-bar-track"><div class="progress-bar-fill" id="progressFill"></div></div>
+        </div>
+      </div>
+
+      <div class="agent-preview-row">
+        <div class="agent-preview-card">
+          <div class="ap-emoji">&#x1F527;</div>
+          <div class="ap-name">Maintenance Agent</div>
+          <div class="ap-desc">Handles repairs</div>
+        </div>
+        <div class="agent-preview-card">
+          <div class="ap-emoji">&#x1F4CB;</div>
+          <div class="ap-name">Renewal Agent</div>
+          <div class="ap-desc">Manages renewals</div>
+        </div>
+        <div class="agent-preview-card">
+          <div class="ap-emoji">&#x1F4B0;</div>
+          <div class="ap-name">Collection Agent</div>
+          <div class="ap-desc">Collects rent</div>
+        </div>
+      </div>
+      <p class="agent-hint">AI will determine which agents you need from your policy</p>
+    </div>
+
+    <!-- ==================== TAB 2: MY AGENTS ==================== -->
+    <div class="tab-content" id="tab-my-agents">
+      <h2 class="greeting">Good morning, Sarah &#x1F44B;</h2>
+      <p class="greeting-sub">Your agents handled 23 things while you slept</p>
+
+      <!-- Notification cards -->
+      <div class="notif-card" id="notif1">
+        <div class="notif-emoji">&#x1F527;</div>
+        <div class="notif-text">
+          <div class="nt-main">Maria needs a water heater &mdash; $2,800 quote needs your OK</div>
+          <div class="nt-sub">742 Evergreen 3A &middot; ABC Plumbing &middot; Available 2&ndash;4 PM</div>
+        </div>
+        <div class="notif-actions">
+          <button class="btn-approve" onclick="handleNotifAction(this, 'Approved! Dispatching plumber.')">Approve &#x2713;</button>
+          <button class="btn-deny" onclick="handleNotifAction(this, 'Denied. We\'ll find alternatives.')">Deny &#x2717;</button>
+        </div>
+      </div>
+
+      <div class="notif-card" id="notif2">
+        <div class="notif-emoji">&#x1F4B0;</div>
+        <div class="notif-text">
+          <div class="nt-main">James hasn't paid rent &mdash; 3rd time. Want to send a notice?</div>
+          <div class="nt-sub">155 Pine 7B &middot; $1,450 &middot; 5 days past due</div>
+        </div>
+        <div class="notif-actions">
+          <button class="btn-approve" onclick="handleNotifAction(this, 'Formal notice sent to James.')">Send Notice</button>
+          <button class="btn-alt" onclick="handleNotifAction(this, 'Payment plan created.')">Set Up Plan</button>
+        </div>
+      </div>
+
+      <!-- Agent status pills -->
+      <div class="agent-status-row">
+        <div class="status-pill">
+          <div class="sp-emoji">&#x1F527;</div>
+          <div>
+            <div class="sp-name">Maintenance</div>
+            <div class="sp-info">12 active &middot; all good &#x2713;</div>
+          </div>
+        </div>
+        <div class="status-pill">
+          <div class="sp-emoji">&#x1F4CB;</div>
+          <div>
+            <div class="sp-name">Renewal</div>
+            <div class="sp-info">8 active &middot; 1 needs you</div>
+          </div>
+        </div>
+        <div class="status-pill">
+          <div class="sp-emoji">&#x1F4B0;</div>
+          <div>
+            <div class="sp-name">Collection</div>
+            <div class="sp-info">3 active &middot; 1 escalated</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Automatically handled section -->
+      <div class="auto-section">
+        <div class="auto-header" id="autoToggle" onclick="toggleAutoList()">Everything else was handled automatically &#x2728; <span id="autoArrow">&#x25B6;</span></div>
+        <ul class="auto-list" id="autoList" style="display: none;">
+          <li><span class="check">&#x2713;</span> Sent lease renewal offer to Angela Davis &mdash; 4% increase</li>
+          <li><span class="check">&#x2713;</span> Scheduled HVAC inspection for 890 Oak Ave</li>
+          <li><span class="check">&#x2713;</span> Collected $4,350 in rent from 3 tenants on auto-pay</li>
+          <li><span class="check">&#x2713;</span> Responded to 8 tenant questions about parking</li>
+          <li><span class="check">&#x2713;</span> Filed insurance claim for storm damage at Maple Gardens</li>
+          <li><span class="check">&#x2713;</span> Sent January owner statements to all 12 owners</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 3: INBOX ==================== -->
+    <div class="tab-content" id="tab-inbox">
+      <div class="inbox-layout">
+        <!-- Conversation list -->
+        <div class="conv-list">
+          <div class="conv-item active" onclick="selectConv(this, 'sarah')">
+            <div class="conv-avatar" style="background: #8b5cf6;">ST</div>
+            <div class="conv-meta">
+              <div class="cm-name">Sarah Thompson</div>
+              <div class="cm-preview">Water heater update...</div>
+            </div>
+            <div class="conv-time">8:02</div>
+            <div class="conv-unread"></div>
+          </div>
+          <div class="conv-item" onclick="selectConv(this, 'james')">
+            <div class="conv-avatar" style="background: #f97316;">JW</div>
+            <div class="conv-meta">
+              <div class="cm-name">James Wilson</div>
+              <div class="cm-preview">Payment reminder sent</div>
+            </div>
+            <div class="conv-time">7:45</div>
+          </div>
+          <div class="conv-item" onclick="selectConv(this, 'angela')">
+            <div class="conv-avatar" style="background: #16a34a;">AD</div>
+            <div class="conv-meta">
+              <div class="cm-name">Angela Davis</div>
+              <div class="cm-preview">Signed her renewal!</div>
+            </div>
+            <div class="conv-time">Yest</div>
+          </div>
+          <div class="conv-item" onclick="selectConv(this, 'patricia')">
+            <div class="conv-avatar" style="background: #ec4899;">PM</div>
+            <div class="conv-meta">
+              <div class="cm-name">Patricia Moore</div>
+              <div class="cm-preview">Payment plan confirmed</div>
+            </div>
+            <div class="conv-time">Yest</div>
+          </div>
+          <div class="conv-item" onclick="selectConv(this, 'abc')">
+            <div class="conv-avatar" style="background: #6366f1;">AB</div>
+            <div class="conv-meta">
+              <div class="cm-name">ABC Plumbing</div>
+              <div class="cm-preview">Confirmed for 2-4 PM</div>
+            </div>
+            <div class="conv-time">7:30</div>
+          </div>
+        </div>
+
+        <!-- Chat area -->
+        <div class="chat-area">
+          <div class="chat-header">
+            <div class="chat-header-left">
+              <div class="ch-name">Sarah Thompson</div>
+              <div class="ch-unit">742 Evergreen Terrace, Unit 3A</div>
+            </div>
+            <div class="chat-progress" id="chatProgress" onclick="toggleTimeline()">
+              <span>Maintenance &middot; Step 10 of 12</span>
+              <div class="cp-bar"><div class="cp-bar-fill"></div></div>
+            </div>
+          </div>
+
+          <div class="chat-progress-expanded" id="miniTimeline">
+            <ul class="mini-timeline">
+              <li><span class="mt-dot done"></span> Tenant reported issue</li>
+              <li><span class="mt-dot done"></span> AI diagnosed: water heater failure</li>
+              <li><span class="mt-dot done"></span> Vendor search &amp; quote requested</li>
+              <li><span class="mt-dot done"></span> ABC Plumbing quoted $2,800</li>
+              <li><span class="mt-dot done"></span> Owner David Chen notified</li>
+              <li><span class="mt-dot done"></span> Owner approved via SMS</li>
+              <li><span class="mt-dot done"></span> Vendor scheduled 2&ndash;4 PM</li>
+              <li><span class="mt-dot done"></span> Tenant notified of schedule</li>
+              <li><span class="mt-dot done"></span> Work order created in DoorLoop</li>
+              <li class="current-step"><span class="mt-dot current"></span> Waiting for repair verification</li>
+              <li><span class="mt-dot pending"></span> Confirm repair with tenant</li>
+              <li><span class="mt-dot pending"></span> Close work order &amp; update records</li>
+            </ul>
+          </div>
+
+          <div class="chat-messages">
+            <div class="msg inbound">
+              <div class="msg-sender">Maria Lopez &middot; 6:14 AM</div>
+              Hi, there's no hot water in my apartment this morning. It's freezing!
+            </div>
+            <div class="msg agent">
+              <div class="msg-sender">&#x1F916; AI Agent &middot; 6:14 AM</div>
+              I'm sorry to hear that, Maria! Let me look into this right away. Can you tell me &mdash; is there any water leaking around the water heater?
+            </div>
+            <div class="msg inbound">
+              <div class="msg-sender">Maria Lopez &middot; 6:16 AM</div>
+              I don't see any leaking but the unit is making a weird clicking noise
+            </div>
+            <div class="msg agent">
+              <div class="msg-sender">&#x1F916; AI Agent &middot; 6:16 AM</div>
+              Thank you. Based on the symptoms and the unit's age (installed 2014), this is likely a water heater failure. I've found ABC Plumbing available today 2&ndash;4 PM. They quoted $2,800 for replacement. I've sent this to the owner for approval.
+            </div>
+            <div class="msg agent">
+              <div class="msg-sender">&#x1F916; AI Agent &middot; 8:02 AM</div>
+              Great news! Owner David Chen approved the repair. ABC Plumbing is confirmed for 2&ndash;4 PM today. Someone will need to be home to let them in. Will you be available?
+            </div>
+            <div class="msg inbound">
+              <div class="msg-sender">Maria Lopez &middot; 8:05 AM</div>
+              Yes I'll be home. Thank you so much for the fast response!
+            </div>
+            <div class="msg agent">
+              <div class="msg-sender">&#x1F916; AI Agent &middot; 8:05 AM</div>
+              You're welcome, Maria! I'll check in after the repair to make sure everything is working properly. &#x1F44D;
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 4: HISTORY ==================== -->
+    <div class="tab-content" id="tab-history">
+      <div class="history-top">
+        <div class="date-nav">
+          <button onclick="showToast('Showing yesterday')">&#x2190;</button>
+          <span class="current-date">Today &middot; March 22</span>
+          <button onclick="showToast('No future events yet')">&#x2192;</button>
+        </div>
+        <input class="history-search" type="text" placeholder="Search anything...">
+      </div>
+
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-dot" style="background: #fef3c7;">&#x1F511;</div>
+          <div class="tl-card">
+            <div class="tl-time">9:15 AM</div>
+            <div class="tl-desc">&#x1F511; Applicant declined for 890 Oak Ave #12 &mdash; eviction on record</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot" style="background: #dbeafe;">&#x1F697;</div>
+          <div class="tl-card">
+            <div class="tl-time">8:05 AM</div>
+            <div class="tl-desc">&#x1F697; ABC Plumbing dispatched for 2&ndash;4 PM &mdash; 742 Evergreen 3A</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot" style="background: #d1fae5;">&#x2705;</div>
+          <div class="tl-card">
+            <div class="tl-time">8:02 AM</div>
+            <div class="tl-desc">&#x2705; David Chen approved the water heater repair via SMS ($2,800)</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot" style="background: #fce7f3;">&#x1F527;</div>
+          <div class="tl-card">
+            <div class="tl-time">8:02 AM</div>
+            <div class="tl-desc">&#x1F527; Water heater quote sent to owner David Chen &mdash; $2,800</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot" style="background: #fee2e2;">&#x1F4B0;</div>
+          <div class="tl-card">
+            <div class="tl-time">8:00 AM</div>
+            <div class="tl-desc">&#x1F4B0; 3rd rent reminder sent to James Wilson &mdash; no response</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot" style="background: #d1fae5;">&#x1F91D;</div>
+          <div class="tl-card">
+            <div class="tl-time">7:30 AM</div>
+            <div class="tl-desc">&#x1F91D; Payment plan set up for Patricia Moore &mdash; $550 &times; 3 months</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot" style="background: #e0e7ff;">&#x1F4CA;</div>
+          <div class="tl-card">
+            <div class="tl-time">7:00 AM</div>
+            <div class="tl-desc">&#x1F4CA; January owner statements sent to all 12 owners &mdash; $148,200 collected</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot" style="background: #d1fae5;">&#x2705;</div>
+          <div class="tl-card">
+            <div class="tl-time">6:45 AM</div>
+            <div class="tl-desc">&#x2705; Auto-collected $4,350 rent from 3 tenants on auto-pay</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot" style="background: #fef3c7;">&#x1F4CB;</div>
+          <div class="tl-card">
+            <div class="tl-time">6:30 AM</div>
+            <div class="tl-desc">&#x1F4CB; Lease renewal offer sent to Angela Davis &mdash; 4% increase proposed</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content-area -->
+</div><!-- /shell -->
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <span class="toast-check">&#x2713;</span>
+  <span id="toastMsg">Done</span>
+</div>
+
+<script>
+/* ---- Tab switching ---- */
+document.querySelectorAll('.tab').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* ---- Toast ---- */
+function showToast(msg) {
+  var toast = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg || 'Done';
+  toast.classList.add('show');
+  setTimeout(function() { toast.classList.remove('show'); }, 2400);
+}
+
+/* ---- Drop zone upload simulation ---- */
+var uploading = false;
+function simulateUpload() {
+  if (uploading) return;
+  uploading = true;
+  var zone = document.getElementById('dropZone');
+  zone.classList.add('uploading', 'active');
+  var fill = document.getElementById('progressFill');
+  var steps = [
+    { id: 'ps1', pct: 25, delay: 400 },
+    { id: 'ps2', pct: 55, delay: 1400 },
+    { id: 'ps3', pct: 80, delay: 2600 },
+    { id: 'ps4', pct: 100, delay: 3800 }
+  ];
+  steps.forEach(function(s) {
+    setTimeout(function() {
+      var el = document.getElementById(s.id);
+      el.classList.add('visible');
+      fill.style.width = s.pct + '%';
+      if (s.pct === 100) {
+        el.classList.add('done');
+        fill.classList.add('complete');
+        // After done, switch to My Agents tab after a pause
+        setTimeout(function() {
+          document.querySelector('.tab[data-tab="my-agents"]').click();
+          showToast('3 agents created from your policy!');
+          uploading = false;
+        }, 1600);
+      }
+    }, s.delay);
+  });
+}
+
+/* Drag hover effect */
+var dz = document.getElementById('dropZone');
+dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.classList.add('active'); });
+dz.addEventListener('dragleave', function() { if (!uploading) dz.classList.remove('active'); });
+dz.addEventListener('drop', function(e) { e.preventDefault(); simulateUpload(); });
+
+/* ---- Notification actions ---- */
+function handleNotifAction(btn, msg) {
+  var card = btn.closest('.notif-card');
+  var actions = card.querySelector('.notif-actions');
+  actions.innerHTML = '<span class="checkmark-anim">&#x2713;</span>';
+  showToast(msg);
+  setTimeout(function() {
+    card.style.opacity = '0.5';
+    card.style.transform = 'scale(0.98)';
+  }, 800);
+}
+
+/* ---- Auto-list toggle ---- */
+function toggleAutoList() {
+  var list = document.getElementById('autoList');
+  var arrow = document.getElementById('autoArrow');
+  if (list.style.display === 'none') {
+    list.style.display = 'block';
+    arrow.textContent = '\u25BC';
+  } else {
+    list.style.display = 'none';
+    arrow.textContent = '\u25B6';
+  }
+}
+
+/* ---- Conversation selection ---- */
+function selectConv(el) {
+  document.querySelectorAll('.conv-item').forEach(function(c) { c.classList.remove('active'); });
+  el.classList.add('active');
+  // Remove unread dot
+  var dot = el.querySelector('.conv-unread');
+  if (dot) dot.remove();
+}
+
+/* ---- Mini timeline toggle ---- */
+function toggleTimeline() {
+  document.getElementById('miniTimeline').classList.toggle('show');
+}
+</script>
+<script src="cori.js"></script>
+</body>
+</html>

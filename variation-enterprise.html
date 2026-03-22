@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DoorLoop AI Agent – Enterprise</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fb; color: #1a2b4a; height: 100vh; overflow: hidden; }
+
+  /* ---- Variation switcher bar ---- */
+  .variation-bar { height: 36px; background: #0a0f1e; display: flex; align-items: center; justify-content: center; gap: 0; flex-shrink: 0; border-bottom: 1px solid #1e293b; z-index: 100; }
+  .variation-bar a, .variation-bar span { padding: 0 20px; font-size: 12px; font-weight: 500; color: #64748b; text-decoration: none; line-height: 36px; transition: all 0.15s; border-bottom: 2px solid transparent; }
+  .variation-bar a:hover { color: #94a3b8; background: rgba(255,255,255,0.03); }
+  .variation-bar .active { color: #3b82f6; border-bottom: 2px solid #3b82f6; font-weight: 600; background: rgba(59,130,246,0.06); }
+  .variation-bar .ent-badge { display: inline-block; background: #3b82f6; color: white; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 3px; margin-left: 6px; letter-spacing: 0.3px; vertical-align: middle; position: relative; top: -1px; }
+
+  /* ---- Layout ---- */
+  .app-shell { display: flex; flex-direction: column; height: 100vh; }
+  .app-body { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* ---- Top header ---- */
+  .top-header { height: 52px; background: #0f1729; display: flex; align-items: center; padding: 0 28px; gap: 16px; flex-shrink: 0; border-bottom: 1px solid #1e293b; }
+  .top-header .logo { width: 28px; height: 28px; background: #3b82f6; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 13px; flex-shrink: 0; }
+  .top-header .app-title { font-size: 14px; font-weight: 600; color: white; }
+  .top-header .app-subtitle { font-size: 12px; color: #64748b; }
+  .top-header .header-right { margin-left: auto; display: flex; align-items: center; gap: 16px; }
+  .top-header .header-stat { font-size: 11px; color: #94a3b8; }
+  .top-header .header-stat strong { color: #3b82f6; font-weight: 600; }
+  .top-header .user-avatar { width: 28px; height: 28px; background: #1e293b; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 11px; font-weight: 600; border: 1px solid #334155; }
+
+  /* ---- Tab bar ---- */
+  .tab-bar { height: 42px; background: #0f1729; display: flex; align-items: stretch; padding: 0 28px; gap: 0; flex-shrink: 0; border-bottom: 1px solid #1e293b; }
+  .tab-bar .tab { padding: 0 20px; font-size: 12px; font-weight: 500; color: #64748b; cursor: pointer; border-bottom: 2px solid transparent; display: flex; align-items: center; gap: 6px; transition: all 0.15s; }
+  .tab-bar .tab:hover { color: #94a3b8; background: rgba(255,255,255,0.02); }
+  .tab-bar .tab.active { color: #3b82f6; border-bottom-color: #3b82f6; }
+  .tab-bar .tab .tab-count { background: rgba(59,130,246,0.15); color: #3b82f6; font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 8px; }
+  .tab-bar .tab .tab-count.red { background: rgba(239,68,68,0.15); color: #ef4444; }
+
+  /* ---- Content panels ---- */
+  .tab-panel { flex: 1; overflow-y: auto; display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ---- Scrollbar ---- */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #d0d7e2; border-radius: 3px; }
+
+  /* ---- Panel padding ---- */
+  .panel-content { padding: 24px 28px; }
+
+  /* ============================ */
+  /* TAB 1: AGENT SETUP           */
+  /* ============================ */
+  .setup-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .setup-section { background: white; border-radius: 10px; border: 1px solid #e8ecf1; overflow: hidden; }
+  .setup-section-header { padding: 16px 20px; border-bottom: 1px solid #e8ecf1; font-size: 13px; font-weight: 600; color: #1a2b4a; display: flex; align-items: center; gap: 8px; }
+  .setup-section-header .section-icon { width: 24px; height: 24px; background: #eff6ff; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+  .setup-section-body { padding: 20px; }
+
+  /* Drop zone */
+  .drop-zone { border: 2px dashed #cbd5e1; border-radius: 10px; padding: 48px 24px; text-align: center; transition: all 0.2s; cursor: pointer; background: #fafbfd; }
+  .drop-zone:hover, .drop-zone.drag-over { border-color: #3b82f6; background: #eff6ff; }
+  .drop-zone .dz-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.6; }
+  .drop-zone .dz-title { font-size: 14px; font-weight: 600; color: #1a2b4a; margin-bottom: 4px; }
+  .drop-zone .dz-sub { font-size: 12px; color: #6b7a99; margin-bottom: 16px; }
+  .drop-zone .dz-formats { display: flex; gap: 8px; justify-content: center; }
+  .drop-zone .dz-format { padding: 4px 10px; background: white; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 10px; font-weight: 600; color: #64748b; text-transform: uppercase; }
+
+  .templates-label { font-size: 12px; font-weight: 600; color: #6b7a99; margin: 20px 0 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .template-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .template-card { padding: 12px; border: 1px solid #e8ecf1; border-radius: 8px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 10px; }
+  .template-card:hover { border-color: #3b82f6; background: #eff6ff; }
+  .template-card.selected { border-color: #3b82f6; background: #eff6ff; box-shadow: 0 0 0 1px #3b82f6; }
+  .template-card .tc-icon { width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .template-card .tc-icon.maint { background: #fef3c7; }
+  .template-card .tc-icon.renewal { background: #d1fae5; }
+  .template-card .tc-icon.delinq { background: #fee2e2; }
+  .template-card .tc-icon.leasing { background: #e0e7ff; }
+  .template-card .tc-icon.inspect { background: #f3e8ff; }
+  .template-card .tc-icon.report { background: #e0f2fe; }
+  .template-card .tc-name { font-size: 12px; font-weight: 600; color: #1a2b4a; }
+  .template-card .tc-desc { font-size: 10px; color: #6b7a99; margin-top: 1px; }
+
+  /* Config panel */
+  .config-section { margin-bottom: 20px; }
+  .config-section:last-child { margin-bottom: 0; }
+  .config-label { font-size: 11px; font-weight: 600; color: #6b7a99; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+
+  .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag { padding: 4px 10px; background: #fee2e2; color: #dc2626; border-radius: 4px; font-size: 11px; font-weight: 500; display: flex; align-items: center; gap: 4px; }
+  .tag .tag-remove { cursor: pointer; opacity: 0.5; font-size: 13px; }
+  .tag .tag-remove:hover { opacity: 1; }
+  .tag.urgent { background: #fef3c7; color: #d97706; }
+  .tag.standard { background: #e0f2fe; color: #0284c7; }
+
+  .sla-table { width: 100%; font-size: 12px; border-collapse: collapse; }
+  .sla-table th { text-align: left; font-weight: 500; color: #6b7a99; padding: 6px 0; font-size: 11px; }
+  .sla-table td { padding: 5px 0; }
+  .sla-table input { width: 60px; padding: 4px 8px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 12px; text-align: center; font-family: inherit; }
+  .sla-table .sla-label { font-weight: 500; color: #1a2b4a; }
+  .sla-table .sla-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+  .sla-dot.red { background: #ef4444; }
+  .sla-dot.yellow { background: #f59e0b; }
+  .sla-dot.blue { background: #3b82f6; }
+
+  .threshold-row { display: flex; align-items: center; gap: 8px; }
+  .threshold-input { width: 100px; padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; font-family: inherit; }
+  .threshold-hint { font-size: 11px; color: #94a3b8; }
+
+  .vendor-list { list-style: none; }
+  .vendor-list li { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 12px; border-bottom: 1px solid #f1f5f9; }
+  .vendor-list li:last-child { border: none; }
+  .vendor-list .drag-handle { color: #cbd5e1; cursor: grab; font-size: 14px; }
+  .vendor-list .vendor-name { font-weight: 500; color: #1a2b4a; flex: 1; }
+  .vendor-list .vendor-rating { color: #f59e0b; font-size: 11px; }
+
+  .config-select { width: 100%; padding: 7px 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 12px; font-family: inherit; color: #1a2b4a; background: white; }
+
+  .property-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .property-tag { padding: 4px 10px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 11px; color: #475569; cursor: pointer; transition: all 0.15s; }
+  .property-tag.selected { background: #eff6ff; border-color: #3b82f6; color: #3b82f6; }
+
+  .setup-footer { margin-top: 20px; display: flex; align-items: center; gap: 16px; }
+  .setup-stat { font-size: 12px; color: #6b7a99; flex: 1; }
+  .setup-stat strong { color: #3b82f6; }
+
+  /* ============================ */
+  /* TAB 2: COMMAND CENTER        */
+  /* ============================ */
+  .kpi-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; margin-bottom: 24px; }
+  .kpi-card { background: white; border-radius: 10px; border: 1px solid #e8ecf1; padding: 16px; }
+  .kpi-card .kpi-label { font-size: 11px; color: #6b7a99; font-weight: 500; text-transform: uppercase; letter-spacing: 0.3px; }
+  .kpi-card .kpi-value { font-size: 24px; font-weight: 700; color: #1a2b4a; margin-top: 4px; }
+  .kpi-card .kpi-change { font-size: 11px; margin-top: 2px; }
+  .kpi-card .kpi-change.up { color: #16a34a; }
+  .kpi-card .kpi-change.down { color: #dc2626; }
+  .kpi-card .kpi-change.neutral { color: #6b7a99; }
+
+  .cc-layout { display: grid; grid-template-columns: 3fr 2fr; gap: 20px; }
+
+  /* Escalation queue table */
+  .panel-box { background: white; border-radius: 10px; border: 1px solid #e8ecf1; overflow: hidden; }
+  .panel-box-header { padding: 14px 18px; border-bottom: 1px solid #e8ecf1; display: flex; align-items: center; gap: 8px; }
+  .panel-box-header .pbh-title { font-size: 13px; font-weight: 600; color: #1a2b4a; }
+  .panel-box-header .pbh-count { background: #fee2e2; color: #dc2626; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 8px; }
+
+  .eq-table { width: 100%; border-collapse: collapse; }
+  .eq-table thead th { padding: 8px 12px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; color: #6b7a99; text-align: left; border-bottom: 1px solid #e8ecf1; background: #fafbfd; cursor: pointer; white-space: nowrap; }
+  .eq-table thead th:hover { color: #3b82f6; }
+  .eq-table tbody tr { transition: background 0.1s; cursor: pointer; }
+  .eq-table tbody tr:hover { background: #f0f5ff; }
+  .eq-table tbody td { padding: 8px 12px; font-size: 11px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+
+  .priority-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; }
+  .priority-dot.critical { background: #ef4444; }
+  .priority-dot.high { background: #f59e0b; }
+  .priority-dot.medium { background: #3b82f6; }
+  .priority-dot.low { background: #22c55e; }
+
+  .eq-agent-badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: 600; white-space: nowrap; }
+  .eq-agent-badge.maint { background: #fef3c7; color: #92400e; }
+  .eq-agent-badge.rent { background: #fee2e2; color: #991b1b; }
+  .eq-agent-badge.lease { background: #e0e7ff; color: #3730a3; }
+  .eq-agent-badge.renewal { background: #d1fae5; color: #065f46; }
+
+  .eq-action-btn { padding: 3px 8px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 10px; background: white; cursor: pointer; color: #475569; transition: all 0.1s; }
+  .eq-action-btn:hover { border-color: #3b82f6; color: #3b82f6; }
+  .eq-action-btn.primary { background: #3b82f6; color: white; border-color: #3b82f6; }
+  .eq-action-btn.primary:hover { background: #2563eb; }
+
+  .panel-box-footer { padding: 10px 18px; border-top: 1px solid #e8ecf1; font-size: 11px; color: #94a3b8; display: flex; align-items: center; gap: 8px; }
+  .panel-box-footer a { color: #3b82f6; text-decoration: none; font-weight: 500; }
+  .panel-box-footer a:hover { text-decoration: underline; }
+
+  /* Agent fleet grid */
+  .fleet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 14px; }
+  .fleet-tile { border: 1px solid #e8ecf1; border-radius: 8px; padding: 14px; transition: all 0.15s; cursor: pointer; }
+  .fleet-tile:hover { border-color: #3b82f6; box-shadow: 0 2px 8px rgba(59,130,246,0.08); }
+  .fleet-tile .ft-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .fleet-tile .ft-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+  .fleet-tile .ft-name { font-size: 12px; font-weight: 600; color: #1a2b4a; }
+  .fleet-tile .ft-status { display: flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 500; }
+  .fleet-tile .ft-status .status-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .fleet-tile .ft-status.healthy { color: #16a34a; }
+  .fleet-tile .ft-status.healthy .status-dot { background: #16a34a; }
+  .fleet-tile .ft-status.degraded { color: #d97706; }
+  .fleet-tile .ft-status.degraded .status-dot { background: #d97706; }
+  .fleet-tile .ft-status.down { color: #ef4444; }
+  .fleet-tile .ft-status.down .status-dot { background: #ef4444; }
+  .fleet-tile .ft-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+  .fleet-tile .ft-metric { font-size: 10px; color: #6b7a99; }
+  .fleet-tile .ft-metric strong { display: block; font-size: 14px; color: #1a2b4a; font-weight: 600; }
+  .fleet-tile .ft-sparkline { margin-top: 8px; height: 20px; display: flex; align-items: flex-end; gap: 2px; }
+  .fleet-tile .ft-sparkline .bar { width: 4px; border-radius: 1px; background: #3b82f6; opacity: 0.6; transition: opacity 0.1s; }
+  .fleet-tile:hover .ft-sparkline .bar { opacity: 1; }
+
+  /* ============================ */
+  /* TAB 3: COMMUNICATION         */
+  /* ============================ */
+  .comm-filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+  .comm-filter-bar select, .comm-filter-bar input { padding: 6px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 12px; font-family: inherit; background: white; color: #1a2b4a; }
+  .comm-filter-bar input { width: 220px; }
+
+  .kanban { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .kanban-col { background: white; border-radius: 10px; border: 1px solid #e8ecf1; overflow: hidden; }
+  .kanban-col-header { padding: 12px 16px; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
+  .kanban-col-header.needs-attention { background: #fef2f2; color: #dc2626; border-bottom: 2px solid #fecaca; }
+  .kanban-col-header.in-progress { background: #eff6ff; color: #2563eb; border-bottom: 2px solid #bfdbfe; }
+  .kanban-col-header.resolved { background: #f0fdf4; color: #16a34a; border-bottom: 2px solid #bbf7d0; }
+  .kanban-col-body { padding: 10px; display: flex; flex-direction: column; gap: 8px; max-height: 340px; overflow-y: auto; }
+
+  .conv-card { border: 1px solid #e8ecf1; border-radius: 8px; padding: 12px; cursor: pointer; transition: all 0.15s; }
+  .conv-card:hover { border-color: #3b82f6; background: #fafbff; }
+  .conv-card .cc-top { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+  .conv-card .cc-tenant { font-size: 12px; font-weight: 600; color: #1a2b4a; }
+  .conv-card .cc-property { font-size: 10px; color: #94a3b8; }
+  .conv-card .cc-badge { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 600; margin-left: auto; }
+  .conv-card .cc-badge.maint { background: #fef3c7; color: #92400e; }
+  .conv-card .cc-badge.rent { background: #fee2e2; color: #991b1b; }
+  .conv-card .cc-badge.lease { background: #e0e7ff; color: #3730a3; }
+  .conv-card .cc-badge.renewal { background: #d1fae5; color: #065f46; }
+  .conv-card .cc-preview { font-size: 11px; color: #64748b; line-height: 1.5; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .conv-card .cc-footer { display: flex; align-items: center; justify-content: space-between; font-size: 10px; color: #94a3b8; }
+
+  .team-activity-table { width: 100%; border-collapse: collapse; }
+  .team-activity-table thead th { padding: 8px 14px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; color: #6b7a99; text-align: left; border-bottom: 1px solid #e8ecf1; background: #fafbfd; }
+  .team-activity-table tbody td { padding: 10px 14px; font-size: 12px; border-bottom: 1px solid #f1f5f9; }
+  .team-member-name { font-weight: 500; color: #1a2b4a; display: flex; align-items: center; gap: 8px; }
+  .team-avatar { width: 24px; height: 24px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; color: #475569; flex-shrink: 0; }
+
+  /* ============================ */
+  /* TAB 4: AUDIT LOG             */
+  /* ============================ */
+  .audit-stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  .audit-stat-card { background: white; border-radius: 10px; border: 1px solid #e8ecf1; padding: 16px; }
+  .audit-stat-card .as-label { font-size: 11px; color: #6b7a99; font-weight: 500; }
+  .audit-stat-card .as-value { font-size: 22px; font-weight: 700; color: #1a2b4a; margin-top: 2px; }
+  .audit-stat-card .as-sub { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+  .audit-stat-card.flagged .as-value { color: #dc2626; }
+
+  .audit-filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .audit-filter-bar select, .audit-filter-bar input { padding: 6px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 12px; font-family: inherit; background: white; color: #1a2b4a; }
+  .audit-filter-bar .filter-btn { padding: 5px 12px; border-radius: 5px; font-size: 11px; border: 1px solid #e8ecf1; background: white; cursor: pointer; color: #6b7a99; font-weight: 500; transition: all 0.15s; }
+  .audit-filter-bar .filter-btn:hover { border-color: #3b82f6; color: #3b82f6; }
+  .audit-filter-bar .filter-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; }
+
+  .ent-audit-table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; border: 1px solid #e8ecf1; }
+  .ent-audit-table thead th { padding: 9px 12px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; color: #6b7a99; text-align: left; border-bottom: 1px solid #e8ecf1; background: #fafbfd; cursor: pointer; white-space: nowrap; }
+  .ent-audit-table thead th:hover { color: #3b82f6; }
+  .ent-audit-table tbody tr.audit-data-row { transition: background 0.1s; cursor: pointer; }
+  .ent-audit-table tbody tr.audit-data-row:hover { background: #f0f5ff; }
+  .ent-audit-table tbody tr.audit-data-row:nth-child(4n+1) { background: #fafbfd; }
+  .ent-audit-table tbody tr.audit-data-row:nth-child(4n+1):hover { background: #f0f5ff; }
+  .ent-audit-table tbody td { padding: 8px 12px; font-size: 11px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+
+  .compliance-badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 9px; font-weight: 600; margin-right: 4px; white-space: nowrap; }
+  .compliance-badge.fair-housing { background: #d1fae5; color: #065f46; }
+  .compliance-badge.fl-statute { background: #e0e7ff; color: #3730a3; }
+  .compliance-badge.sox { background: #fef3c7; color: #92400e; }
+  .compliance-badge.state-reg { background: #f3e8ff; color: #6b21a8; }
+
+  .badge-actor { display: inline-block; padding: 2px 7px; border-radius: 3px; font-size: 10px; font-weight: 600; }
+  .badge-actor.ai { background: #e8f0fe; color: #1a73e8; }
+  .badge-actor.human { background: #e8f5e9; color: #2e7d32; }
+  .badge-result { display: inline-block; padding: 2px 7px; border-radius: 3px; font-size: 10px; font-weight: 600; }
+  .badge-result.approved { background: #e8f5e9; color: #2e7d32; }
+  .badge-result.auto { background: #e8eaf6; color: #3949ab; }
+  .badge-result.escalated { background: #fff8e1; color: #f57f17; }
+  .badge-result.resolved { background: #e8f5e9; color: #2e7d32; }
+  .badge-result.flagged { background: #fee2e2; color: #dc2626; }
+
+  .expand-arrow { transition: transform 0.2s; display: inline-block; font-size: 10px; color: #94a3b8; }
+  .expand-arrow.open { transform: rotate(90deg); }
+
+  .audit-detail-row { display: none; }
+  .audit-detail-row.open { display: table-row; }
+  .audit-detail-row td { padding: 0 12px 12px 44px; background: #f0f5ff; border-bottom: 1px solid #e8ecf1; }
+  .audit-detail-content { padding: 14px 18px; background: white; border-radius: 8px; border: 1px solid #e0e7f1; font-size: 12px; line-height: 1.7; color: #3d4f6f; }
+  .audit-detail-content strong { color: #1a2b4a; }
+
+  .audit-export-footer { margin-top: 16px; display: flex; align-items: center; gap: 12px; }
+
+  /* ---- Buttons ---- */
+  .btn { padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all 0.15s; font-family: inherit; }
+  .btn-primary { background: #3b82f6; color: white; }
+  .btn-primary:hover { background: #2563eb; }
+  .btn-secondary { background: white; color: #1a2b4a; border: 1px solid #e8ecf1; }
+  .btn-secondary:hover { border-color: #3b82f6; color: #3b82f6; }
+  .btn-sm { padding: 6px 14px; font-size: 12px; border-radius: 6px; }
+  .btn-danger-outline { background: white; color: #dc2626; border: 1px solid #fecaca; }
+  .btn-danger-outline:hover { background: #fef2f2; }
+
+  /* ---- Toast ---- */
+  .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(80px); background: #0f1729; color: white; padding: 12px 24px; border-radius: 10px; font-size: 13px; font-weight: 500; box-shadow: 0 8px 24px rgba(0,0,0,0.2); z-index: 200; transition: transform 0.3s ease, opacity 0.3s ease; opacity: 0; display: flex; align-items: center; gap: 8px; pointer-events: none; }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  .toast .toast-check { width: 20px; height: 20px; background: #16a34a; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+  <!-- Variation Switcher -->
+  <div class="variation-bar">
+    <a href="maintenance-agent-prototype.html">Variation 1: Standard</a>
+    <span class="active">Variation 2: Enterprise<span class="ent-badge">ENT</span></span>
+    <a href="variation-simple.html">Variation 3: Simple</a>
+  </div>
+
+  <div class="app-body">
+    <!-- Top Header -->
+    <div class="top-header">
+      <div class="logo">D</div>
+      <span class="app-title">DoorLoop AI Agents</span>
+      <span class="app-subtitle">Enterprise Operations Center</span>
+      <div class="header-right">
+        <span class="header-stat"><strong>6</strong> agents active</span>
+        <span class="header-stat"><strong>1,247</strong> units managed</span>
+        <span class="header-stat"><strong>99.8%</strong> uptime</span>
+        <div class="user-avatar">SJ</div>
+      </div>
+    </div>
+
+    <!-- Tab Bar -->
+    <div class="tab-bar">
+      <div class="tab active" data-tab="setup" onclick="switchTab('setup')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Agent Setup
+      </div>
+      <div class="tab" data-tab="command" onclick="switchTab('command')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Command Center
+        <span class="tab-count red">8</span>
+      </div>
+      <div class="tab" data-tab="comm" onclick="switchTab('comm')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Communication
+        <span class="tab-count">43</span>
+      </div>
+      <div class="tab" data-tab="audit" onclick="switchTab('audit')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Audit Log
+      </div>
+    </div>
+
+    <!-- =============================== -->
+    <!-- TAB 1: AGENT SETUP              -->
+    <!-- =============================== -->
+    <div class="tab-panel active" id="panel-setup">
+      <div class="panel-content">
+        <div class="setup-layout">
+          <!-- Left: Document Upload -->
+          <div class="setup-section">
+            <div class="setup-section-header">
+              <div class="section-icon">&#128196;</div>
+              Policy Documents
+            </div>
+            <div class="setup-section-body">
+              <div class="drop-zone" id="dropZone">
+                <div class="dz-icon">&#128451;</div>
+                <div class="dz-title">Drop your policy documents here or browse</div>
+                <div class="dz-sub">We'll auto-extract rules, SLAs, and vendor preferences</div>
+                <div class="dz-formats">
+                  <span class="dz-format">PDF</span>
+                  <span class="dz-format">DOCX</span>
+                  <span class="dz-format">TXT</span>
+                  <span class="dz-format">CSV</span>
+                </div>
+              </div>
+
+              <div class="templates-label">Or start from a template</div>
+              <div class="template-grid">
+                <div class="template-card selected" onclick="selectTemplate(this)">
+                  <div class="tc-icon maint">&#128295;</div>
+                  <div><div class="tc-name">Maintenance</div><div class="tc-desc">Work orders, vendors, SLAs</div></div>
+                </div>
+                <div class="template-card" onclick="selectTemplate(this)">
+                  <div class="tc-icon renewal">&#128196;</div>
+                  <div><div class="tc-name">Renewal</div><div class="tc-desc">Lease renewals, pricing</div></div>
+                </div>
+                <div class="template-card" onclick="selectTemplate(this)">
+                  <div class="tc-icon delinq">&#128176;</div>
+                  <div><div class="tc-name">Delinquency</div><div class="tc-desc">Collections, notices</div></div>
+                </div>
+                <div class="template-card" onclick="selectTemplate(this)">
+                  <div class="tc-icon leasing">&#128273;</div>
+                  <div><div class="tc-name">Leasing</div><div class="tc-desc">Showings, screening</div></div>
+                </div>
+                <div class="template-card" onclick="selectTemplate(this)">
+                  <div class="tc-icon inspect">&#128269;</div>
+                  <div><div class="tc-name">Inspections</div><div class="tc-desc">Move-in/out, annual</div></div>
+                </div>
+                <div class="template-card" onclick="selectTemplate(this)">
+                  <div class="tc-icon report">&#128202;</div>
+                  <div><div class="tc-name">Owner Reporting</div><div class="tc-desc">Statements, distributions</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Configuration Panel -->
+          <div class="setup-section">
+            <div class="setup-section-header">
+              <div class="section-icon">&#9881;</div>
+              Configuration Panel
+            </div>
+            <div class="setup-section-body">
+              <!-- Emergency Types -->
+              <div class="config-section">
+                <div class="config-label">Emergency Types</div>
+                <div class="tag-list">
+                  <span class="tag">Water Leak <span class="tag-remove" onclick="this.parentElement.remove()">&times;</span></span>
+                  <span class="tag">Fire/Smoke <span class="tag-remove" onclick="this.parentElement.remove()">&times;</span></span>
+                  <span class="tag">Gas Leak <span class="tag-remove" onclick="this.parentElement.remove()">&times;</span></span>
+                  <span class="tag">No Heat (Winter) <span class="tag-remove" onclick="this.parentElement.remove()">&times;</span></span>
+                  <span class="tag">Electrical Hazard <span class="tag-remove" onclick="this.parentElement.remove()">&times;</span></span>
+                  <span class="tag">Sewage Backup <span class="tag-remove" onclick="this.parentElement.remove()">&times;</span></span>
+                </div>
+              </div>
+
+              <!-- SLA Targets -->
+              <div class="config-section">
+                <div class="config-label">SLA Targets</div>
+                <table class="sla-table">
+                  <thead><tr><th>Priority</th><th>Response</th><th>Resolution</th></tr></thead>
+                  <tbody>
+                    <tr><td class="sla-label"><span class="sla-dot red"></span>Emergency</td><td><input type="text" value="30 min"></td><td><input type="text" value="2 hr"></td></tr>
+                    <tr><td class="sla-label"><span class="sla-dot yellow"></span>Urgent</td><td><input type="text" value="2 hr"></td><td><input type="text" value="24 hr"></td></tr>
+                    <tr><td class="sla-label"><span class="sla-dot blue"></span>Standard</td><td><input type="text" value="4 hr"></td><td><input type="text" value="72 hr"></td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Approval Threshold -->
+              <div class="config-section">
+                <div class="config-label">Approval Threshold</div>
+                <div class="threshold-row">
+                  <span style="font-size:12px;color:#1a2b4a;font-weight:500;">$</span>
+                  <input type="number" class="threshold-input" value="500">
+                  <span class="threshold-hint">Auto-approve below this amount</span>
+                </div>
+              </div>
+
+              <!-- Vendor Preferences -->
+              <div class="config-section">
+                <div class="config-label">Vendor Preferences (drag to reorder)</div>
+                <ul class="vendor-list">
+                  <li><span class="drag-handle">&#9776;</span><span class="vendor-name">ABC Plumbing</span><span class="vendor-rating">&#9733; 4.8</span></li>
+                  <li><span class="drag-handle">&#9776;</span><span class="vendor-name">FastFix Electric</span><span class="vendor-rating">&#9733; 4.7</span></li>
+                  <li><span class="drag-handle">&#9776;</span><span class="vendor-name">ProHVAC Services</span><span class="vendor-rating">&#9733; 4.6</span></li>
+                  <li><span class="drag-handle">&#9776;</span><span class="vendor-name">CleanPro Janitorial</span><span class="vendor-rating">&#9733; 4.5</span></li>
+                </ul>
+              </div>
+
+              <!-- Team Assignment -->
+              <div class="config-section">
+                <div class="config-label">Team Assignment</div>
+                <select class="config-select">
+                  <option>Maintenance Team</option>
+                  <option>Leasing Team</option>
+                  <option>Collections Team</option>
+                  <option>Operations Team</option>
+                  <option>All Teams</option>
+                </select>
+              </div>
+
+              <!-- Active Properties -->
+              <div class="config-section">
+                <div class="config-label">Active Properties</div>
+                <div class="property-tags">
+                  <span class="property-tag selected" onclick="this.classList.toggle('selected')">Evergreen Complex (142 units)</span>
+                  <span class="property-tag selected" onclick="this.classList.toggle('selected')">Pine Street Apts (88 units)</span>
+                  <span class="property-tag selected" onclick="this.classList.toggle('selected')">Oak Avenue Tower (210 units)</span>
+                  <span class="property-tag selected" onclick="this.classList.toggle('selected')">Maple Gardens (64 units)</span>
+                  <span class="property-tag" onclick="this.classList.toggle('selected')">Willow Creek (156 units)</span>
+                  <span class="property-tag selected" onclick="this.classList.toggle('selected')">Cedar Heights (187 units)</span>
+                  <span class="property-tag" onclick="this.classList.toggle('selected')">Birch Landing (72 units)</span>
+                  <span class="property-tag selected" onclick="this.classList.toggle('selected')">Elm Park Estates (96 units)</span>
+                  <span class="property-tag" onclick="this.classList.toggle('selected')">Spruce Point (48 units)</span>
+                  <span class="property-tag selected" onclick="this.classList.toggle('selected')">Ash Grove (90 units)</span>
+                  <span class="property-tag selected" onclick="this.classList.toggle('selected')">Magnolia Place (122 units)</span>
+                  <span class="property-tag selected" onclick="this.classList.toggle('selected')">Harbor View (98 units)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom: Actions -->
+        <div class="setup-footer">
+          <div class="setup-stat">This agent will manage approximately <strong>847 active units</strong> across <strong>12 properties</strong></div>
+          <button class="btn btn-secondary" onclick="showToast('Preview generated')">Preview Workflow</button>
+          <button class="btn btn-primary" onclick="showToast('Agent created successfully')">Create Agent</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- =============================== -->
+    <!-- TAB 2: COMMAND CENTER            -->
+    <!-- =============================== -->
+    <div class="tab-panel" id="panel-command">
+      <div class="panel-content">
+        <!-- KPI Row -->
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-label">Active Workflows</div>
+            <div class="kpi-value">156</div>
+            <div class="kpi-change up">+12 from yesterday</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Pending Escalations</div>
+            <div class="kpi-value" style="color:#dc2626;">8</div>
+            <div class="kpi-change down">+3 from yesterday</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Avg Response Time</div>
+            <div class="kpi-value">4.2<span style="font-size:13px;color:#6b7a99;font-weight:400;"> min</span></div>
+            <div class="kpi-change up">-0.8 min improved</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">SLA Compliance</div>
+            <div class="kpi-value" style="color:#16a34a;">96.3%</div>
+            <div class="kpi-change up">+1.2% from last week</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Team Utilization</div>
+            <div class="kpi-value">78%</div>
+            <div class="kpi-change neutral">Stable</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Monthly Savings</div>
+            <div class="kpi-value" style="color:#16a34a;">$42K</div>
+            <div class="kpi-change up">+$8K from last month</div>
+          </div>
+        </div>
+
+        <!-- Two-column layout -->
+        <div class="cc-layout">
+          <!-- Left: Escalation Queue -->
+          <div class="panel-box">
+            <div class="panel-box-header">
+              <span class="pbh-title">Escalation Queue</span>
+              <span class="pbh-count">8 pending</span>
+            </div>
+            <table class="eq-table">
+              <thead>
+                <tr>
+                  <th>Priority</th>
+                  <th>Time</th>
+                  <th>Agent</th>
+                  <th>Property</th>
+                  <th>Issue</th>
+                  <th>Assigned To</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr onclick="showToast('Opening escalation details')">
+                  <td><span class="priority-dot critical"></span></td>
+                  <td style="white-space:nowrap;color:#6b7a99;">2 min ago</td>
+                  <td><span class="eq-agent-badge maint">Maintenance</span></td>
+                  <td style="font-size:11px;">Evergreen 3A</td>
+                  <td>Water heater failure, $2,800 quote</td>
+                  <td style="font-size:11px;">Sarah J.</td>
+                  <td><button class="eq-action-btn primary" onclick="event.stopPropagation();showToast('Approved')">Approve</button></td>
+                </tr>
+                <tr onclick="showToast('Opening escalation details')">
+                  <td><span class="priority-dot critical"></span></td>
+                  <td style="white-space:nowrap;color:#6b7a99;">18 min ago</td>
+                  <td><span class="eq-agent-badge maint">Maintenance</span></td>
+                  <td style="font-size:11px;">Oak Tower 14C</td>
+                  <td>Mold reported, licensed contractor needed</td>
+                  <td style="font-size:11px;">Mike R.</td>
+                  <td><button class="eq-action-btn" onclick="event.stopPropagation();showToast('Assigned')">Assign</button></td>
+                </tr>
+                <tr onclick="showToast('Opening escalation details')">
+                  <td><span class="priority-dot high"></span></td>
+                  <td style="white-space:nowrap;color:#6b7a99;">34 min ago</td>
+                  <td><span class="eq-agent-badge rent">Rent</span></td>
+                  <td style="font-size:11px;">Pine St 7B</td>
+                  <td>3rd late payment, no tenant response</td>
+                  <td style="font-size:11px;">Sarah J.</td>
+                  <td><button class="eq-action-btn" onclick="event.stopPropagation();showToast('Notice sent')">Notice</button></td>
+                </tr>
+                <tr onclick="showToast('Opening escalation details')">
+                  <td><span class="priority-dot high"></span></td>
+                  <td style="white-space:nowrap;color:#6b7a99;">42 min ago</td>
+                  <td><span class="eq-agent-badge lease">Leasing</span></td>
+                  <td style="font-size:11px;">Cedar Hts 8A</td>
+                  <td>Applicant dispute on screening decision</td>
+                  <td style="font-size:11px;">Lisa T.</td>
+                  <td><button class="eq-action-btn" onclick="event.stopPropagation();showToast('Reviewing')">Review</button></td>
+                </tr>
+                <tr onclick="showToast('Opening escalation details')">
+                  <td><span class="priority-dot high"></span></td>
+                  <td style="white-space:nowrap;color:#6b7a99;">1 hr ago</td>
+                  <td><span class="eq-agent-badge maint">Maintenance</span></td>
+                  <td style="font-size:11px;">Maple Gdn 6B</td>
+                  <td>HVAC repair quote exceeds threshold</td>
+                  <td style="font-size:11px;">Mike R.</td>
+                  <td><button class="eq-action-btn primary" onclick="event.stopPropagation();showToast('Approved')">Approve</button></td>
+                </tr>
+                <tr onclick="showToast('Opening escalation details')">
+                  <td><span class="priority-dot medium"></span></td>
+                  <td style="white-space:nowrap;color:#6b7a99;">1.5 hr ago</td>
+                  <td><span class="eq-agent-badge renewal">Renewal</span></td>
+                  <td style="font-size:11px;">Elm Park 2D</td>
+                  <td>Tenant requesting 6% cap on increase</td>
+                  <td style="font-size:11px;">Sarah J.</td>
+                  <td><button class="eq-action-btn" onclick="event.stopPropagation();showToast('Reviewing')">Review</button></td>
+                </tr>
+                <tr onclick="showToast('Opening escalation details')">
+                  <td><span class="priority-dot medium"></span></td>
+                  <td style="white-space:nowrap;color:#6b7a99;">2 hr ago</td>
+                  <td><span class="eq-agent-badge rent">Rent</span></td>
+                  <td style="font-size:11px;">Harbor View 11A</td>
+                  <td>Partial payment received, plan needed</td>
+                  <td style="font-size:11px;">Lisa T.</td>
+                  <td><button class="eq-action-btn" onclick="event.stopPropagation();showToast('Plan created')">Plan</button></td>
+                </tr>
+                <tr onclick="showToast('Opening escalation details')">
+                  <td><span class="priority-dot low"></span></td>
+                  <td style="white-space:nowrap;color:#6b7a99;">3 hr ago</td>
+                  <td><span class="eq-agent-badge maint">Maintenance</span></td>
+                  <td style="font-size:11px;">Ash Grove 5C</td>
+                  <td>Vendor scheduling conflict, needs rebooking</td>
+                  <td style="font-size:11px;">Mike R.</td>
+                  <td><button class="eq-action-btn" onclick="event.stopPropagation();showToast('Rebooked')">Rebook</button></td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="panel-box-footer">
+              Showing 8 of 23 escalations &middot; <a href="#" onclick="showToast('Loading all escalations')">View all</a> &middot; <a href="#" onclick="showToast('Exporting CSV')">Export CSV</a> &middot; <a href="#" onclick="showToast('Report scheduled')">Schedule report</a>
+            </div>
+          </div>
+
+          <!-- Right: Agent Fleet Health -->
+          <div class="panel-box">
+            <div class="panel-box-header">
+              <span class="pbh-title">Agent Fleet Health</span>
+            </div>
+            <div class="fleet-grid">
+              <!-- Agent 1 -->
+              <div class="fleet-tile" onclick="showToast('Opening Maintenance Agent details')">
+                <div class="ft-header">
+                  <div class="ft-icon" style="background:#fef3c7;">&#128295;</div>
+                  <div>
+                    <div class="ft-name">Maintenance Agent</div>
+                    <div class="ft-status healthy"><span class="status-dot"></span> Healthy</div>
+                  </div>
+                </div>
+                <div class="ft-metrics">
+                  <div class="ft-metric"><strong>42</strong> Active</div>
+                  <div class="ft-metric"><strong>97.1%</strong> SLA</div>
+                </div>
+                <div class="ft-sparkline">
+                  <div class="bar" style="height:8px"></div><div class="bar" style="height:12px"></div><div class="bar" style="height:10px"></div><div class="bar" style="height:15px"></div><div class="bar" style="height:11px"></div><div class="bar" style="height:18px"></div><div class="bar" style="height:14px"></div><div class="bar" style="height:16px"></div><div class="bar" style="height:13px"></div><div class="bar" style="height:19px"></div><div class="bar" style="height:17px"></div><div class="bar" style="height:20px"></div>
+                </div>
+              </div>
+              <!-- Agent 2 -->
+              <div class="fleet-tile" onclick="showToast('Opening Rent Collection Agent details')">
+                <div class="ft-header">
+                  <div class="ft-icon" style="background:#fee2e2;">&#128176;</div>
+                  <div>
+                    <div class="ft-name">Rent Collection</div>
+                    <div class="ft-status healthy"><span class="status-dot"></span> Healthy</div>
+                  </div>
+                </div>
+                <div class="ft-metrics">
+                  <div class="ft-metric"><strong>38</strong> Active</div>
+                  <div class="ft-metric"><strong>98.4%</strong> SLA</div>
+                </div>
+                <div class="ft-sparkline">
+                  <div class="bar" style="height:14px"></div><div class="bar" style="height:16px"></div><div class="bar" style="height:12px"></div><div class="bar" style="height:18px"></div><div class="bar" style="height:15px"></div><div class="bar" style="height:13px"></div><div class="bar" style="height:17px"></div><div class="bar" style="height:19px"></div><div class="bar" style="height:16px"></div><div class="bar" style="height:14px"></div><div class="bar" style="height:18px"></div><div class="bar" style="height:17px"></div>
+                </div>
+              </div>
+              <!-- Agent 3 -->
+              <div class="fleet-tile" onclick="showToast('Opening Leasing Agent details')">
+                <div class="ft-header">
+                  <div class="ft-icon" style="background:#e0e7ff;">&#128273;</div>
+                  <div>
+                    <div class="ft-name">Leasing Agent</div>
+                    <div class="ft-status degraded"><span class="status-dot"></span> Degraded</div>
+                  </div>
+                </div>
+                <div class="ft-metrics">
+                  <div class="ft-metric"><strong>28</strong> Active</div>
+                  <div class="ft-metric"><strong>91.2%</strong> SLA</div>
+                </div>
+                <div class="ft-sparkline">
+                  <div class="bar" style="height:16px"></div><div class="bar" style="height:14px"></div><div class="bar" style="height:18px"></div><div class="bar" style="height:12px"></div><div class="bar" style="height:10px"></div><div class="bar" style="height:8px"></div><div class="bar" style="height:11px"></div><div class="bar" style="height:9px"></div><div class="bar" style="height:7px"></div><div class="bar" style="height:10px"></div><div class="bar" style="height:8px"></div><div class="bar" style="height:6px"></div>
+                </div>
+              </div>
+              <!-- Agent 4 -->
+              <div class="fleet-tile" onclick="showToast('Opening Lease Renewal Agent details')">
+                <div class="ft-header">
+                  <div class="ft-icon" style="background:#d1fae5;">&#128196;</div>
+                  <div>
+                    <div class="ft-name">Lease Renewal</div>
+                    <div class="ft-status healthy"><span class="status-dot"></span> Healthy</div>
+                  </div>
+                </div>
+                <div class="ft-metrics">
+                  <div class="ft-metric"><strong>24</strong> Active</div>
+                  <div class="ft-metric"><strong>99.0%</strong> SLA</div>
+                </div>
+                <div class="ft-sparkline">
+                  <div class="bar" style="height:10px"></div><div class="bar" style="height:12px"></div><div class="bar" style="height:14px"></div><div class="bar" style="height:13px"></div><div class="bar" style="height:16px"></div><div class="bar" style="height:15px"></div><div class="bar" style="height:18px"></div><div class="bar" style="height:17px"></div><div class="bar" style="height:19px"></div><div class="bar" style="height:18px"></div><div class="bar" style="height:20px"></div><div class="bar" style="height:19px"></div>
+                </div>
+              </div>
+              <!-- Agent 5 -->
+              <div class="fleet-tile" onclick="showToast('Opening Inspections Agent details')">
+                <div class="ft-header">
+                  <div class="ft-icon" style="background:#f3e8ff;">&#128269;</div>
+                  <div>
+                    <div class="ft-name">Inspections</div>
+                    <div class="ft-status healthy"><span class="status-dot"></span> Healthy</div>
+                  </div>
+                </div>
+                <div class="ft-metrics">
+                  <div class="ft-metric"><strong>14</strong> Active</div>
+                  <div class="ft-metric"><strong>96.8%</strong> SLA</div>
+                </div>
+                <div class="ft-sparkline">
+                  <div class="bar" style="height:6px"></div><div class="bar" style="height:8px"></div><div class="bar" style="height:10px"></div><div class="bar" style="height:12px"></div><div class="bar" style="height:9px"></div><div class="bar" style="height:14px"></div><div class="bar" style="height:11px"></div><div class="bar" style="height:13px"></div><div class="bar" style="height:10px"></div><div class="bar" style="height:15px"></div><div class="bar" style="height:12px"></div><div class="bar" style="height:14px"></div>
+                </div>
+              </div>
+              <!-- Agent 6 -->
+              <div class="fleet-tile" onclick="showToast('Opening Owner Reporting Agent details')">
+                <div class="ft-header">
+                  <div class="ft-icon" style="background:#e0f2fe;">&#128202;</div>
+                  <div>
+                    <div class="ft-name">Owner Reporting</div>
+                    <div class="ft-status healthy"><span class="status-dot"></span> Healthy</div>
+                  </div>
+                </div>
+                <div class="ft-metrics">
+                  <div class="ft-metric"><strong>10</strong> Active</div>
+                  <div class="ft-metric"><strong>100%</strong> SLA</div>
+                </div>
+                <div class="ft-sparkline">
+                  <div class="bar" style="height:12px"></div><div class="bar" style="height:12px"></div><div class="bar" style="height:14px"></div><div class="bar" style="height:14px"></div><div class="bar" style="height:16px"></div><div class="bar" style="height:16px"></div><div class="bar" style="height:18px"></div><div class="bar" style="height:18px"></div><div class="bar" style="height:20px"></div><div class="bar" style="height:20px"></div><div class="bar" style="height:20px"></div><div class="bar" style="height:20px"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =============================== -->
+    <!-- TAB 3: COMMUNICATION             -->
+    <!-- =============================== -->
+    <div class="tab-panel" id="panel-comm">
+      <div class="panel-content">
+        <!-- Filter bar -->
+        <div class="comm-filter-bar">
+          <select>
+            <option>All Teams</option>
+            <option>Maintenance Team</option>
+            <option>Leasing Team</option>
+            <option>Collections Team</option>
+          </select>
+          <select>
+            <option>All Agent Types</option>
+            <option>Maintenance</option>
+            <option>Rent Collection</option>
+            <option>Leasing</option>
+            <option>Renewal</option>
+          </select>
+          <select>
+            <option>All Priorities</option>
+            <option>Critical</option>
+            <option>High</option>
+            <option>Medium</option>
+            <option>Low</option>
+          </select>
+          <input type="text" placeholder="Search conversations...">
+        </div>
+
+        <!-- Kanban columns -->
+        <div class="kanban">
+          <!-- Needs Attention -->
+          <div class="kanban-col">
+            <div class="kanban-col-header needs-attention">
+              Needs Attention
+              <span>3</span>
+            </div>
+            <div class="kanban-col-body">
+              <div class="conv-card" onclick="showToast('Opening conversation')">
+                <div class="cc-top">
+                  <span class="cc-tenant">Maria Lopez</span>
+                  <span class="cc-property">Evergreen 3A</span>
+                  <span class="cc-badge maint">Maintenance</span>
+                </div>
+                <div class="cc-preview">No hot water since 6 AM. Water heater diagnosed as failed. Waiting on owner approval for $2,800 replacement quote.</div>
+                <div class="cc-footer"><span>2 min ago</span><span>Sarah J.</span></div>
+              </div>
+              <div class="conv-card" onclick="showToast('Opening conversation')">
+                <div class="cc-top">
+                  <span class="cc-tenant">James Wilson</span>
+                  <span class="cc-property">Pine St 7B</span>
+                  <span class="cc-badge rent">Rent</span>
+                </div>
+                <div class="cc-preview">Rent $1,450 is 5 days past due. 2 reminder texts sent with no reply. 3rd late payment in 6 months.</div>
+                <div class="cc-footer"><span>34 min ago</span><span>Sarah J.</span></div>
+              </div>
+              <div class="conv-card" onclick="showToast('Opening conversation')">
+                <div class="cc-top">
+                  <span class="cc-tenant">Patricia Moore</span>
+                  <span class="cc-property">Oak Tower 14C</span>
+                  <span class="cc-badge maint">Maintenance</span>
+                </div>
+                <div class="cc-preview">Black mold reported around bathroom vent. Requires licensed mold remediation contractor per FL statute 468.84.</div>
+                <div class="cc-footer"><span>18 min ago</span><span>Mike R.</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- In Progress -->
+          <div class="kanban-col">
+            <div class="kanban-col-header in-progress">
+              In Progress
+              <span>12</span>
+            </div>
+            <div class="kanban-col-body">
+              <div class="conv-card" onclick="showToast('Opening conversation')">
+                <div class="cc-top">
+                  <span class="cc-tenant">Robert Chen</span>
+                  <span class="cc-property">Cedar Hts 8A</span>
+                  <span class="cc-badge lease">Leasing</span>
+                </div>
+                <div class="cc-preview">Applicant screening in progress. Background check returned, waiting on employment verification.</div>
+                <div class="cc-footer"><span>42 min ago</span><span>Lisa T.</span></div>
+              </div>
+              <div class="conv-card" onclick="showToast('Opening conversation')">
+                <div class="cc-top">
+                  <span class="cc-tenant">Angela Davis</span>
+                  <span class="cc-property">Maple Gdn 18</span>
+                  <span class="cc-badge renewal">Renewal</span>
+                </div>
+                <div class="cc-preview">Renewal offer sent with 4% increase. Tenant reviewing terms. Follow-up scheduled for tomorrow.</div>
+                <div class="cc-footer"><span>1 hr ago</span><span>Sarah J.</span></div>
+              </div>
+              <div class="conv-card" onclick="showToast('Opening conversation')">
+                <div class="cc-top">
+                  <span class="cc-tenant">Kevin Park</span>
+                  <span class="cc-property">Elm Park 2D</span>
+                  <span class="cc-badge renewal">Renewal</span>
+                </div>
+                <div class="cc-preview">Tenant requesting 6% cap on increase. Negotiation in progress, counter-offer being prepared.</div>
+                <div class="cc-footer"><span>1.5 hr ago</span><span>Sarah J.</span></div>
+              </div>
+              <div class="conv-card" onclick="showToast('Opening conversation')">
+                <div class="cc-top">
+                  <span class="cc-tenant">Diana Ross</span>
+                  <span class="cc-property">Harbor View 11A</span>
+                  <span class="cc-badge rent">Rent</span>
+                </div>
+                <div class="cc-preview">Partial payment of $800 received. Payment plan being drafted for remaining $650 balance.</div>
+                <div class="cc-footer"><span>2 hr ago</span><span>Lisa T.</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Resolved Today -->
+          <div class="kanban-col">
+            <div class="kanban-col-header resolved">
+              Resolved Today
+              <span>28</span>
+            </div>
+            <div class="kanban-col-body">
+              <div class="conv-card" onclick="showToast('Opening conversation')">
+                <div class="cc-top">
+                  <span class="cc-tenant">Tom Baker</span>
+                  <span class="cc-property">Ash Grove 12B</span>
+                  <span class="cc-badge maint">Maintenance</span>
+                </div>
+                <div class="cc-preview">Garbage disposal replaced. Tenant confirmed working. Cost: $180, auto-approved.</div>
+                <div class="cc-footer"><span>45 min ago</span><span>Auto</span></div>
+              </div>
+              <div class="conv-card" onclick="showToast('Opening conversation')">
+                <div class="cc-top">
+                  <span class="cc-tenant">Sarah Kim</span>
+                  <span class="cc-property">Magnolia 4A</span>
+                  <span class="cc-badge rent">Rent</span>
+                </div>
+                <div class="cc-preview">Late payment received via ACH. $35 late fee applied per lease terms. Balance cleared.</div>
+                <div class="cc-footer"><span>1 hr ago</span><span>Auto</span></div>
+              </div>
+              <div class="conv-card" onclick="showToast('Opening conversation')">
+                <div class="cc-top">
+                  <span class="cc-tenant">Mark Johnson</span>
+                  <span class="cc-property">Evergreen 7D</span>
+                  <span class="cc-badge lease">Leasing</span>
+                </div>
+                <div class="cc-preview">Showing confirmed for Saturday 2 PM. Pre-screening passed. Application link sent.</div>
+                <div class="cc-footer"><span>2 hr ago</span><span>Auto</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Team Activity -->
+        <div class="panel-box">
+          <div class="panel-box-header">
+            <span class="pbh-title">Team Activity</span>
+          </div>
+          <table class="team-activity-table">
+            <thead>
+              <tr>
+                <th>Team Member</th>
+                <th>Role</th>
+                <th>Active Conversations</th>
+                <th>Avg Response Time</th>
+                <th>Resolved Today</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="team-member-name"><span class="team-avatar">SJ</span> Sarah Johnson</span></td>
+                <td style="font-size:11px;color:#6b7a99;">Senior PM</td>
+                <td><strong>8</strong></td>
+                <td>3.2 min</td>
+                <td>14</td>
+                <td><span style="color:#16a34a;font-size:11px;font-weight:500;">Online</span></td>
+              </tr>
+              <tr>
+                <td><span class="team-member-name"><span class="team-avatar">MR</span> Mike Rivera</span></td>
+                <td style="font-size:11px;color:#6b7a99;">Maintenance Lead</td>
+                <td><strong>5</strong></td>
+                <td>5.1 min</td>
+                <td>9</td>
+                <td><span style="color:#16a34a;font-size:11px;font-weight:500;">Online</span></td>
+              </tr>
+              <tr>
+                <td><span class="team-member-name"><span class="team-avatar">LT</span> Lisa Tran</span></td>
+                <td style="font-size:11px;color:#6b7a99;">Leasing Manager</td>
+                <td><strong>6</strong></td>
+                <td>4.8 min</td>
+                <td>11</td>
+                <td><span style="color:#16a34a;font-size:11px;font-weight:500;">Online</span></td>
+              </tr>
+              <tr>
+                <td><span class="team-member-name"><span class="team-avatar">DP</span> David Park</span></td>
+                <td style="font-size:11px;color:#6b7a99;">Collections</td>
+                <td><strong>3</strong></td>
+                <td>6.4 min</td>
+                <td>7</td>
+                <td><span style="color:#d97706;font-size:11px;font-weight:500;">Away</span></td>
+              </tr>
+              <tr>
+                <td><span class="team-member-name"><span class="team-avatar">JM</span> Jessica Martinez</span></td>
+                <td style="font-size:11px;color:#6b7a99;">Associate PM</td>
+                <td><strong>4</strong></td>
+                <td>3.9 min</td>
+                <td>8</td>
+                <td><span style="color:#16a34a;font-size:11px;font-weight:500;">Online</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- =============================== -->
+    <!-- TAB 4: AUDIT LOG                 -->
+    <!-- =============================== -->
+    <div class="tab-panel" id="panel-audit">
+      <div class="panel-content">
+        <!-- Stats row -->
+        <div class="audit-stats-row">
+          <div class="audit-stat-card">
+            <div class="as-label">Total Decisions</div>
+            <div class="as-value">2,847</div>
+            <div class="as-sub">Last 30 days</div>
+          </div>
+          <div class="audit-stat-card">
+            <div class="as-label">AI Decisions</div>
+            <div class="as-value">2,614</div>
+            <div class="as-sub">91.8% automated</div>
+          </div>
+          <div class="audit-stat-card">
+            <div class="as-label">Human Overrides</div>
+            <div class="as-value">233</div>
+            <div class="as-sub">8.2% override rate</div>
+          </div>
+          <div class="audit-stat-card flagged">
+            <div class="as-label">Compliance Flags</div>
+            <div class="as-value">4</div>
+            <div class="as-sub">Requires review</div>
+          </div>
+        </div>
+
+        <!-- Filter bar -->
+        <div class="audit-filter-bar">
+          <input type="text" placeholder="Search decisions..." id="auditSearch" oninput="filterAudit()" style="width:200px;">
+          <input type="date" value="2026-03-01" style="width:130px;">
+          <span style="font-size:11px;color:#94a3b8;">to</span>
+          <input type="date" value="2026-03-22" style="width:130px;">
+          <select onchange="filterAudit()">
+            <option>All Agents</option>
+            <option>Maintenance</option>
+            <option>Rent Collection</option>
+            <option>Leasing</option>
+            <option>Renewal</option>
+          </select>
+          <select onchange="filterAudit()">
+            <option>All Actions</option>
+            <option>Approved</option>
+            <option>Auto-resolved</option>
+            <option>Escalated</option>
+            <option>Flagged</option>
+          </select>
+          <select onchange="filterAudit()">
+            <option>All Team Members</option>
+            <option>Sarah Johnson</option>
+            <option>Mike Rivera</option>
+            <option>Lisa Tran</option>
+          </select>
+          <button class="filter-btn active" onclick="setAuditCompFilter(this,'all')">All</button>
+          <button class="filter-btn" onclick="setAuditCompFilter(this,'fair-housing')">Fair Housing</button>
+          <button class="filter-btn" onclick="setAuditCompFilter(this,'state')">State Regs</button>
+          <button class="filter-btn" onclick="setAuditCompFilter(this,'sox')">SOX</button>
+        </div>
+
+        <!-- Table -->
+        <table class="ent-audit-table">
+          <thead>
+            <tr>
+              <th style="width:24px;"></th>
+              <th>Timestamp</th>
+              <th>Agent</th>
+              <th>Property Group</th>
+              <th>Decision</th>
+              <th>Actor</th>
+              <th>Compliance</th>
+              <th>Result</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Row 1 -->
+            <tr class="audit-data-row" onclick="toggleAuditDetail('ad1')">
+              <td><span class="expand-arrow" id="arrow-ad1">&#9654;</span></td>
+              <td style="white-space:nowrap;color:#6b7a99;font-size:11px;">Mar 22, 8:02 AM</td>
+              <td><span class="eq-agent-badge maint">Maintenance</span></td>
+              <td style="font-size:11px;">Evergreen Complex</td>
+              <td>Water heater replacement approved ($2,800)</td>
+              <td><span class="badge-actor human">Human</span></td>
+              <td><span class="compliance-badge state-reg">FL-468.84</span></td>
+              <td><span class="badge-result approved">Approved</span></td>
+            </tr>
+            <tr class="audit-detail-row" id="ad1">
+              <td colspan="8">
+                <div class="audit-detail-content">
+                  <strong>Approved by David Chen (owner)</strong> at 8:02 AM via SMS.<br>
+                  <strong>Context:</strong> Unit installed 2014, tenant in good standing 5 yrs. ABC Plumbing quote: $2,800. Threshold exceeded: $500.<br>
+                  <strong>Compliance:</strong> Florida statute 468.84 requires licensed contractor for water heater replacement. ABC Plumbing license verified.
+                </div>
+              </td>
+            </tr>
+            <!-- Row 2 -->
+            <tr class="audit-data-row" onclick="toggleAuditDetail('ad2')">
+              <td><span class="expand-arrow" id="arrow-ad2">&#9654;</span></td>
+              <td style="white-space:nowrap;color:#6b7a99;font-size:11px;">Mar 22, 8:05 AM</td>
+              <td><span class="eq-agent-badge maint">Maintenance</span></td>
+              <td style="font-size:11px;">Evergreen Complex</td>
+              <td>Dispatched ABC Plumbing, tenant confirmed 2-4 PM</td>
+              <td><span class="badge-actor ai">AI</span></td>
+              <td></td>
+              <td><span class="badge-result auto">Auto</span></td>
+            </tr>
+            <tr class="audit-detail-row" id="ad2">
+              <td colspan="8">
+                <div class="audit-detail-content">
+                  <strong>Rule applied:</strong> Preferred vendor rule &mdash; ABC Plumbing (plumbing specialty, rating 4.8).<br>
+                  <strong>Availability confirmed</strong> via SMS at 8:04 AM. Tenant Maria Lopez confirmed 2-4 PM window.
+                </div>
+              </td>
+            </tr>
+            <!-- Row 3 -->
+            <tr class="audit-data-row" onclick="toggleAuditDetail('ad3')">
+              <td><span class="expand-arrow" id="arrow-ad3">&#9654;</span></td>
+              <td style="white-space:nowrap;color:#6b7a99;font-size:11px;">Mar 22, 7:46 AM</td>
+              <td><span class="eq-agent-badge maint">Maintenance</span></td>
+              <td style="font-size:11px;">Oak Avenue Tower</td>
+              <td>Mold remediation escalated - licensed contractor required</td>
+              <td><span class="badge-actor ai">AI</span></td>
+              <td><span class="compliance-badge fl-statute">FL-468.84</span><span class="compliance-badge fair-housing">Fair Housing &#10003;</span></td>
+              <td><span class="badge-result escalated">Escalated</span></td>
+            </tr>
+            <tr class="audit-detail-row" id="ad3">
+              <td colspan="8">
+                <div class="audit-detail-content">
+                  <strong>Escalated by Maintenance Agent</strong> to Mike Rivera (Maintenance Lead).<br>
+                  <strong>Why:</strong> Mold remediation requires licensed contractors per Florida statute 468.84. Health/safety regulatory requirement.<br>
+                  <strong>Fair Housing:</strong> Habitability standards met. Tenant notified within required timeframe.
+                </div>
+              </td>
+            </tr>
+            <!-- Row 4 -->
+            <tr class="audit-data-row" onclick="toggleAuditDetail('ad4')">
+              <td><span class="expand-arrow" id="arrow-ad4">&#9654;</span></td>
+              <td style="white-space:nowrap;color:#6b7a99;font-size:11px;">Mar 22, 9:15 AM</td>
+              <td><span class="eq-agent-badge lease">Leasing</span></td>
+              <td style="font-size:11px;">Cedar Heights</td>
+              <td>Applicant rejected: prior eviction 2021 (rule: none &lt;5 yrs)</td>
+              <td><span class="badge-actor ai">AI</span></td>
+              <td><span class="compliance-badge fair-housing">Fair Housing &#10003;</span></td>
+              <td><span class="badge-result auto">Auto</span></td>
+            </tr>
+            <tr class="audit-detail-row" id="ad4">
+              <td colspan="8">
+                <div class="audit-detail-content">
+                  <strong>Rule applied:</strong> Screening rule &mdash; no evictions within 5 years. Eviction filed Nov 2021.<br>
+                  <strong>Fair Housing compliance:</strong> Adverse action notice sent using approved template. Criteria applied uniformly across all applicants. No disparate impact flags.
+                </div>
+              </td>
+            </tr>
+            <!-- Row 5 -->
+            <tr class="audit-data-row" onclick="toggleAuditDetail('ad5')">
+              <td><span class="expand-arrow" id="arrow-ad5">&#9654;</span></td>
+              <td style="white-space:nowrap;color:#6b7a99;font-size:11px;">Mar 22, 8:00 AM</td>
+              <td><span class="eq-agent-badge rent">Rent</span></td>
+              <td style="font-size:11px;">Pine Street Apts</td>
+              <td>3rd late reminder to James Wilson - escalated to PM</td>
+              <td><span class="badge-actor ai">AI</span></td>
+              <td><span class="compliance-badge state-reg">State Reg</span></td>
+              <td><span class="badge-result escalated">Escalated</span></td>
+            </tr>
+            <tr class="audit-detail-row" id="ad5">
+              <td colspan="8">
+                <div class="audit-detail-content">
+                  <strong>Escalated by Rent Collection Agent</strong> to Sarah Johnson (Senior PM).<br>
+                  <strong>Why:</strong> Rule: after 3 reminders with no response, escalate. Also: 3rd late payment in 6 months.<br>
+                  <strong>State compliance:</strong> All notices sent within statutory timeframes. Formal notice pending PM approval.
+                </div>
+              </td>
+            </tr>
+            <!-- Row 6 -->
+            <tr class="audit-data-row" onclick="toggleAuditDetail('ad6')">
+              <td><span class="expand-arrow" id="arrow-ad6">&#9654;</span></td>
+              <td style="white-space:nowrap;color:#6b7a99;font-size:11px;">Mar 22, 7:30 AM</td>
+              <td><span class="eq-agent-badge rent">Rent</span></td>
+              <td style="font-size:11px;">Harbor View</td>
+              <td>Payment plan offered to Diana Ross - accepted</td>
+              <td><span class="badge-actor ai">AI</span></td>
+              <td><span class="compliance-badge sox">SOX Compliant</span></td>
+              <td><span class="badge-result resolved">Resolved</span></td>
+            </tr>
+            <tr class="audit-detail-row" id="ad6">
+              <td colspan="8">
+                <div class="audit-detail-content">
+                  <strong>Rule applied:</strong> Hardship language detected. Standard 3-installment plan offered.<br>
+                  <strong>SOX compliance:</strong> Financial arrangement logged, payment schedule documented, audit trail complete.
+                </div>
+              </td>
+            </tr>
+            <!-- Row 7 -->
+            <tr class="audit-data-row" onclick="toggleAuditDetail('ad7')">
+              <td><span class="expand-arrow" id="arrow-ad7">&#9654;</span></td>
+              <td style="white-space:nowrap;color:#6b7a99;font-size:11px;">Mar 22, 10:12 AM</td>
+              <td><span class="eq-agent-badge renewal">Renewal</span></td>
+              <td style="font-size:11px;">Maple Gardens</td>
+              <td>Angela Davis signed renewal - 4% increase accepted</td>
+              <td><span class="badge-actor ai">AI</span></td>
+              <td><span class="compliance-badge fair-housing">Fair Housing &#10003;</span></td>
+              <td><span class="badge-result resolved">Resolved</span></td>
+            </tr>
+            <tr class="audit-detail-row" id="ad7">
+              <td colspan="8">
+                <div class="audit-detail-content">
+                  <strong>Auto-processed by Lease Renewal Agent.</strong> New lease through Feb 2027.<br>
+                  <strong>Fair Housing:</strong> Rent increase within market rate guidelines. Uniform criteria applied. +$624/yr added to portfolio revenue.
+                </div>
+              </td>
+            </tr>
+            <!-- Row 8 -->
+            <tr class="audit-data-row" onclick="toggleAuditDetail('ad8')">
+              <td><span class="expand-arrow" id="arrow-ad8">&#9654;</span></td>
+              <td style="white-space:nowrap;color:#6b7a99;font-size:11px;">Mar 22, 6:45 AM</td>
+              <td><span class="eq-agent-badge maint">Maintenance</span></td>
+              <td style="font-size:11px;">Ash Grove</td>
+              <td>Garbage disposal replacement - auto-approved ($180)</td>
+              <td><span class="badge-actor ai">AI</span></td>
+              <td></td>
+              <td><span class="badge-result auto">Auto</span></td>
+            </tr>
+            <tr class="audit-detail-row" id="ad8">
+              <td colspan="8">
+                <div class="audit-detail-content">
+                  <strong>Auto-approved:</strong> $180 is below $500 threshold. CleanPro dispatched.<br>
+                  <strong>Tenant confirmed:</strong> Tom Baker, Unit 12B. Repair completed same day.
+                </div>
+              </td>
+            </tr>
+            <!-- Row 9 -->
+            <tr class="audit-data-row" onclick="toggleAuditDetail('ad9')">
+              <td><span class="expand-arrow" id="arrow-ad9">&#9654;</span></td>
+              <td style="white-space:nowrap;color:#6b7a99;font-size:11px;">Mar 21, 4:30 PM</td>
+              <td><span class="eq-agent-badge lease">Leasing</span></td>
+              <td style="font-size:11px;">Evergreen Complex</td>
+              <td>Screening criteria flagged for potential disparate impact</td>
+              <td><span class="badge-actor ai">AI</span></td>
+              <td><span class="compliance-badge fair-housing">Fair Housing &#10003;</span></td>
+              <td><span class="badge-result flagged">Flagged</span></td>
+            </tr>
+            <tr class="audit-detail-row" id="ad9">
+              <td colspan="8">
+                <div class="audit-detail-content">
+                  <strong>Compliance flag:</strong> Income-to-rent ratio of 4x may have disparate impact. Industry standard is 3x.<br>
+                  <strong>Recommendation:</strong> Review screening criteria with legal counsel. Flagged for Lisa Tran and compliance team review.
+                </div>
+              </td>
+            </tr>
+            <!-- Row 10 -->
+            <tr class="audit-data-row" onclick="toggleAuditDetail('ad10')">
+              <td><span class="expand-arrow" id="arrow-ad10">&#9654;</span></td>
+              <td style="white-space:nowrap;color:#6b7a99;font-size:11px;">Mar 21, 3:15 PM</td>
+              <td><span class="eq-agent-badge maint">Maintenance</span></td>
+              <td style="font-size:11px;">Magnolia Place</td>
+              <td>Emergency HVAC repair approved by owner ($1,200)</td>
+              <td><span class="badge-actor human">Human</span></td>
+              <td><span class="compliance-badge sox">SOX Compliant</span></td>
+              <td><span class="badge-result approved">Approved</span></td>
+            </tr>
+            <tr class="audit-detail-row" id="ad10">
+              <td colspan="8">
+                <div class="audit-detail-content">
+                  <strong>Approved by owner Chen Wei</strong> via email at 3:15 PM.<br>
+                  <strong>SOX compliance:</strong> Expenditure logged, vendor PO generated, 3-way match documented. ProHVAC Services dispatched.
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Export footer -->
+        <div class="audit-export-footer">
+          <span style="font-size:11px;color:#94a3b8;">Showing 10 of 2,847 decisions &middot; Last 30 days</span>
+          <span style="flex:1;"></span>
+          <button class="btn btn-secondary btn-sm" onclick="showToast('Exporting CSV')">Export CSV</button>
+          <button class="btn btn-primary btn-sm" onclick="showToast('Generating compliance report')">Export Compliance Report</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /app-body -->
+</div><!-- /app-shell -->
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <span class="toast-check">&#10003;</span>
+  <span id="toastMsg">Action sent</span>
+</div>
+
+<script>
+// --- Tab switching ---
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-bar .tab').forEach(function(t) {
+    t.classList.toggle('active', t.dataset.tab === tabId);
+  });
+  document.querySelectorAll('.tab-panel').forEach(function(p) {
+    p.classList.toggle('active', p.id === 'panel-' + tabId);
+  });
+}
+
+// --- Toast ---
+function showToast(msg) {
+  var toast = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg || 'Action sent';
+  toast.classList.add('show');
+  setTimeout(function() { toast.classList.remove('show'); }, 2200);
+}
+
+// --- Template selection ---
+function selectTemplate(el) {
+  document.querySelectorAll('.template-card').forEach(function(c) { c.classList.remove('selected'); });
+  el.classList.add('selected');
+}
+
+// --- Drop zone effects ---
+var dropZone = document.getElementById('dropZone');
+if (dropZone) {
+  dropZone.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    dropZone.classList.add('drag-over');
+  });
+  dropZone.addEventListener('dragleave', function() {
+    dropZone.classList.remove('drag-over');
+  });
+  dropZone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+    showToast('Document uploaded - extracting rules...');
+  });
+  dropZone.addEventListener('click', function() {
+    showToast('File browser opened');
+  });
+}
+
+// --- Audit log detail expand ---
+var currentAuditOpen = null;
+function toggleAuditDetail(id) {
+  var row = document.getElementById(id);
+  var arrow = document.getElementById('arrow-' + id);
+  if (currentAuditOpen && currentAuditOpen !== id) {
+    document.getElementById(currentAuditOpen).classList.remove('open');
+    document.getElementById('arrow-' + currentAuditOpen).classList.remove('open');
+  }
+  if (row.classList.contains('open')) {
+    row.classList.remove('open');
+    arrow.classList.remove('open');
+    currentAuditOpen = null;
+  } else {
+    row.classList.add('open');
+    arrow.classList.add('open');
+    currentAuditOpen = id;
+  }
+}
+
+// --- Audit compliance filter ---
+function setAuditCompFilter(btn, type) {
+  document.querySelectorAll('.audit-filter-bar .filter-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  // Simple visual filter
+  var rows = document.querySelectorAll('.audit-data-row');
+  rows.forEach(function(r) {
+    var detailId = r.querySelector('.expand-arrow').id.replace('arrow-', '');
+    var detailRow = document.getElementById(detailId);
+    if (type === 'all') {
+      r.style.display = '';
+      if (detailRow) detailRow.style.display = '';
+    } else {
+      var badges = r.querySelectorAll('.compliance-badge');
+      var match = false;
+      badges.forEach(function(b) {
+        if (type === 'fair-housing' && b.classList.contains('fair-housing')) match = true;
+        if (type === 'state' && (b.classList.contains('state-reg') || b.classList.contains('fl-statute'))) match = true;
+        if (type === 'sox' && b.classList.contains('sox')) match = true;
+      });
+      r.style.display = match ? '' : 'none';
+      if (detailRow) {
+        if (!match) { detailRow.classList.remove('open'); detailRow.style.display = 'none'; }
+        else { detailRow.style.display = ''; }
+      }
+    }
+  });
+}
+
+function filterAudit() {
+  var search = document.getElementById('auditSearch').value.toLowerCase();
+  var rows = document.querySelectorAll('.audit-data-row');
+  rows.forEach(function(r) {
+    var text = r.textContent.toLowerCase();
+    var detailId = r.querySelector('.expand-arrow').id.replace('arrow-', '');
+    var detailRow = document.getElementById(detailId);
+    var show = !search || text.includes(search);
+    r.style.display = show ? '' : 'none';
+    if (detailRow && !show) { detailRow.classList.remove('open'); detailRow.style.display = 'none'; }
+    else if (detailRow) { detailRow.style.display = ''; }
+  });
+}
+</script>
+<script src="cori.js"></script>
+</body>
+</html>
