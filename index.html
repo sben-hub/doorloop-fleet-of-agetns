@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DoorLoop AI Agent Hub — Prototype</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fb; color: #1a1a2e; height: 100vh; overflow: hidden; }
+
+  /* Sidebar */
+  .sidebar { width: 56px; background: #1a1a2e; position: fixed; top: 0; left: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 12px 0; z-index: 100; }
+  .sidebar-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; cursor: pointer; color: #8888aa; transition: all 0.2s; font-size: 16px; }
+  .sidebar-icon:hover { background: rgba(255,255,255,0.1); color: #fff; }
+  .sidebar-icon.active { background: rgba(99,102,241,0.3); color: #818cf8; }
+  .sidebar-icon.plus { background: #4f46e5; color: #fff; margin-bottom: 16px; }
+  .sidebar-icon.ai-btn { background: linear-gradient(135deg, #818cf8, #6366f1); color: #fff; }
+
+  /* Main content */
+  .main { margin-left: 56px; height: 100vh; position: relative; display: flex; }
+
+  /* === AI CHAT (Center) === */
+  .ai-center { flex: 1; display: flex; flex-direction: column; height: 100vh; border-right: 1px solid #e5e7eb; }
+  .ai-topbar { height: 56px; background: #fff; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; padding: 0 24px; flex-shrink: 0; }
+  .ai-topbar h1 { font-size: 18px; font-weight: 600; }
+  .ai-container { flex: 1; display: flex; flex-direction: column; align-items: center; overflow-y: auto; padding: 40px 20px; }
+  .ai-hero { text-align: center; margin-bottom: 32px; }
+  .ai-hero .sparkle { font-size: 48px; margin-bottom: 16px; color: #818cf8; }
+  .ai-hero h2 { font-size: 24px; font-weight: 600; margin-bottom: 8px; }
+  .ai-hero p { color: #6b7280; font-size: 14px; }
+
+  .ai-cards { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; justify-content: center; }
+  .ai-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; width: 160px; cursor: pointer; transition: all 0.2s; }
+  .ai-card:hover { border-color: #818cf8; box-shadow: 0 2px 8px rgba(99,102,241,0.15); }
+  .ai-card.agent-card { border-color: #818cf8; background: linear-gradient(135deg, #f5f3ff, #ede9fe); }
+  .ai-card .icon { font-size: 20px; margin-bottom: 8px; }
+  .ai-card .label { font-size: 13px; font-weight: 500; line-height: 1.3; }
+
+  .chat-area { width: 100%; max-width: 720px; flex: 1; display: flex; flex-direction: column; }
+  .chat-messages { flex: 1; overflow-y: auto; padding: 16px 0; }
+  .chat-msg { display: flex; gap: 12px; margin-bottom: 16px; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .chat-msg.ai .avatar { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #818cf8, #6366f1); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; flex-shrink: 0; }
+  .chat-msg.user .avatar { width: 32px; height: 32px; border-radius: 8px; background: #e5e7eb; display: flex; align-items: center; justify-content: center; color: #6b7280; font-size: 14px; flex-shrink: 0; }
+  .chat-msg .bubble { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px 16px; font-size: 14px; line-height: 1.6; max-width: 560px; }
+  .chat-msg.user { flex-direction: row-reverse; }
+  .chat-msg.user .bubble { background: #4f46e5; color: #fff; border-color: #4f46e5; }
+
+  .chat-options { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+  .chat-option { background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer; transition: all 0.2s; }
+  .chat-option:hover { background: #ede9fe; border-color: #818cf8; color: #4f46e5; }
+
+  .chat-input-bar { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; margin: 12px 20px 20px 20px; }
+  .chat-input-bar input { flex: 1; border: none; outline: none; font-size: 14px; }
+  .chat-input-bar .send-btn { width: 32px; height: 32px; border-radius: 8px; background: #4f46e5; color: #fff; border: none; cursor: pointer; font-size: 14px; }
+
+  /* === RIGHT DRAWER (Workflow) === */
+  .right-drawer { width: 0; background: #fff; border-left: 1px solid #e5e7eb; height: 100vh; overflow: hidden; transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1); flex-shrink: 0; display: flex; flex-direction: column; }
+  .right-drawer.open { width: 420px; }
+  .drawer-header { height: 56px; background: #fff; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; padding: 0 16px; flex-shrink: 0; justify-content: space-between; }
+  .drawer-header h2 { font-size: 15px; font-weight: 600; white-space: nowrap; }
+  .drawer-header .drawer-tabs { display: flex; gap: 0; margin-left: 12px; }
+  .drawer-tab { padding: 16px 12px; font-size: 13px; font-weight: 500; color: #6b7280; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; }
+  .drawer-tab:hover { color: #1a1a2e; }
+  .drawer-tab.active { color: #4f46e5; border-bottom-color: #4f46e5; }
+  .drawer-close { width: 28px; height: 28px; border-radius: 6px; border: 1px solid #e5e7eb; background: #fff; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .drawer-close:hover { background: #f3f4f6; }
+
+  .drawer-body { flex: 1; overflow-y: auto; }
+
+  /* Workflow nodes in drawer */
+  .drawer-workflow { padding: 20px 16px; display: flex; flex-direction: column; align-items: center; }
+  .workflow-node { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 14px 16px; width: 100%; margin-bottom: 6px; position: relative; transition: all 0.3s; cursor: pointer; }
+  .workflow-node:hover { border-color: #c7d2fe; }
+  .workflow-node.highlight { border-color: #818cf8; box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
+  .workflow-node.active-step { border-color: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,0.15); }
+  .workflow-node .node-badge { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: inline-block; padding: 2px 8px; border-radius: 4px; }
+  .workflow-node .node-badge.trigger { background: #fef3c7; color: #92400e; }
+  .workflow-node .node-badge.ai-decision { background: #ede9fe; color: #5b21b6; }
+  .workflow-node .node-badge.action { background: #dbeafe; color: #1e40af; }
+  .workflow-node .node-badge.communication { background: #d1fae5; color: #065f46; }
+  .workflow-node .node-badge.wait { background: #fee2e2; color: #991b1b; }
+  .workflow-node .node-badge.condition { background: #fce7f3; color: #9d174d; }
+  .workflow-node .node-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+  .workflow-node .node-desc { font-size: 12px; color: #6b7280; line-height: 1.4; }
+  .workflow-node .node-config { font-size: 11px; color: #9ca3af; margin-top: 6px; padding-top: 6px; border-top: 1px solid #f3f4f6; }
+  .workflow-node .learned-tag { font-size: 10px; color: #818cf8; background: #f5f3ff; padding: 2px 6px; border-radius: 4px; margin-top: 6px; display: inline-block; }
+
+  .workflow-connector { width: 2px; height: 16px; background: #d1d5db; margin: 0 auto; flex-shrink: 0; }
+
+  /* Node config panel (replaces workflow view in drawer) */
+  .node-config-panel { padding: 20px 16px; }
+  .node-config-panel h3 { font-size: 15px; font-weight: 600; margin-bottom: 16px; }
+  .panel-section { margin-bottom: 16px; }
+  .panel-section label { font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px; }
+  .panel-section input, .panel-section select, .panel-section textarea { width: 100%; padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px; font-family: inherit; }
+  .panel-section textarea { resize: vertical; }
+  .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; }
+  .toggle { width: 36px; height: 20px; background: #d1d5db; border-radius: 10px; position: relative; cursor: pointer; transition: 0.2s; flex-shrink: 0; }
+  .toggle.on { background: #4f46e5; }
+  .toggle::after { content: ''; width: 16px; height: 16px; background: #fff; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: 0.2s; }
+  .toggle.on::after { left: 18px; }
+  .back-link { font-size: 13px; color: #4f46e5; cursor: pointer; margin-bottom: 12px; display: inline-flex; align-items: center; gap: 4px; }
+  .back-link:hover { text-decoration: underline; }
+
+  /* Drawer - Comms tab */
+  .drawer-comms { padding: 0; }
+  .drawer-comms-item { padding: 12px 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer; transition: background 0.15s; }
+  .drawer-comms-item:hover { background: #f9fafb; }
+  .drawer-comms-item.active { background: #f5f3ff; }
+  .drawer-comms-item .name { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+  .drawer-comms-item .preview { font-size: 12px; color: #6b7280; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .drawer-comms-item .meta { font-size: 11px; color: #9ca3af; margin-top: 3px; }
+  .agent-badge { font-size: 9px; background: #ede9fe; color: #5b21b6; padding: 1px 5px; border-radius: 3px; }
+
+  .drawer-thread { padding: 16px; }
+  .thread-msg { margin-bottom: 12px; max-width: 100%; }
+  .thread-msg.outbound { text-align: right; }
+  .thread-msg .msg-sender { font-size: 11px; font-weight: 600; color: #6b7280; margin-bottom: 3px; display: flex; align-items: center; gap: 4px; }
+  .thread-msg.outbound .msg-sender { justify-content: flex-end; }
+  .thread-msg .msg-bubble { padding: 8px 12px; border-radius: 10px; font-size: 13px; line-height: 1.5; display: inline-block; text-align: left; max-width: 90%; }
+  .thread-msg.inbound .msg-bubble { background: #f3f4f6; }
+  .thread-msg.outbound .msg-bubble { background: #4f46e5; color: #fff; }
+  .thread-msg.system .msg-bubble { background: #fef3c7; border: 1px solid #fde68a; color: #92400e; font-size: 12px; }
+  .thread-msg .msg-time { font-size: 10px; color: #9ca3af; margin-top: 3px; }
+  .agent-tag { font-size: 9px; background: #ede9fe; color: #5b21b6; padding: 1px 5px; border-radius: 3px; }
+
+  /* Drawer activate bar */
+  .drawer-footer { padding: 12px 16px; border-top: 1px solid #e5e7eb; background: #fff; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; }
+  .drawer-footer .activate-label { font-size: 13px; font-weight: 500; }
+  .drawer-footer .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #d1d5db; display: inline-block; margin-right: 6px; }
+  .drawer-footer .status-dot.active { background: #10b981; }
+
+  /* === SIMULATION MODAL === */
+  .sim-overlay { display: none; position: fixed; top: 0; left: 56px; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 50; justify-content: center; align-items: center; }
+  .sim-overlay.active { display: flex; }
+  .sim-modal { background: #fff; border-radius: 16px; width: 90%; max-width: 700px; max-height: 85vh; overflow: hidden; display: flex; flex-direction: column; }
+  .sim-header { padding: 20px 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
+  .sim-header h2 { font-size: 18px; font-weight: 600; }
+  .sim-close { width: 32px; height: 32px; border-radius: 8px; border: 1px solid #e5e7eb; background: #fff; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+  .sim-body { flex: 1; overflow-y: auto; padding: 24px; }
+  .sim-step { display: flex; gap: 12px; margin-bottom: 16px; opacity: 0; transform: translateY(10px); transition: all 0.4s; }
+  .sim-step.visible { opacity: 1; transform: translateY(0); }
+  .sim-step .sim-time { font-size: 11px; color: #9ca3af; width: 52px; flex-shrink: 0; padding-top: 2px; }
+  .sim-step .sim-icon { width: 26px; height: 26px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
+  .sim-step .sim-icon.trigger { background: #fef3c7; color: #92400e; }
+  .sim-step .sim-icon.decision { background: #ede9fe; color: #5b21b6; }
+  .sim-step .sim-icon.action { background: #dbeafe; color: #1e40af; }
+  .sim-step .sim-icon.comm { background: #d1fae5; color: #065f46; }
+  .sim-step .sim-icon.wait { background: #fee2e2; color: #991b1b; }
+  .sim-step .sim-content { flex: 1; }
+  .sim-step .sim-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .sim-step .sim-desc { font-size: 12px; color: #6b7280; }
+  .sim-step .sim-sms { background: #f3f4f6; border-radius: 8px; padding: 8px 12px; margin-top: 6px; font-size: 12px; color: #374151; font-style: italic; }
+  .sim-footer { padding: 16px 24px; border-top: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
+  .sim-footer .btn { padding: 8px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; }
+  .sim-footer .btn-primary { background: #4f46e5; color: #fff; }
+  .sim-footer .btn-primary:hover { background: #4338ca; }
+  .sim-footer .btn-secondary { background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; }
+  .sim-footer .btn-secondary:hover { background: #e5e7eb; }
+  .sim-progress { font-size: 13px; color: #6b7280; }
+
+  /* Typing indicator */
+  .typing { display: inline-flex; gap: 4px; padding: 8px 12px; }
+  .typing span { width: 6px; height: 6px; background: #9ca3af; border-radius: 50%; animation: bounce 1.4s infinite; }
+  .typing span:nth-child(2) { animation-delay: 0.2s; }
+  .typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
+
+  /* Checklist */
+  .checklist { margin-top: 8px; }
+  .checklist-item { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 13px; }
+  .checklist-item .check { color: #10b981; }
+  .checklist-item .missing { color: #ef4444; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 24px; right: 24px; background: #1a1a2e; color: #fff; padding: 12px 20px; border-radius: 10px; font-size: 14px; z-index: 200; display: none; animation: slideUp 0.3s ease; }
+  .toast.show { display: flex; align-items: center; gap: 8px; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Workflow highlight pulse in drawer during sim */
+  .workflow-node.sim-active { border-color: #10b981; background: #f0fdf4; }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<nav class="sidebar">
+  <div class="sidebar-icon plus" title="Create new">+</div>
+  <div class="sidebar-icon ai-btn active" data-view="ai" title="AI Assistant">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+  </div>
+  <div class="sidebar-icon" data-view="comms" title="Communications">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+  </div>
+</nav>
+
+<!-- Main Layout: Chat Center + Drawer Right -->
+<div class="main">
+
+  <!-- AI Chat (Center) -->
+  <div class="ai-center">
+    <div class="ai-topbar">
+      <h1>AI Assistant</h1>
+      <div style="margin-left:auto; display:flex; gap:8px;">
+        <button id="toggle-drawer-btn" onclick="toggleDrawer()" style="background:#f3f4f6; border:1px solid #e5e7eb; border-radius:8px; padding:6px 14px; font-size:13px; cursor:pointer; display:none; align-items:center; gap:6px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+          Workflow
+        </button>
+      </div>
+    </div>
+    <div class="ai-container">
+      <div id="ai-hero" class="ai-hero">
+        <div class="sparkle">&#10024;</div>
+        <h2>Let's get your next task done</h2>
+        <p>AI Assistant is here to handle tasks, questions, and free up your time</p>
+      </div>
+      <div id="ai-cards" class="ai-cards">
+        <div class="ai-card agent-card" onclick="startSetup()">
+          <div class="icon">&#129302;</div>
+          <div class="label">Set up Maintenance Agent</div>
+        </div>
+        <div class="ai-card">
+          <div class="icon">&#128196;</div>
+          <div class="label">Set up Renewal Agent</div>
+        </div>
+        <div class="ai-card">
+          <div class="icon">&#9874;</div>
+          <div class="label">Highlight today's priorities</div>
+        </div>
+        <div class="ai-card">
+          <div class="icon">&#128203;</div>
+          <div class="label">List all tasks due in 7 days</div>
+        </div>
+        <div class="ai-card">
+          <div class="icon">&#128200;</div>
+          <div class="label">Summarize property performance</div>
+        </div>
+      </div>
+      <div class="chat-area">
+        <div id="chat-messages" class="chat-messages"></div>
+      </div>
+    </div>
+    <div class="chat-input-bar">
+      <span style="font-size: 18px; cursor: pointer;">+</span>
+      <span style="font-size: 16px; color: #9ca3af; cursor: pointer;">@</span>
+      <input type="text" id="chat-input" placeholder="Type @ to link a property, unit, or tenant to your task request" />
+      <button class="send-btn" onclick="handleChatSend()">&#9654;</button>
+    </div>
+  </div>
+
+  <!-- Right Drawer (Workflow + Comms) -->
+  <div class="right-drawer" id="right-drawer">
+    <div class="drawer-header">
+      <h2>Maintenance Agent</h2>
+      <div class="drawer-header" style="height:auto; border:none; padding:0; gap:0;">
+        <div class="drawer-tabs">
+          <div class="drawer-tab active" data-tab="workflow" onclick="switchDrawerTab('workflow')">Workflow</div>
+          <div class="drawer-tab" data-tab="comms" onclick="switchDrawerTab('comms')">Comms</div>
+          <div class="drawer-tab" data-tab="activity" onclick="switchDrawerTab('activity')">Activity</div>
+        </div>
+      </div>
+      <button class="drawer-close" onclick="toggleDrawer()">&times;</button>
+    </div>
+
+    <div class="drawer-body" id="drawer-body">
+      <!-- Workflow tab (default) -->
+      <div id="drawer-tab-workflow" class="drawer-workflow"></div>
+
+      <!-- Comms tab -->
+      <div id="drawer-tab-comms" class="drawer-comms" style="display:none;"></div>
+
+      <!-- Activity tab -->
+      <div id="drawer-tab-activity" style="display:none; padding:16px;">
+        <p style="color:#9ca3af; font-size:13px; text-align:center; margin-top:40px;">No activity yet. Set up and activate your agent to see live activity here.</p>
+      </div>
+    </div>
+
+    <div class="drawer-footer">
+      <div>
+        <span class="status-dot" id="agent-status-dot"></span>
+        <span class="activate-label" id="agent-status-label">Not activated</span>
+      </div>
+      <div class="toggle" id="activate-toggle" onclick="toggleActivate()"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Simulation Modal -->
+<div class="sim-overlay" id="sim-overlay">
+  <div class="sim-modal">
+    <div class="sim-header">
+      <h2>&#128269; Dry-Run Simulation</h2>
+      <button class="sim-close" onclick="closeSim()">&times;</button>
+    </div>
+    <div class="sim-body" id="sim-body">
+      <p style="color:#6b7280; margin-bottom:16px; font-size:14px;">Simulating: <strong>Tenant reports a leaky faucet in Unit 4B with a photo</strong></p>
+    </div>
+    <div class="sim-footer">
+      <span class="sim-progress" id="sim-progress">Step 0 of 8</span>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-secondary" onclick="closeSim()">Cancel</button>
+        <button class="btn btn-primary" id="sim-next-btn" onclick="nextSimStep()">Start Simulation</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// === DRAWER ===
+let drawerOpen = false;
+
+function toggleDrawer() {
+  drawerOpen = !drawerOpen;
+  document.getElementById('right-drawer').classList.toggle('open', drawerOpen);
+}
+
+function openDrawer() {
+  if (!drawerOpen) {
+    drawerOpen = true;
+    document.getElementById('right-drawer').classList.add('open');
+  }
+}
+
+function switchDrawerTab(tab) {
+  document.querySelectorAll('.drawer-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  document.getElementById('drawer-tab-workflow').style.display = tab === 'workflow' ? 'flex' : 'none';
+  document.getElementById('drawer-tab-comms').style.display = tab === 'comms' ? 'block' : 'none';
+  document.getElementById('drawer-tab-activity').style.display = tab === 'activity' ? 'block' : 'none';
+
+  if (tab === 'comms') buildCommsTab();
+}
+
+function toggleActivate() {
+  const toggle = document.getElementById('activate-toggle');
+  const dot = document.getElementById('agent-status-dot');
+  const label = document.getElementById('agent-status-label');
+  toggle.classList.toggle('on');
+  const isOn = toggle.classList.contains('on');
+  dot.classList.toggle('active', isOn);
+  label.textContent = isOn ? 'Active' : 'Not activated';
+  if (isOn) showToast('&#10003; Maintenance Agent activated');
+}
+
+// === TOAST ===
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.innerHTML = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// === CHAT ===
+const chatMessages = document.getElementById('chat-messages');
+
+function addMsg(type, html, options) {
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + type;
+  let avatar = type === 'ai' ? '&#10024;' : '&#128100;';
+  div.innerHTML = `<div class="avatar">${avatar}</div><div><div class="bubble">${html}</div>${options ? '<div class="chat-options">' + options.map(o => `<div class="chat-option" onclick="handleOption('${o.action}')">${o.label}</div>`).join('') + '</div>' : ''}</div>`;
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function addTyping() {
+  const div = document.createElement('div');
+  div.className = 'chat-msg ai';
+  div.id = 'typing-indicator';
+  div.innerHTML = `<div class="avatar">&#10024;</div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function removeTyping() {
+  const el = document.getElementById('typing-indicator');
+  if (el) el.remove();
+}
+
+function handleChatSend() {
+  const input = document.getElementById('chat-input');
+  if (input.value.trim()) {
+    addMsg('user', input.value);
+    input.value = '';
+  }
+}
+
+document.getElementById('chat-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') handleChatSend();
+});
+
+// === SETUP FLOW ===
+function startSetup() {
+  document.getElementById('ai-hero').style.display = 'none';
+  document.getElementById('ai-cards').style.display = 'none';
+  document.getElementById('toggle-drawer-btn').style.display = 'flex';
+
+  addTyping();
+  setTimeout(() => {
+    removeTyping();
+    addMsg('ai',
+      "Great! Let's set up your <strong>Maintenance Agent</strong>. This agent will handle tenant maintenance requests end-to-end \u2014 from triage to resolution.<br><br>First, do you have any maintenance policies or guidelines you'd like me to read? I can extract rules like approval thresholds, vendor preferences, and emergency procedures.",
+      [
+        { label: '&#128206; Upload documents', action: 'upload' },
+        { label: 'Skip for now', action: 'skip-upload' }
+      ]
+    );
+  }, 1000);
+}
+
+function handleOption(action) {
+  // Disable clicked options
+  document.querySelectorAll('.chat-options').forEach(el => {
+    el.querySelectorAll('.chat-option').forEach(btn => {
+      btn.style.pointerEvents = 'none';
+      btn.style.opacity = '0.5';
+    });
+  });
+
+  switch(action) {
+    case 'upload':
+      addMsg('user', '&#128206; Uploaded: maintenance-policy-2026.pdf');
+      addTyping();
+      setTimeout(() => {
+        removeTyping();
+        addMsg('ai',
+          "I've read your maintenance policy. Here's what I extracted:<br><br>" +
+          "&#8226; <strong>Emergency types:</strong> flooding, gas leaks, fire damage, no heat in winter<br>" +
+          "&#8226; <strong>Owner approval threshold:</strong> $500<br>" +
+          "&#8226; <strong>Preferred vendors:</strong> Mike's Plumbing, HVAC Pro, SparkFix Electric<br>" +
+          "&#8226; <strong>Response time SLA:</strong> Emergency: 2hrs, Urgent: 24hrs, Routine: 72hrs<br><br>" +
+          "Let me create a workflow based on this. I'll walk you through each step.",
+          [
+            { label: 'Looks right, continue', action: 'policy-ok' },
+            { label: 'Let me correct something', action: 'policy-edit' }
+          ]
+        );
+      }, 1500);
+      break;
+
+    case 'skip-upload':
+      addMsg('user', "I'll skip for now");
+      addTyping();
+      setTimeout(() => {
+        removeTyping();
+        addMsg('ai',
+          "No problem! I'll create a standard maintenance workflow and we'll configure the rules together.",
+          [{ label: 'Continue', action: 'policy-ok' }]
+        );
+      }, 800);
+      break;
+
+    case 'policy-ok':
+      addMsg('user', 'Looks good, continue');
+      addTyping();
+      setTimeout(() => {
+        removeTyping();
+        buildWorkflowNodes();
+        openDrawer();
+        addMsg('ai',
+          "I've created a maintenance workflow with 7 steps \u2014 you can see it in the drawer on the right.<br><br>" +
+          "Let's configure each step. Starting with <strong>Triage</strong>:<br><br>" +
+          "When a tenant submits a maintenance request, should the agent auto-dispatch a vendor for emergencies (flooding, gas leaks) without waiting for your review?",
+          [
+            { label: 'Yes, auto-dispatch emergencies', action: 'triage-auto' },
+            { label: 'No, always notify me first', action: 'triage-notify' }
+          ]
+        );
+        highlightNode(1);
+      }, 2000);
+      break;
+
+    case 'triage-auto':
+      addMsg('user', 'Yes, auto-dispatch for emergencies');
+      highlightNode(1);
+      addTyping();
+      setTimeout(() => {
+        removeTyping();
+        highlightNode(3);
+        addMsg('ai',
+          "Got it \u2014 emergencies get auto-dispatched. For non-emergency requests, should the agent:<br><br>" +
+          "A) Automatically create a work order and find a vendor<br>" +
+          "B) Create a work order but wait for your approval before contacting vendors",
+          [
+            { label: 'A \u2014 Fully automatic', action: 'vendor-auto' },
+            { label: 'B \u2014 I approve vendors', action: 'vendor-approve' }
+          ]
+        );
+      }, 1000);
+      break;
+
+    case 'triage-notify':
+      addMsg('user', 'Always notify me first');
+      addTyping();
+      setTimeout(() => {
+        removeTyping();
+        highlightNode(3);
+        addMsg('ai',
+          "Understood \u2014 I'll check with you before dispatching. Now for vendor selection \u2014 should the agent suggest a vendor, or do you prefer to pick manually?",
+          [
+            { label: 'Agent suggests vendors', action: 'vendor-auto' },
+            { label: 'I pick vendors manually', action: 'vendor-approve' }
+          ]
+        );
+      }, 1000);
+      break;
+
+    case 'vendor-auto':
+    case 'vendor-approve':
+      addMsg('user', action === 'vendor-auto' ? 'Agent handles it automatically' : "I'll approve vendors");
+      highlightNode(6);
+      addTyping();
+      setTimeout(() => {
+        removeTyping();
+        addMsg('ai',
+          "Now for <strong>owner approval</strong>. Your policy says the threshold is <strong>$500</strong>. Should the agent:<br><br>" +
+          "&#8226; Ask the owner for approval when the estimate exceeds $500<br>" +
+          "&#8226; Just notify the owner but proceed without waiting<br>" +
+          "&#8226; Use a different threshold",
+          [
+            { label: 'Ask owner above $500', action: 'owner-ask' },
+            { label: 'Notify only', action: 'owner-notify' },
+            { label: 'Different threshold', action: 'owner-custom' }
+          ]
+        );
+      }, 1200);
+      break;
+
+    case 'owner-ask':
+    case 'owner-notify':
+    case 'owner-custom':
+      addMsg('user', action === 'owner-ask' ? 'Ask owner above $500' : action === 'owner-notify' ? 'Just notify' : 'Custom threshold');
+      clearHighlights();
+      addTyping();
+      setTimeout(() => {
+        removeTyping();
+        addMsg('ai',
+          "Almost done! Let me verify everything is configured:<br><br>" +
+          '<div class="checklist">' +
+          '<div class="checklist-item"><span class="check">&#10003;</span> Triage rules defined</div>' +
+          '<div class="checklist-item"><span class="check">&#10003;</span> Vendor selection: auto-suggest from preferred list</div>' +
+          '<div class="checklist-item"><span class="check">&#10003;</span> Owner approval threshold: $500</div>' +
+          '<div class="checklist-item"><span class="check">&#10003;</span> Communication channels: SMS for all parties</div>' +
+          '<div class="checklist-item"><span class="check">&#10003;</span> Response SLA: Emergency 2hrs, Urgent 24hrs, Routine 72hrs</div>' +
+          '<div class="checklist-item"><span class="check">&#10003;</span> Follow-up verification after fix</div>' +
+          '</div><br>' +
+          "Everything checks out! Want to run a <strong>dry-run simulation</strong> to see how the agent handles a real scenario?",
+          [
+            { label: '&#128269; Run simulation', action: 'simulate' },
+            { label: 'Skip, activate now', action: 'activate' }
+          ]
+        );
+      }, 1500);
+      break;
+
+    case 'simulate':
+      addMsg('user', 'Run the simulation');
+      openSim();
+      break;
+
+    case 'activate':
+    case 'activate-final':
+      if (action === 'activate') addMsg('user', 'Activate the agent');
+      addTyping();
+      setTimeout(() => {
+        removeTyping();
+        // Activate the toggle in drawer
+        const toggle = document.getElementById('activate-toggle');
+        const dot = document.getElementById('agent-status-dot');
+        const label = document.getElementById('agent-status-label');
+        toggle.classList.add('on');
+        dot.classList.add('active');
+        label.textContent = 'Active';
+        // Switch to activity tab
+        buildActivityTab();
+        buildCommsTab();
+
+        addMsg('ai',
+          "&#10024; <strong>Your Maintenance Agent is now active!</strong><br><br>" +
+          "It will start handling incoming maintenance requests. You can monitor everything in the drawer:<br><br>" +
+          "&#8226; <strong>Workflow</strong> tab \u2014 review and edit the flow<br>" +
+          "&#8226; <strong>Comms</strong> tab \u2014 see all agent conversations<br>" +
+          "&#8226; <strong>Activity</strong> tab \u2014 live feed of agent actions<br><br>" +
+          "If the agent encounters something new, it will ask you right here. &#128170;"
+        );
+        showToast('&#10003; Maintenance Agent activated');
+      }, 1000);
+      break;
+
+    case 'escalation-replace':
+      addMsg('user', 'Find a replacement vendor');
+      addTyping();
+      setTimeout(() => {
+        removeTyping();
+        addMsg('ai',
+          "On it. Should I <strong>always</strong> find a replacement when a vendor cancels, or just this time?",
+          [
+            { label: 'Always do this', action: 'learn-always' },
+            { label: 'Just this time', action: 'learn-once' }
+          ]
+        );
+      }, 800);
+      break;
+
+    case 'learn-always':
+      addMsg('user', 'Always do this');
+      addTyping();
+      setTimeout(() => {
+        removeTyping();
+        addLearnedNode();
+        addMsg('ai',
+          "Done! I've added a new rule to your workflow: <strong>\"If vendor cancels \u2192 auto-find replacement.\"</strong> You can see it in the Workflow tab \u2014 tagged as a learned rule.<br><br>" +
+          "I've contacted <strong>SparkFix Electric</strong> as a replacement for Unit 4B. Available tomorrow 3pm.",
+          [{ label: 'Great, proceed', action: 'activate-final' }]
+        );
+        showToast('&#128218; New rule learned and added to workflow');
+      }, 1200);
+      break;
+
+    case 'learn-once':
+      addMsg('user', 'Just this time');
+      addTyping();
+      setTimeout(() => {
+        removeTyping();
+        addMsg('ai', "Got it \u2014 one-time action. I've contacted <strong>SparkFix Electric</strong> as a replacement. Available tomorrow 3pm. Work order updated.");
+      }, 800);
+      break;
+  }
+}
+
+// === WORKFLOW NODES IN DRAWER ===
+const workflowNodes = [
+  { badge: 'trigger', badgeLabel: 'Trigger', title: 'Tenant submits request', desc: 'New maintenance request created', config: 'All properties' },
+  { badge: 'ai-decision', badgeLabel: 'AI Decision', title: 'Triage request', desc: 'Analyze request + photos, determine severity', config: 'Emergency auto-dispatch: ON' },
+  { badge: 'action', badgeLabel: 'Agent Action', title: 'Create work order', desc: 'Auto-categorize and create work order', config: 'Category from text + images' },
+  { badge: 'ai-decision', badgeLabel: 'AI Decision', title: 'Select vendor', desc: 'Pick best vendor by type, proximity, rating', config: "Preferred vendor list" },
+  { badge: 'communication', badgeLabel: 'Communication', title: 'Request estimate', desc: 'SMS vendor with job details', config: 'Channel: SMS' },
+  { badge: 'wait', badgeLabel: 'Wait', title: 'Wait for estimate', desc: 'Pause until vendor replies', config: 'Timeout: 24hrs' },
+  { badge: 'condition', badgeLabel: 'Condition', title: 'Owner approval needed?', desc: 'Check estimate vs threshold', config: 'Threshold: $500' },
+  { badge: 'communication', badgeLabel: 'Communication', title: 'Schedule fix', desc: 'Coordinate vendor + tenant times', config: 'SMS both parties' },
+  { badge: 'wait', badgeLabel: 'Wait', title: 'Wait for completion', desc: 'Follow up after scheduled date', config: 'Follow-up: +1 day' },
+  { badge: 'communication', badgeLabel: 'Communication', title: 'Verify resolution', desc: 'Ask tenant if issue is fixed', config: 'Escalate if unresolved' },
+  { badge: 'action', badgeLabel: 'Agent Action', title: 'Close + send bill', desc: 'Mark resolved, generate invoice', config: 'Auto-close on confirmation' },
+];
+
+function buildWorkflowNodes() {
+  const container = document.getElementById('drawer-tab-workflow');
+  container.innerHTML = '';
+  workflowNodes.forEach((node, i) => {
+    const el = document.createElement('div');
+    el.className = 'workflow-node';
+    el.id = 'wf-node-' + i;
+    el.onclick = () => showNodeConfig(node, i);
+    el.innerHTML = `
+      <span class="node-badge ${node.badge}">${node.badgeLabel}</span>
+      <div class="node-title">${node.title}</div>
+      <div class="node-desc">${node.desc}</div>
+      <div class="node-config">${node.config}</div>
+    `;
+    container.appendChild(el);
+    if (i < workflowNodes.length - 1) {
+      const conn = document.createElement('div');
+      conn.className = 'workflow-connector';
+      container.appendChild(conn);
+    }
+  });
+}
+
+function highlightNode(index) {
+  clearHighlights();
+  const node = document.getElementById('wf-node-' + index);
+  if (node) {
+    node.classList.add('highlight');
+    node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+function clearHighlights() {
+  document.querySelectorAll('.workflow-node').forEach(n => n.classList.remove('highlight', 'sim-active'));
+}
+
+function showNodeConfig(node, index) {
+  const container = document.getElementById('drawer-tab-workflow');
+  let html = `<div class="node-config-panel">
+    <div class="back-link" onclick="buildWorkflowNodes()">&larr; Back to workflow</div>
+    <h3>${node.title}</h3>
+    <p style="font-size:12px; color:#6b7280; margin-bottom:16px;">${node.desc}</p>`;
+
+  if (node.badge === 'ai-decision') {
+    html += `
+      <div class="panel-section"><label>Decision Type</label><select><option>AI Judgment (rules-based)</option><option>Simple Rule</option></select></div>
+      <div class="panel-section"><label>Agent Rules</label><textarea rows="3">${node.config}</textarea></div>
+      <div class="panel-section">
+        <div class="toggle-row"><span style="font-size:13px;">Auto-dispatch emergencies</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="toggle-row"><span style="font-size:13px;">Escalate unknowns to PM</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      </div>`;
+  } else if (node.badge === 'communication') {
+    html += `
+      <div class="panel-section"><label>Channel</label><select><option>SMS</option><option>Email</option><option>Both</option></select></div>
+      <div class="panel-section"><label>Recipient</label><select><option>Tenant</option><option>Owner</option><option>Vendor</option><option>PM</option></select></div>
+      <div class="panel-section"><label>Message Template</label><textarea rows="3">Hi {name}, {agent_message}</textarea></div>`;
+  } else if (node.badge === 'condition') {
+    html += `
+      <div class="panel-section"><label>Condition</label><select><option>Estimate amount</option><option>Request priority</option></select></div>
+      <div class="panel-section"><label>Threshold</label><input type="text" value="$500" /></div>
+      <div class="panel-section"><label>If Above</label><select><option>Request owner approval</option><option>Notify only</option><option>Proceed</option></select></div>`;
+  } else if (node.badge === 'wait') {
+    html += `
+      <div class="panel-section"><label>Timeout</label><input type="text" value="24 hours" /></div>
+      <div class="panel-section"><label>On Timeout</label><select><option>Escalate to PM</option><option>Send reminder</option><option>Skip</option></select></div>`;
+  } else {
+    html += `<div class="panel-section"><label>Configuration</label><textarea rows="3">${node.config}</textarea></div>`;
+  }
+
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function addLearnedNode() {
+  // Add a learned rule node to the workflow
+  const newNode = { badge: 'condition', badgeLabel: 'Condition', title: 'Vendor cancels?', desc: 'If vendor cancels, find replacement', config: 'Auto-find from preferred list', learned: true };
+  workflowNodes.splice(8, 0, newNode);
+  buildWorkflowNodes();
+  // Tag it
+  setTimeout(() => {
+    const el = document.getElementById('wf-node-8');
+    if (el) {
+      const tag = document.createElement('div');
+      tag.className = 'learned-tag';
+      tag.textContent = 'Learned from PM decision \u2022 Mar 17';
+      el.appendChild(tag);
+      el.classList.add('highlight');
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, 100);
+}
+
+// === COMMS TAB IN DRAWER ===
+const threads = {
+  tenant: {
+    name: 'Sarah Johnson',
+    meta: 'Tenant \u2022 Unit 4B',
+    messages: [
+      { type: 'inbound', sender: 'Sarah Johnson', text: "Hi, I have a leaky faucet in my kitchen.", time: '10:01 AM', isAgent: false },
+      { type: 'outbound', sender: 'Agent', text: "Hi Sarah! I can see this looks like a faucet valve issue. Creating a work order now.", time: '10:02 AM', isAgent: true },
+      { type: 'outbound', sender: 'Agent', text: "Mike's Plumbing can come tomorrow at 2pm for $350. Does that work?", time: '10:18 AM', isAgent: true },
+      { type: 'inbound', sender: 'Sarah Johnson', text: "Yes, 2pm works!", time: '10:22 AM', isAgent: false },
+      { type: 'outbound', sender: 'Agent', text: "Confirmed for tomorrow 2pm. I'll send a reminder in the morning!", time: '10:23 AM', isAgent: true },
+    ]
+  },
+  vendor: {
+    name: "Mike's Plumbing",
+    meta: 'Vendor \u2022 Plumbing',
+    messages: [
+      { type: 'outbound', sender: 'Agent', text: "Hi Mike, new job:\nLeaky faucet, 123 Palm Ave Unit 4B\nCan you provide an estimate?", time: '10:03 AM', isAgent: true },
+      { type: 'inbound', sender: "Mike's", text: "Available tomorrow 2pm. Estimate: $350.", time: '10:15 AM', isAgent: false },
+      { type: 'outbound', sender: 'Agent', text: "Approved. Tenant confirmed 2pm tomorrow. You're set.", time: '10:24 AM', isAgent: true },
+    ]
+  },
+  owner: {
+    name: 'David Chen',
+    meta: 'Owner \u2022 123 Palm Ave',
+    messages: [
+      { type: 'outbound', sender: 'Agent', text: "Hi David, maintenance at Unit 4B (leaky faucet). Mike's Plumbing, $350 \u2014 below your $500 threshold. No action needed.", time: '10:25 AM', isAgent: true },
+    ]
+  }
+};
+
+let currentThread = null;
+
+function buildCommsTab() {
+  const container = document.getElementById('drawer-tab-comms');
+  container.innerHTML = '';
+  Object.entries(threads).forEach(([id, thread]) => {
+    const lastMsg = thread.messages[thread.messages.length - 1];
+    const div = document.createElement('div');
+    div.className = 'drawer-comms-item' + (currentThread === id ? ' active' : '');
+    div.onclick = () => showDrawerThread(id);
+    div.innerHTML = `
+      <div class="name">${thread.name} ${lastMsg.isAgent ? '<span class="agent-badge">Agent</span>' : ''}</div>
+      <div class="preview">${lastMsg.text.split('\n')[0].substring(0, 50)}...</div>
+      <div class="meta">${thread.meta} \u2022 ${lastMsg.time}</div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function showDrawerThread(id) {
+  currentThread = id;
+  const thread = threads[id];
+  const container = document.getElementById('drawer-tab-comms');
+  let html = `<div style="padding:12px 16px; border-bottom:1px solid #e5e7eb;">
+    <div class="back-link" onclick="buildCommsTab()">&larr; All conversations</div>
+    <div style="font-size:14px; font-weight:600;">${thread.name}</div>
+    <div style="font-size:12px; color:#6b7280;">${thread.meta}</div>
+  </div><div class="drawer-thread">`;
+
+  thread.messages.forEach(msg => {
+    html += `<div class="thread-msg ${msg.type}">
+      <div class="msg-sender">${msg.sender} ${msg.isAgent ? '<span class="agent-tag">AI Agent</span>' : ''}</div>
+      <div class="msg-bubble">${msg.text.replace(/\n/g, '<br>')}</div>
+      <div class="msg-time">${msg.time}</div>
+    </div>`;
+  });
+
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+// === ACTIVITY TAB ===
+function buildActivityTab() {
+  const container = document.getElementById('drawer-tab-activity');
+  container.innerHTML = `
+    <div style="padding:4px 0;">
+      <div style="display:flex; gap:10px; padding:8px 0; border-bottom:1px solid #f3f4f6;">
+        <span style="font-size:11px; color:#9ca3af; width:50px;">10:23</span>
+        <span style="font-size:12px;">&#10003; Fix scheduled with tenant + vendor</span>
+      </div>
+      <div style="display:flex; gap:10px; padding:8px 0; border-bottom:1px solid #f3f4f6;">
+        <span style="font-size:11px; color:#9ca3af; width:50px;">10:18</span>
+        <span style="font-size:12px;">&#128172; Sent estimate to tenant for confirmation</span>
+      </div>
+      <div style="display:flex; gap:10px; padding:8px 0; border-bottom:1px solid #f3f4f6;">
+        <span style="font-size:11px; color:#9ca3af; width:50px;">10:15</span>
+        <span style="font-size:12px;">&#128176; Vendor estimate received: $350 (under $500)</span>
+      </div>
+      <div style="display:flex; gap:10px; padding:8px 0; border-bottom:1px solid #f3f4f6;">
+        <span style="font-size:11px; color:#9ca3af; width:50px;">10:03</span>
+        <span style="font-size:12px;">&#128172; Requested estimate from Mike's Plumbing</span>
+      </div>
+      <div style="display:flex; gap:10px; padding:8px 0; border-bottom:1px solid #f3f4f6;">
+        <span style="font-size:11px; color:#9ca3af; width:50px;">10:02</span>
+        <span style="font-size:12px;">&#129504; Triaged: Plumbing, Routine priority</span>
+      </div>
+      <div style="display:flex; gap:10px; padding:8px 0; border-bottom:1px solid #f3f4f6;">
+        <span style="font-size:11px; color:#9ca3af; width:50px;">10:02</span>
+        <span style="font-size:12px;">&#128221; Work Order #4521 created</span>
+      </div>
+      <div style="display:flex; gap:10px; padding:8px 0;">
+        <span style="font-size:11px; color:#9ca3af; width:50px;">10:01</span>
+        <span style="font-size:12px;">&#9889; New request: Leaky faucet, Unit 4B</span>
+      </div>
+    </div>
+  `;
+}
+
+// === SIMULATION ===
+let simStep = 0;
+const simSteps = [
+  { time: '10:01', icon: 'trigger', title: 'Tenant submits request', desc: 'Sarah Johnson reports a leaky faucet in Unit 4B with a photo', nodeIndex: 0 },
+  { time: '10:02', icon: 'decision', title: 'Agent triages request', desc: 'Plumbing issue. Priority: Routine. Decision: Create work order.', nodeIndex: 1 },
+  { time: '10:02', icon: 'action', title: 'Work order created', desc: 'Work Order #4521 \u2014 Leaky kitchen faucet, Unit 4B', nodeIndex: 2 },
+  { time: '10:02', icon: 'comm', title: 'SMS sent to tenant', desc: '', sms: "Hi Sarah! I'm creating a work order and will get a plumber scheduled.", nodeIndex: 9 },
+  { time: '10:03', icon: 'decision', title: 'Agent selects vendor', desc: "Best match: Mike's Plumbing (4.8 rating, 2.1mi)", nodeIndex: 3 },
+  { time: '10:03', icon: 'comm', title: 'SMS sent to vendor', desc: '', sms: "Hi Mike, leaky faucet at 123 Palm Ave Unit 4B. Estimate?", nodeIndex: 4 },
+  { time: '10:15', icon: 'wait', title: 'Vendor responds', desc: "Estimate $350, available tomorrow 2pm", nodeIndex: 5 },
+  { time: '10:15', icon: 'decision', title: 'Owner approval check', desc: '$350 < $500 threshold. No approval needed.', nodeIndex: 6 },
+  { time: '10:16', icon: 'comm', title: 'Schedule + notify', desc: '', sms: "Tenant: Tomorrow 2pm works?\nOwner: $350 fix at Unit 4B, below threshold.", nodeIndex: 7 },
+  { time: 'Day 2', icon: 'comm', title: 'Follow-up', desc: '', sms: "Hi Sarah, has the leak been fixed?", nodeIndex: 9 },
+  { time: '', icon: 'action', title: 'Close + bill', desc: 'Work order resolved. Invoice: $350.', nodeIndex: 10 },
+];
+
+function openSim() {
+  simStep = 0;
+  document.getElementById('sim-overlay').classList.add('active');
+  document.getElementById('sim-body').innerHTML = '<p style="color:#6b7280; margin-bottom:16px; font-size:14px;">Simulating: <strong>Tenant reports a leaky faucet in Unit 4B with a photo</strong></p>';
+  document.getElementById('sim-progress').textContent = `Step 0 of ${simSteps.length}`;
+  document.getElementById('sim-next-btn').textContent = 'Start Simulation';
+}
+
+function closeSim() {
+  document.getElementById('sim-overlay').classList.remove('active');
+  clearHighlights();
+  addTyping();
+  setTimeout(() => {
+    removeTyping();
+    addMsg('ai',
+      "That's how your maintenance agent would handle a leaky faucet \u2014 fully automated from intake to billing.<br><br>Ready to activate?",
+      [
+        { label: 'Activate Agent', action: 'activate' },
+        { label: 'Run another simulation', action: 'simulate' },
+        { label: 'Adjust settings', action: 'policy-ok' }
+      ]
+    );
+  }, 500);
+}
+
+function nextSimStep() {
+  if (simStep >= simSteps.length) {
+    closeSim();
+    return;
+  }
+  const step = simSteps[simStep];
+  const body = document.getElementById('sim-body');
+  const div = document.createElement('div');
+  div.className = 'sim-step';
+  div.innerHTML = `
+    <div class="sim-time">${step.time}</div>
+    <div class="sim-icon ${step.icon}">${step.icon === 'trigger' ? '&#9889;' : step.icon === 'decision' ? '&#129504;' : step.icon === 'action' ? '&#9881;' : step.icon === 'comm' ? '&#128172;' : '&#9200;'}</div>
+    <div class="sim-content">
+      <div class="sim-title">${step.title}</div>
+      ${step.desc ? `<div class="sim-desc">${step.desc}</div>` : ''}
+      ${step.sms ? `<div class="sim-sms">${step.sms.replace(/\n/g, '<br>')}</div>` : ''}
+    </div>
+  `;
+  body.appendChild(div);
+  setTimeout(() => div.classList.add('visible'), 50);
+  body.scrollTop = body.scrollHeight;
+
+  // Highlight corresponding workflow node in drawer
+  highlightNode(step.nodeIndex);
+
+  simStep++;
+  document.getElementById('sim-progress').textContent = `Step ${simStep} of ${simSteps.length}`;
+  document.getElementById('sim-next-btn').textContent = simStep >= simSteps.length ? 'Done \u2014 looks great!' : 'Next Step';
+}
+
+// === ESCALATION DEMO (Ctrl+E) ===
+function triggerEscalation() {
+  addMsg('ai',
+    "&#9888;&#65039; <strong>Agent needs your input</strong> \u2014 Unit 4B<br><br>" +
+    "Mike's Plumbing just cancelled. I don't have a rule for vendor cancellations yet.<br><br>" +
+    "1. Find a replacement vendor<br>2. Reschedule with Mike's<br>3. Notify owner and wait",
+    [
+      { label: 'Find replacement', action: 'escalation-replace' },
+      { label: "Reschedule with Mike's", action: 'escalation-replace' },
+      { label: 'Notify owner', action: 'escalation-replace' }
+    ]
+  );
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'e' && e.ctrlKey) {
+    e.preventDefault();
+    triggerEscalation();
+  }
+});
+
+// Init
+buildWorkflowNodes();
+</script>
+</body>
+</html>

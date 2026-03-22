@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DoorLoop – Communication Center</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fb; color: #1a2b4a; height: 100vh; overflow: hidden; }
+
+  .app { display: flex; height: 100vh; }
+
+  /* Sidebar — same as main prototype */
+  .sidebar { width: 56px; background: #1a2b4a; display: flex; flex-direction: column; align-items: center; padding: 12px 0; gap: 8px; flex-shrink: 0; }
+  .sidebar .logo { width: 32px; height: 32px; background: #4C6FFF; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px; cursor: pointer; }
+  .sidebar .nav-item { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #8896b3; cursor: pointer; transition: all 0.2s; position: relative; }
+  .sidebar .nav-item:hover { background: rgba(255,255,255,0.1); color: white; }
+  .sidebar .nav-item.active { background: rgba(76,111,255,0.2); color: #4C6FFF; }
+  .sidebar .nav-item .badge { position: absolute; top: 2px; right: 2px; width: 14px; height: 14px; background: #ff4757; border-radius: 50%; font-size: 8px; color: white; display: flex; align-items: center; justify-content: center; }
+  .sidebar .spacer { flex: 1; }
+  .icon-svg { width: 18px; height: 18px; }
+
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* Top bar */
+  .topbar { height: 56px; background: white; border-bottom: 1px solid #e8ecf1; display: flex; align-items: center; padding: 0 24px; gap: 16px; flex-shrink: 0; }
+  .topbar-title { font-size: 16px; font-weight: 600; }
+  .topbar-subtitle { font-size: 13px; color: #6b7a99; }
+  .topbar .search { flex: 1; max-width: 500px; margin: 0 auto; }
+  .topbar .search input { width: 100%; padding: 8px 16px; border: 1px solid #e8ecf1; border-radius: 8px; font-size: 13px; background: #f5f7fb; }
+  .topbar .search input:focus { outline: none; border-color: #4C6FFF; background: white; }
+
+  /* Content: 3-column layout */
+  .cc-layout { flex: 1; display: flex; overflow: hidden; }
+
+  /* ============ LEFT: Conversation List ============ */
+  .conv-list { width: 320px; background: white; border-right: 1px solid #e8ecf1; display: flex; flex-direction: column; flex-shrink: 0; }
+  .conv-list-header { padding: 16px; border-bottom: 1px solid #e8ecf1; }
+  .conv-list-header h3 { font-size: 14px; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+  .conv-list-header .create-btn { font-size: 12px; color: #4C6FFF; cursor: pointer; font-weight: 500; background: none; border: none; }
+  .conv-search { width: 100%; padding: 8px 12px; border: 1px solid #e8ecf1; border-radius: 8px; font-size: 13px; margin-bottom: 10px; }
+  .conv-search:focus { outline: none; border-color: #4C6FFF; }
+  .conv-filters { display: flex; gap: 6px; }
+  .conv-filter { padding: 5px 12px; border-radius: 6px; font-size: 12px; border: 1px solid #e8ecf1; background: white; cursor: pointer; color: #6b7a99; }
+  .conv-filter.active { background: #4C6FFF; color: white; border-color: #4C6FFF; }
+  .conv-items { flex: 1; overflow-y: auto; }
+  .conv-item { padding: 14px 16px; border-bottom: 1px solid #f0f2f5; cursor: pointer; transition: background 0.15s; display: flex; gap: 12px; align-items: flex-start; }
+  .conv-item:hover { background: #f8f9fc; }
+  .conv-item.active { background: #f0f3ff; border-left: 3px solid #4C6FFF; }
+  .conv-item .conv-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; flex-shrink: 0; }
+  .conv-item .conv-avatar.tenant { background: #e3f2fd; color: #1565c0; }
+  .conv-item .conv-avatar.vendor { background: #fff3e0; color: #e65100; }
+  .conv-item .conv-avatar.owner { background: #e8f5e9; color: #2e7d32; }
+  .conv-info { flex: 1; min-width: 0; }
+  .conv-info .conv-name { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+  .conv-info .conv-name .agent-badge { font-size: 9px; padding: 1px 6px; border-radius: 3px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+  .conv-info .conv-property { font-size: 11px; color: #9aa5b8; margin-top: 2px; }
+  .conv-info .conv-preview { font-size: 12px; color: #6b7a99; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .conv-item .conv-meta { text-align: right; flex-shrink: 0; }
+  .conv-item .conv-meta .conv-time { font-size: 11px; color: #9aa5b8; }
+  .conv-item .conv-meta .conv-unread { width: 18px; height: 18px; background: #4C6FFF; border-radius: 50%; color: white; font-size: 10px; display: flex; align-items: center; justify-content: center; margin-top: 4px; margin-left: auto; }
+  .conv-sort { padding: 8px 16px; font-size: 11px; color: #9aa5b8; border-bottom: 1px solid #f0f2f5; display: flex; align-items: center; justify-content: space-between; }
+
+  /* ============ CENTER: Conversation Thread ============ */
+  .conv-thread { flex: 1; display: flex; flex-direction: column; background: white; }
+  .thread-header { padding: 16px 20px; border-bottom: 1px solid #e8ecf1; display: flex; align-items: center; gap: 12px; }
+  .thread-header .thread-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; background: #e3f2fd; color: #1565c0; }
+  .thread-header-info h4 { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .thread-header-info p { font-size: 12px; color: #6b7a99; }
+  .thread-header .thread-actions { margin-left: auto; display: flex; gap: 8px; }
+  .thread-header .thread-actions button { padding: 6px 12px; border: 1px solid #e8ecf1; border-radius: 6px; background: white; font-size: 12px; cursor: pointer; color: #6b7a99; }
+  .thread-header .thread-actions button:hover { border-color: #4C6FFF; color: #4C6FFF; }
+  .thread-header .thread-actions button.take-over { background: #4C6FFF; color: white; border-color: #4C6FFF; font-weight: 500; }
+  .thread-header .thread-actions button.take-over:hover { background: #3a5ae0; }
+
+  .thread-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+
+  /* Thread messages — styled like DoorLoop's Communication Center */
+  .thread-msg { max-width: 75%; animation: fadeIn 0.3s ease; }
+  .thread-msg.inbound { align-self: flex-start; }
+  .thread-msg.outbound { align-self: flex-end; }
+  .thread-msg .msg-sender { font-size: 11px; color: #6b7a99; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+  .thread-msg .msg-sender .agent-tag { font-size: 9px; padding: 1px 6px; border-radius: 3px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; font-weight: 600; }
+  .thread-msg .msg-sender .system-tag { font-size: 9px; padding: 1px 6px; border-radius: 3px; background: #e8ecf1; color: #6b7a99; font-weight: 600; }
+  .thread-msg .msg-bubble { padding: 12px 16px; border-radius: 12px; font-size: 14px; line-height: 1.5; }
+  .thread-msg.inbound .msg-bubble { background: #f5f7fb; border: 1px solid #e8ecf1; border-top-left-radius: 4px; }
+  .thread-msg.outbound .msg-bubble { background: #4C6FFF; color: white; border-top-right-radius: 4px; }
+  .thread-msg.outbound.agent .msg-bubble { background: linear-gradient(135deg, #667eea, #764ba2); }
+  .thread-msg.outbound.system .msg-bubble { background: #6b7a99; }
+  .thread-msg .msg-footer { font-size: 10px; color: #9aa5b8; margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+  .thread-msg.outbound .msg-footer { justify-content: flex-end; color: rgba(255,255,255,0.6); }
+  .thread-msg .msg-footer .delivered { color: #4caf50; }
+  .thread-msg .msg-photo { width: 200px; border-radius: 8px; background: #e8ecf1; height: 140px; display: flex; align-items: center; justify-content: center; color: #9aa5b8; font-size: 12px; margin-top: 8px; }
+
+  .thread-date { text-align: center; font-size: 11px; color: #9aa5b8; padding: 8px 0; }
+
+  .thread-input { padding: 16px 20px; border-top: 1px solid #e8ecf1; display: flex; align-items: flex-end; gap: 12px; }
+  .thread-input textarea { flex: 1; border: 1px solid #e8ecf1; border-radius: 8px; padding: 10px 14px; font-size: 14px; font-family: inherit; resize: none; min-height: 20px; max-height: 100px; line-height: 1.4; }
+  .thread-input textarea:focus { outline: none; border-color: #4C6FFF; }
+  .thread-input .help-write-btn { padding: 8px 14px; background: #4C6FFF; color: white; border: none; border-radius: 8px; font-size: 12px; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; }
+  .thread-input .help-write-btn:hover { background: #3a5ae0; }
+  .thread-input .send-btn { width: 36px; height: 36px; background: #4C6FFF; border: none; border-radius: 8px; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .thread-input .credits { font-size: 11px; color: #9aa5b8; }
+
+  /* ============ RIGHT: Workflow Progress Drawer ============ */
+  .wf-drawer { width: 380px; background: #fafbfd; border-left: 1px solid #e8ecf1; display: flex; flex-direction: column; flex-shrink: 0; overflow: hidden; transition: width 0.3s ease; }
+  .wf-drawer.collapsed { width: 0; border: none; }
+  .wf-drawer-header { padding: 14px 18px; border-bottom: 1px solid #e8ecf1; background: white; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .wf-drawer-header h3 { font-size: 13px; font-weight: 600; }
+  .wf-drawer-header .wf-status { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 500; }
+  .wf-drawer-header .wf-status.active { background: #e8f5e9; color: #2e7d32; }
+  .wf-drawer-toggle { width: 26px; height: 26px; border: 1px solid #e8ecf1; border-radius: 6px; background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #6b7a99; }
+  .wf-drawer-toggle:hover { background: #f5f7fb; }
+
+  .wf-drawer-content { flex: 1; overflow-y: auto; padding: 16px; }
+  .wf-drawer-footer { padding: 12px 18px; border-top: 1px solid #e8ecf1; background: white; font-size: 11px; color: #6b7a99; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .wf-drawer-footer .wf-progress { flex: 1; height: 4px; background: #e8ecf1; border-radius: 2px; overflow: hidden; }
+  .wf-drawer-footer .wf-progress-bar { height: 100%; background: #4C6FFF; border-radius: 2px; transition: width 0.5s ease; }
+
+  /* Workflow step nodes in drawer */
+  .wf-steps { display: flex; flex-direction: column; gap: 0; }
+  .wf-step { display: flex; gap: 12px; position: relative; }
+  .wf-step-line { width: 24px; display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+  .wf-step-dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #d0d7e2; background: white; z-index: 1; flex-shrink: 0; transition: all 0.3s; }
+  .wf-step-connector { width: 2px; flex: 1; background: #e8ecf1; min-height: 16px; }
+  .wf-step.completed .wf-step-dot { background: #4caf50; border-color: #4caf50; }
+  .wf-step.current .wf-step-dot { background: #4C6FFF; border-color: #4C6FFF; box-shadow: 0 0 0 4px rgba(76,111,255,0.2); }
+  .wf-step.current .wf-step-connector { background: linear-gradient(to bottom, #4C6FFF 0%, #e8ecf1 100%); }
+  .wf-step.completed .wf-step-connector { background: #4caf50; }
+  .wf-step-body { padding-bottom: 16px; flex: 1; }
+  .wf-step-card { padding: 10px 14px; border-radius: 8px; background: white; border: 1px solid #e8ecf1; transition: all 0.3s; }
+  .wf-step.completed .wf-step-card { opacity: 0.7; }
+  .wf-step.current .wf-step-card { border-color: #4C6FFF; box-shadow: 0 2px 8px rgba(76,111,255,0.1); background: #f8f9ff; }
+  .wf-step-card .step-tag { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px; }
+  .wf-step-card .step-tag.trigger { background: #fff8e1; color: #f57f17; }
+  .wf-step-card .step-tag.ai-decision { background: #f3e5f5; color: #7b1fa2; }
+  .wf-step-card .step-tag.agent-action { background: #e3f2fd; color: #1565c0; }
+  .wf-step-card .step-tag.communication { background: #e8f5e9; color: #2e7d32; }
+  .wf-step-card .step-tag.wait { background: #fce4ec; color: #c62828; }
+  .wf-step-card .step-tag.condition { background: #fff3e0; color: #e65100; }
+  .wf-step-card h5 { font-size: 12px; font-weight: 600; margin-bottom: 2px; }
+  .wf-step-card p { font-size: 11px; color: #6b7a99; }
+  .wf-step.completed .wf-step-card .step-result { font-size: 10px; color: #4caf50; margin-top: 4px; font-weight: 500; }
+  .wf-step.current .wf-step-card .step-waiting { font-size: 10px; color: #4C6FFF; margin-top: 4px; font-weight: 500; display: flex; align-items: center; gap: 4px; }
+  .wf-step.current .wf-step-card .step-waiting .pulse { width: 6px; height: 6px; background: #4C6FFF; border-radius: 50%; animation: pulse 1.5s infinite; }
+
+  /* Current step highlight label */
+  .current-label { font-size: 10px; color: #4C6FFF; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+
+  /* Workflow tabs */
+  .wf-tabs { display: flex; border-bottom: 1px solid #e8ecf1; background: white; flex-shrink: 0; }
+  .wf-tab { flex: 1; padding: 10px 14px; font-size: 12px; font-weight: 500; color: #6b7a99; cursor: pointer; border: none; background: none; border-bottom: 2px solid transparent; transition: all 0.2s; display: flex; align-items: center; gap: 6px; justify-content: center; }
+  .wf-tab:hover { color: #1a2b4a; background: #f8f9fc; }
+  .wf-tab.active { color: #4C6FFF; border-bottom-color: #4C6FFF; font-weight: 600; }
+  .wf-tab .tab-icon { font-size: 14px; }
+  .wf-tab .tab-step { font-size: 10px; padding: 1px 6px; border-radius: 10px; background: #e8ecf1; color: #6b7a99; }
+  .wf-tab.active .tab-step { background: #e8f0fe; color: #4C6FFF; }
+
+  /* Workflow panel (switchable) */
+  .wf-panel { display: none; }
+  .wf-panel.active { display: block; }
+
+  /* Message workflow tags */
+  .msg-wf-tag { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; padding: 1px 8px; border-radius: 10px; margin-left: 6px; }
+  .msg-wf-tag.maintenance { background: #fff3e0; color: #e65100; }
+  .msg-wf-tag.renewal { background: #e8f5e9; color: #2e7d32; }
+
+  /* Drawer quick links */
+  .wf-drawer-links { padding: 10px 18px; border-top: 1px solid #e8ecf1; background: #fafbfd; display: flex; gap: 8px; flex-shrink: 0; }
+  .wf-drawer-links a { font-size: 11px; font-weight: 500; color: #4C6FFF; text-decoration: none; padding: 5px 10px; border: 1px solid #e0e7f1; border-radius: 6px; background: white; display: flex; align-items: center; gap: 4px; transition: all 0.15s; }
+  .wf-drawer-links a:hover { background: #f0f3ff; border-color: #4C6FFF; }
+  .wf-drawer-links a svg { width: 12px; height: 12px; }
+
+  /* Open drawer button */
+  .open-wf-btn { position: fixed; right: 16px; top: 72px; padding: 8px 14px; background: white; border: 1px solid #e8ecf1; border-radius: 8px; font-size: 12px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: none; z-index: 10; color: #1a2b4a; align-items: center; gap: 6px; }
+  .open-wf-btn:hover { border-color: #4C6FFF; color: #4C6FFF; }
+  .wf-drawer.collapsed ~ .open-wf-btn { display: flex; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #d0d7e2; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="logo" onclick="window.location.href='maintenance-agent-prototype.html'">D</div>
+    <div class="nav-item" title="AI Agents" onclick="window.location.href='maintenance-agent-prototype.html'">
+      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    </div>
+    <div class="nav-item active" title="Communication Center">
+      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span class="badge">3</span>
+    </div>
+    <div class="nav-item" title="Command Center" onclick="window.location.href='command-center.html'">
+      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    </div>
+    <div class="nav-item" title="Audit Log" onclick="window.location.href='audit-log.html'">
+      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    </div>
+    <div class="nav-item" title="Performance Overview" onclick="window.location.href='performance-overview.html'">
+      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    </div>
+    <div class="spacer"></div>
+  </nav>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-title">Communications</span>
+      <span class="topbar-subtitle">Communicate with tenants, owners, prospects, and vendors through SMS.</span>
+      <div class="search"><input type="text" placeholder="Search anything &#8984;K" /></div>
+      <span style="font-size:13px;color:#6b7a99;">Help & training</span>
+    </div>
+
+    <div class="cc-layout">
+      <!-- ============ LEFT: Conversation List ============ -->
+      <div class="conv-list">
+        <div class="conv-list-header">
+          <h3>All Messages <button class="create-btn">+ Create new</button></h3>
+          <input class="conv-search" type="text" placeholder="Search" />
+          <div class="conv-filters">
+            <button class="conv-filter active">All Types</button>
+            <button class="conv-filter">Text Messages</button>
+            <button class="conv-filter">Announcements</button>
+          </div>
+        </div>
+        <div class="conv-sort">
+          <span>Newest</span>
+          <label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" style="accent-color:#4C6FFF;"> Unread</label>
+        </div>
+        <div class="conv-items">
+          <!-- Active conversation — agent-managed -->
+          <div class="conv-item active" data-conv="sarah" onclick="showConversation('sarah')">
+            <div class="conv-avatar tenant">ST</div>
+            <div class="conv-info">
+              <div class="conv-name">Sarah Thompson <span class="agent-badge">AI Agent</span></div>
+              <div class="conv-property">Unit 4B · 123 Main St</div>
+              <div class="conv-preview">Has the leak been fixed?</div>
+              <div style="display:flex;gap:4px;margin-top:4px;"><span class="msg-wf-tag maintenance" style="font-size:9px;">🔧 Maintenance</span><span class="msg-wf-tag renewal" style="font-size:9px;">📋 Renewal</span></div>
+            </div>
+            <div class="conv-meta">
+              <div class="conv-time">10:16 AM</div>
+              <div class="conv-unread">2</div>
+            </div>
+          </div>
+
+          <!-- Maria Lopez — water heater emergency (from Command Center) -->
+          <div class="conv-item" data-conv="maria" onclick="showConversation('maria')">
+            <div class="conv-avatar tenant">ML</div>
+            <div class="conv-info">
+              <div class="conv-name">Maria Lopez <span class="agent-badge">AI Agent</span></div>
+              <div class="conv-property">Unit 3A · 742 Evergreen</div>
+              <div class="conv-preview">No hot water — water heater failure</div>
+              <div style="display:flex;gap:4px;margin-top:4px;"><span class="msg-wf-tag maintenance" style="font-size:9px;">🔧 Maintenance</span></div>
+            </div>
+            <div class="conv-meta">
+              <div class="conv-time">6:14 AM</div>
+              <div class="conv-unread">1</div>
+            </div>
+          </div>
+
+          <!-- James Wilson — late rent (from Command Center) -->
+          <div class="conv-item" data-conv="james" onclick="showConversation('james')">
+            <div class="conv-avatar tenant">JW</div>
+            <div class="conv-info">
+              <div class="conv-name">James Wilson <span class="agent-badge">AI Agent</span></div>
+              <div class="conv-property">Unit 7B · 155 Pine St</div>
+              <div class="conv-preview">3rd late payment — no response</div>
+              <div style="display:flex;gap:4px;margin-top:4px;"><span class="msg-wf-tag" style="font-size:9px;background:#fff8e1;color:#e65100;">💰 Delinquency</span></div>
+            </div>
+            <div class="conv-meta">
+              <div class="conv-time">8:00 AM</div>
+            </div>
+          </div>
+
+          <!-- Mike's Plumbing — vendor -->
+          <div class="conv-item" data-conv="mike" onclick="showConversation('mike')">
+            <div class="conv-avatar vendor">MP</div>
+            <div class="conv-info">
+              <div class="conv-name">Mike's Plumbing <span class="agent-badge">AI Agent</span></div>
+              <div class="conv-property">WO #4521 · Unit 4B</div>
+              <div class="conv-preview">Available tomorrow, estimate $350</div>
+            </div>
+            <div class="conv-meta">
+              <div class="conv-time">10:15 AM</div>
+            </div>
+          </div>
+
+          <!-- David Kim — regular -->
+          <div class="conv-item" data-conv="regular" onclick="showConversation('regular')">
+            <div class="conv-avatar tenant">DK</div>
+            <div class="conv-info">
+              <div class="conv-name">David Kim</div>
+              <div class="conv-property">Unit 7A · 456 Oak Ave</div>
+              <div class="conv-preview">When is my lease renewal date?</div>
+            </div>
+            <div class="conv-meta">
+              <div class="conv-time">Mar 18</div>
+            </div>
+          </div>
+
+          <!-- ABC Plumbing — vendor for Maria -->
+          <div class="conv-item" data-conv="abc" onclick="showConversation('abc')">
+            <div class="conv-avatar vendor">AP</div>
+            <div class="conv-info">
+              <div class="conv-name">ABC Plumbing <span class="agent-badge">AI Agent</span></div>
+              <div class="conv-property">WO #4528 · 742 Evergreen 3A</div>
+              <div class="conv-preview">Available 2–4 PM, quote $2,800</div>
+            </div>
+            <div class="conv-meta">
+              <div class="conv-time">7:30 AM</div>
+            </div>
+          </div>
+
+          <!-- Owner — David Chen -->
+          <div class="conv-item" data-conv="owner" onclick="showConversation('owner')">
+            <div class="conv-avatar owner">DC</div>
+            <div class="conv-info">
+              <div class="conv-name">David Chen <span class="agent-badge">AI Agent</span></div>
+              <div class="conv-property">Owner · 742 Evergreen</div>
+              <div class="conv-preview">Water heater quote $2,800 — approval needed</div>
+            </div>
+            <div class="conv-meta">
+              <div class="conv-time">7:46 AM</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ CENTER: Conversation Threads ============ -->
+      <!-- SARAH thread -->
+      <div class="conv-thread" id="thread-sarah">
+        <div class="thread-header">
+          <div class="thread-avatar">ST</div>
+          <div class="thread-header-info">
+            <h4>Sarah Thompson <span style="font-size:11px;padding:2px 8px;border-radius:4px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;font-weight:500;">Managed by AI Agent</span></h4>
+            <p>Unit 4B · 123 Main St · +1 786 555 0142</p>
+          </div>
+          <div class="thread-actions">
+            <button onclick="toggleWfDrawer()">Workflow</button>
+            <button class="take-over" onclick="takeOver()">Take over from agent</button>
+          </div>
+        </div>
+
+        <div class="thread-messages" id="threadMessages">
+          <div class="thread-date">Mar 19, 2026</div>
+
+          <!-- Tenant initial message -->
+          <div class="thread-msg inbound">
+            <div class="msg-sender">Sarah Thompson · Tenant <span class="msg-wf-tag maintenance">🔧 Maintenance</span></div>
+            <div class="msg-bubble">Hi, there's a leak under my kitchen sink. Water is pooling on the floor. Can someone come look at it?</div>
+            <div class="msg-photo">📷 Photo: water pooling under sink</div>
+            <div class="msg-footer">10:02 AM</div>
+          </div>
+
+          <!-- Agent auto-response to tenant -->
+          <div class="thread-msg outbound agent">
+            <div class="msg-sender" style="justify-content:flex-end;color:rgba(255,255,255,0.7);"><span class="agent-tag">AI Agent</span> Maintenance Agent <span class="msg-wf-tag maintenance">🔧</span></div>
+            <div class="msg-bubble">Hi Sarah! We've received your maintenance request for the leaky kitchen sink at Unit 4B. We've created work order #4521 and are reaching out to a plumber now. We'll update you shortly with scheduling details.</div>
+            <div class="msg-footer"><span class="delivered">✓✓</span> Delivered 10:02 AM</div>
+          </div>
+
+          <!-- Agent sends scheduling message -->
+          <div class="thread-msg outbound agent">
+            <div class="msg-sender" style="justify-content:flex-end;color:rgba(255,255,255,0.7);"><span class="agent-tag">AI Agent</span> Maintenance Agent <span class="msg-wf-tag maintenance">🔧</span></div>
+            <div class="msg-bubble">Great news — we've arranged Mike's Plumbing to fix the leak. They can come tomorrow (Mar 20). Which time works best for you?<br><br>1. 9:00 AM<br>2. 1:00 PM<br>3. 4:00 PM</div>
+            <div class="msg-footer"><span class="delivered">✓✓</span> Delivered 10:16 AM</div>
+          </div>
+
+          <!-- Tenant reply -->
+          <div class="thread-msg inbound">
+            <div class="msg-sender">Sarah Thompson · Tenant <span class="msg-wf-tag maintenance">🔧 Maintenance</span></div>
+            <div class="msg-bubble">1pm works for me, thanks!</div>
+            <div class="msg-footer">10:20 AM</div>
+          </div>
+
+          <!-- Agent confirmation -->
+          <div class="thread-msg outbound agent">
+            <div class="msg-sender" style="justify-content:flex-end;color:rgba(255,255,255,0.7);"><span class="agent-tag">AI Agent</span> Maintenance Agent <span class="msg-wf-tag maintenance">🔧</span></div>
+            <div class="msg-bubble">You're all set! Mike's Plumbing will arrive at Unit 4B tomorrow (Mar 20) at 1:00 PM. Please make sure someone is home to let them in. We'll follow up after the repair to make sure everything is resolved.</div>
+            <div class="msg-footer"><span class="delivered">✓✓</span> Delivered 10:20 AM</div>
+          </div>
+
+          <div class="thread-date">Mar 20, 2026</div>
+
+          <!-- RENEWAL: Agent sends renewal offer -->
+          <div class="thread-msg outbound agent" style="background: transparent;">
+            <div class="msg-sender" style="justify-content:flex-end;color:rgba(255,255,255,0.7);"><span class="agent-tag">AI Agent</span> Renewal Agent <span class="msg-wf-tag renewal">📋</span></div>
+            <div class="msg-bubble" style="background: linear-gradient(135deg, #2e7d32, #43a047);">Hi Sarah! Your lease for Unit 4B at 123 Main St expires on June 30, 2026. We'd love to have you stay! We're offering a renewal at $1,650/mo (3% increase). This includes all current amenities.<br><br>Would you like to:<br>1. Accept this offer<br>2. Discuss different terms<br>3. Need more time to decide</div>
+            <div class="msg-footer"><span class="delivered">✓✓</span> Delivered 11:30 AM</div>
+          </div>
+
+          <!-- RENEWAL: Tenant response -->
+          <div class="thread-msg inbound">
+            <div class="msg-sender">Sarah Thompson · Tenant <span class="msg-wf-tag renewal">📋 Renewal</span></div>
+            <div class="msg-bubble">I'd like to discuss the terms. Is there flexibility on the rent increase? I've been here 3 years and always paid on time.</div>
+            <div class="msg-footer">2:15 PM</div>
+          </div>
+
+          <!-- RENEWAL: Agent negotiation -->
+          <div class="thread-msg outbound agent" style="background: transparent;">
+            <div class="msg-sender" style="justify-content:flex-end;color:rgba(255,255,255,0.7);"><span class="agent-tag">AI Agent</span> Renewal Agent <span class="msg-wf-tag renewal">📋</span></div>
+            <div class="msg-bubble" style="background: linear-gradient(135deg, #2e7d32, #43a047);">You're absolutely right, Sarah — you've been an excellent tenant! Given your 3-year history and perfect payment record, we can offer $1,620/mo (a 1.2% increase instead of 3%). Would that work for you?</div>
+            <div class="msg-footer"><span class="delivered">✓✓</span> Delivered 2:16 PM</div>
+          </div>
+
+          <div class="thread-date">Mar 21, 2026</div>
+
+          <!-- MAINTENANCE: Agent follow-up -->
+          <div class="thread-msg outbound agent">
+            <div class="msg-sender" style="justify-content:flex-end;color:rgba(255,255,255,0.7);"><span class="agent-tag">AI Agent</span> Maintenance Agent <span class="msg-wf-tag maintenance">🔧</span></div>
+            <div class="msg-bubble">Hi Sarah! The plumber visited yesterday. Has the leak under your kitchen sink been fixed?</div>
+            <div class="msg-footer"><span class="delivered">✓✓</span> Delivered 9:00 AM</div>
+          </div>
+
+          <!-- Waiting for tenant reply — maintenance -->
+          <div class="thread-msg inbound" style="opacity: 0.6;">
+            <div class="msg-sender">Sarah Thompson · Tenant <span class="msg-wf-tag maintenance">🔧 Maintenance</span></div>
+            <div class="msg-bubble" style="border: 1px dashed #d0d7e2; background: transparent; color: #9aa5b8;">Waiting for tenant response...</div>
+          </div>
+        </div>
+
+        <div class="thread-input">
+          <button style="padding:8px;border:1px solid #e8ecf1;border-radius:8px;background:white;cursor:pointer;color:#6b7a99;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.49"/></svg>
+          </button>
+          <textarea rows="1" placeholder="Type a message... (agent is handling this conversation)"></textarea>
+          <button class="help-write-btn">✦ Help me write</button>
+          <button class="send-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div><!-- end thread-sarah -->
+
+      <!-- MARIA thread (water heater emergency) -->
+      <div class="conv-thread" id="thread-maria" style="display:none;">
+        <div class="thread-header">
+          <div class="thread-avatar" style="background:#fff3e0;color:#e65100;">ML</div>
+          <div class="thread-header-info">
+            <h4>Maria Lopez <span style="font-size:11px;padding:2px 8px;border-radius:4px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;font-weight:500;">Managed by AI Agent</span></h4>
+            <p>Unit 3A · 742 Evergreen · +1 786 555 0298</p>
+          </div>
+          <div class="thread-actions">
+            <button onclick="toggleWfDrawer()">Workflow</button>
+            <button class="take-over">Take over from agent</button>
+          </div>
+        </div>
+        <div class="thread-messages">
+          <div class="thread-date">Mar 22, 2026</div>
+          <div class="thread-msg inbound">
+            <div class="msg-sender">Maria Lopez · Tenant <span class="msg-wf-tag maintenance">🔧 Maintenance</span></div>
+            <div class="msg-bubble">I have no hot water this morning. The water heater is making a weird noise and there's a small puddle around the base. This is urgent — I have kids who need to get ready for school.</div>
+            <div class="msg-footer">6:14 AM</div>
+          </div>
+          <div class="thread-msg outbound agent">
+            <div class="msg-sender" style="justify-content:flex-end;color:rgba(255,255,255,0.7);"><span class="agent-tag">AI Agent</span> Maintenance Agent <span class="msg-wf-tag maintenance">🔧</span></div>
+            <div class="msg-bubble">Hi Maria, I'm sorry about the hot water issue! I've flagged this as urgent and created work order #4528. I'm contacting a plumber right now to get you a same-day appointment. I'll update you within the hour.</div>
+            <div class="msg-footer"><span class="delivered">✓✓</span> Delivered 6:15 AM</div>
+          </div>
+          <div class="thread-msg outbound agent">
+            <div class="msg-sender" style="justify-content:flex-end;color:rgba(255,255,255,0.7);"><span class="agent-tag">AI Agent</span> Maintenance Agent <span class="msg-wf-tag maintenance">🔧</span></div>
+            <div class="msg-bubble">Update: ABC Plumbing can come today between 2–4 PM. They've diagnosed it as a likely water heater replacement (your unit's heater was installed in 2014). The quote is $2,800.<br><br>Because this exceeds the $500 auto-approval threshold, I'm requesting approval from your property owner now. I'll confirm the appointment as soon as I hear back.</div>
+            <div class="msg-footer"><span class="delivered">✓✓</span> Delivered 7:50 AM</div>
+          </div>
+          <div class="thread-msg inbound">
+            <div class="msg-sender">Maria Lopez · Tenant <span class="msg-wf-tag maintenance">🔧 Maintenance</span></div>
+            <div class="msg-bubble">Thank you for the quick response! 2-4 PM works for me. Please let me know as soon as the owner approves.</div>
+            <div class="msg-footer">8:05 AM</div>
+          </div>
+          <div class="thread-msg inbound" style="opacity: 0.6;">
+            <div class="msg-sender">Maria Lopez · Tenant</div>
+            <div class="msg-bubble" style="border: 1px dashed #d0d7e2; background: transparent; color: #9aa5b8;">Waiting for owner approval to confirm appointment...</div>
+          </div>
+        </div>
+        <div class="thread-input">
+          <button style="padding:8px;border:1px solid #e8ecf1;border-radius:8px;background:white;cursor:pointer;color:#6b7a99;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.49"/></svg>
+          </button>
+          <textarea rows="1" placeholder="Type a message... (agent is handling this conversation)"></textarea>
+          <button class="help-write-btn">✦ Help me write</button>
+          <button class="send-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div><!-- end thread-maria -->
+
+      <!-- JAMES thread (late rent) -->
+      <div class="conv-thread" id="thread-james" style="display:none;">
+        <div class="thread-header">
+          <div class="thread-avatar" style="background:#fff8e1;color:#e65100;">JW</div>
+          <div class="thread-header-info">
+            <h4>James Wilson <span style="font-size:11px;padding:2px 8px;border-radius:4px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;font-weight:500;">Managed by AI Agent</span></h4>
+            <p>Unit 7B · 155 Pine St · +1 786 555 0531</p>
+          </div>
+          <div class="thread-actions">
+            <button onclick="toggleWfDrawer()">Workflow</button>
+            <button class="take-over">Take over from agent</button>
+          </div>
+        </div>
+        <div class="thread-messages">
+          <div class="thread-date">Mar 17, 2026</div>
+          <div class="thread-msg outbound agent" style="background:transparent;">
+            <div class="msg-sender" style="justify-content:flex-end;color:rgba(255,255,255,0.7);"><span class="agent-tag">AI Agent</span> Rent Collection Agent</div>
+            <div class="msg-bubble" style="background: linear-gradient(135deg, #e65100, #f57c00);">Hi James, this is a reminder that your rent of $1,450 for Unit 7B at 155 Pine St was due on March 15. Please submit payment at your earliest convenience. You can pay online at your DoorLoop portal.</div>
+            <div class="msg-footer"><span class="delivered">✓✓</span> Delivered 9:00 AM</div>
+          </div>
+          <div class="thread-date">Mar 19, 2026</div>
+          <div class="thread-msg outbound agent" style="background:transparent;">
+            <div class="msg-sender" style="justify-content:flex-end;color:rgba(255,255,255,0.7);"><span class="agent-tag">AI Agent</span> Rent Collection Agent</div>
+            <div class="msg-bubble" style="background: linear-gradient(135deg, #e65100, #f57c00);">Hi James, your rent of $1,450 is now 4 days past due. A late fee of $75 has been applied per your lease agreement. Please submit payment today to avoid further action. Pay online: doorloop.com/pay</div>
+            <div class="msg-footer"><span class="delivered">✓✓</span> Delivered 8:00 AM</div>
+          </div>
+          <div class="thread-date">Mar 22, 2026</div>
+          <div class="thread-msg outbound agent" style="background:transparent;">
+            <div class="msg-sender" style="justify-content:flex-end;color:rgba(255,255,255,0.7);"><span class="agent-tag">AI Agent</span> Rent Collection Agent</div>
+            <div class="msg-bubble" style="background: linear-gradient(135deg, #e65100, #f57c00);">James, your rent of $1,450 plus a $75 late fee ($1,525 total) remains unpaid. This is your 3rd late payment in the past 6 months. Please respond to this message or contact us to discuss payment options.</div>
+            <div class="msg-footer"><span class="delivered">✓✓</span> Delivered 8:00 AM</div>
+          </div>
+          <div class="thread-msg inbound" style="opacity: 0.6;">
+            <div class="msg-sender">James Wilson · Tenant</div>
+            <div class="msg-bubble" style="border: 1px dashed #d0d7e2; background: transparent; color: #9aa5b8;">No response — escalated to PM</div>
+          </div>
+        </div>
+        <div class="thread-input">
+          <button style="padding:8px;border:1px solid #e8ecf1;border-radius:8px;background:white;cursor:pointer;color:#6b7a99;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.49"/></svg>
+          </button>
+          <textarea rows="1" placeholder="Type a message..."></textarea>
+          <button class="help-write-btn">✦ Help me write</button>
+          <button class="send-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div><!-- end thread-james -->
+
+      <!-- DAVID CHEN thread (owner — water heater approval) -->
+      <div class="conv-thread" id="thread-owner" style="display:none;">
+        <div class="thread-header">
+          <div class="thread-avatar" style="background:#e8f5e9;color:#2e7d32;">DC</div>
+          <div class="thread-header-info">
+            <h4>David Chen <span style="font-size:11px;padding:2px 8px;border-radius:4px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;font-weight:500;">Managed by AI Agent</span></h4>
+            <p>Owner · 742 Evergreen · +1 786 555 0377</p>
+          </div>
+          <div class="thread-actions">
+            <button class="take-over">Take over from agent</button>
+          </div>
+        </div>
+        <div class="thread-messages">
+          <div class="thread-date">Mar 22, 2026</div>
+          <div class="thread-msg outbound agent">
+            <div class="msg-sender" style="justify-content:flex-end;color:rgba(255,255,255,0.7);"><span class="agent-tag">AI Agent</span> Maintenance Agent <span class="msg-wf-tag maintenance">🔧</span></div>
+            <div class="msg-bubble">Hi David, your tenant Maria Lopez at 742 Evergreen 3A reported a water heater failure this morning (no hot water). We've had ABC Plumbing assess the issue.<br><br><strong>Quote: $2,800</strong> for full water heater replacement (current unit installed 2014).<br><br>This exceeds the $500 auto-approval threshold. ABC Plumbing is available today 2–4 PM.<br><br>Do you approve this repair?<br>Reply YES to approve or NO to discuss alternatives.</div>
+            <div class="msg-footer"><span class="delivered">✓✓</span> Delivered 7:46 AM</div>
+          </div>
+          <div class="thread-msg inbound">
+            <div class="msg-sender">David Chen · Owner</div>
+            <div class="msg-bubble">Yes, approved. Please go ahead with the replacement. Keep me posted on completion.</div>
+            <div class="msg-footer">8:02 AM</div>
+          </div>
+          <div class="thread-msg outbound agent">
+            <div class="msg-sender" style="justify-content:flex-end;color:rgba(255,255,255,0.7);"><span class="agent-tag">AI Agent</span> Maintenance Agent <span class="msg-wf-tag maintenance">🔧</span></div>
+            <div class="msg-bubble">Thank you, David! ABC Plumbing has been dispatched and will arrive at 742 Evergreen 3A between 2–4 PM today. Maria has confirmed she'll be home. We'll send you a completion update and invoice once the work is done.</div>
+            <div class="msg-footer"><span class="delivered">✓✓</span> Delivered 8:05 AM</div>
+          </div>
+        </div>
+        <div class="thread-input">
+          <button style="padding:8px;border:1px solid #e8ecf1;border-radius:8px;background:white;cursor:pointer;color:#6b7a99;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.49"/></svg>
+          </button>
+          <textarea rows="1" placeholder="Type a message..."></textarea>
+          <button class="help-write-btn">✦ Help me write</button>
+          <button class="send-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div><!-- end thread-owner -->
+
+      <!-- ABC PLUMBING thread (vendor — water heater) -->
+      <div class="conv-thread" id="thread-abc" style="display:none;">
+        <div class="thread-header">
+          <div class="thread-avatar" style="background:#fff3e0;color:#e65100;">AP</div>
+          <div class="thread-header-info">
+            <h4>ABC Plumbing <span style="font-size:11px;padding:2px 8px;border-radius:4px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;font-weight:500;">Managed by AI Agent</span></h4>
+            <p>Vendor · WO #4528 · 742 Evergreen 3A · +1 786 555 0200</p>
+          </div>
+          <div class="thread-actions">
+            <button class="take-over">Take over from agent</button>
+          </div>
+        </div>
+        <div class="thread-messages">
+          <div class="thread-date">Mar 22, 2026</div>
+          <div class="thread-msg outbound agent">
+            <div class="msg-sender" style="justify-content:flex-end;color:rgba(255,255,255,0.7);"><span class="agent-tag">AI Agent</span> Maintenance Agent <span class="msg-wf-tag maintenance">🔧</span></div>
+            <div class="msg-bubble">Hi, this is DoorLoop's maintenance system. We have an urgent job at 742 Evergreen, Unit 3A — water heater failure, no hot water. Tenant reports noise and small puddle at base (unit installed 2014).<br><br>Can you provide an estimate and earliest availability?</div>
+            <div class="msg-footer"><span class="delivered">✓✓</span> Delivered 6:30 AM</div>
+          </div>
+          <div class="thread-msg inbound">
+            <div class="msg-sender">ABC Plumbing · Vendor</div>
+            <div class="msg-bubble">We can come today. Based on the description — sounds like the unit needs full replacement. Estimate: $2,800 including parts and labor. We have a 2–4 PM window available.</div>
+            <div class="msg-footer">7:30 AM</div>
+          </div>
+          <div class="thread-msg outbound agent">
+            <div class="msg-sender" style="justify-content:flex-end;color:rgba(255,255,255,0.7);"><span class="agent-tag">AI Agent</span> Maintenance Agent <span class="msg-wf-tag maintenance">🔧</span></div>
+            <div class="msg-bubble">Thank you! We're requesting owner approval now. I'll confirm the 2–4 PM slot as soon as we have it. Please hold that window.</div>
+            <div class="msg-footer"><span class="delivered">✓✓</span> Delivered 7:46 AM</div>
+          </div>
+          <div class="thread-msg outbound agent">
+            <div class="msg-sender" style="justify-content:flex-end;color:rgba(255,255,255,0.7);"><span class="agent-tag">AI Agent</span> Maintenance Agent <span class="msg-wf-tag maintenance">🔧</span></div>
+            <div class="msg-bubble">Owner has approved. Please proceed with the 2–4 PM appointment at 742 Evergreen, Unit 3A. Tenant Maria Lopez will be home. Contact her at +1 786 555 0298 if needed.</div>
+            <div class="msg-footer"><span class="delivered">✓✓</span> Delivered 8:05 AM</div>
+          </div>
+        </div>
+        <div class="thread-input">
+          <button style="padding:8px;border:1px solid #e8ecf1;border-radius:8px;background:white;cursor:pointer;color:#6b7a99;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.49"/></svg>
+          </button>
+          <textarea rows="1" placeholder="Type a message..."></textarea>
+          <button class="help-write-btn">✦ Help me write</button>
+          <button class="send-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div><!-- end thread-abc -->
+
+      <!-- LEASING thread (showings) -->
+      <div class="conv-thread" id="thread-leasing" style="display:none;">
+        <div class="thread-header">
+          <div class="thread-avatar" style="background:#ede7f6;color:#7b1fa2;">LS</div>
+          <div class="thread-header-info">
+            <h4>Leasing — 890 Oak Ave #12 <span style="font-size:11px;padding:2px 8px;border-radius:4px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;font-weight:500;">Managed by AI Agent</span></h4>
+            <p>3 confirmed showings · Saturday</p>
+          </div>
+          <div class="thread-actions">
+            <button class="take-over">Take over from agent</button>
+          </div>
+        </div>
+        <div class="thread-messages">
+          <div class="thread-date">Mar 21, 2026</div>
+          <div class="thread-msg outbound agent" style="background:transparent;">
+            <div class="msg-sender" style="justify-content:flex-end;color:rgba(255,255,255,0.7);"><span class="agent-tag">AI Agent</span> Leasing Agent</div>
+            <div class="msg-bubble" style="background:linear-gradient(135deg,#7b1fa2,#9c27b0);">Hi! Thanks for your interest in 890 Oak Ave #12. This is a beautiful 2BR/1BA unit at $1,800/mo. Would you like to schedule a showing? We have slots available Saturday at 10 AM, 12 PM, or 2 PM.</div>
+            <div class="msg-footer"><span class="delivered">✓✓</span> Sent to 28 inquiries</div>
+          </div>
+          <div class="thread-msg inbound">
+            <div class="msg-sender">Alex Rivera · Prospect</div>
+            <div class="msg-bubble">I'd love to see it! 10 AM Saturday works for me.</div>
+            <div class="msg-footer">Mar 21, 3:15 PM</div>
+          </div>
+          <div class="thread-msg inbound">
+            <div class="msg-sender">Kim Nguyen · Prospect</div>
+            <div class="msg-bubble">Can I come at noon? Also, is parking included?</div>
+            <div class="msg-footer">Mar 21, 4:02 PM</div>
+          </div>
+          <div class="thread-msg outbound agent" style="background:transparent;">
+            <div class="msg-sender" style="justify-content:flex-end;color:rgba(255,255,255,0.7);"><span class="agent-tag">AI Agent</span> Leasing Agent</div>
+            <div class="msg-bubble" style="background:linear-gradient(135deg,#7b1fa2,#9c27b0);">Hi Kim! Yes, 12 PM Saturday is confirmed. And yes — one dedicated parking spot is included with the unit. See you Saturday!</div>
+            <div class="msg-footer"><span class="delivered">✓✓</span> Delivered 4:03 PM</div>
+          </div>
+          <div class="thread-msg inbound">
+            <div class="msg-sender">Tyler Brooks · Prospect ⚠️</div>
+            <div class="msg-bubble">2 PM works. I'll bring my application.</div>
+            <div class="msg-footer">Mar 21, 5:30 PM</div>
+          </div>
+          <div class="thread-msg outbound agent" style="background:transparent;">
+            <div class="msg-sender" style="justify-content:flex-end;color:rgba(255,255,255,0.7);"><span class="agent-tag">AI Agent</span> Leasing Agent</div>
+            <div class="msg-bubble" style="background:linear-gradient(135deg,#7b1fa2,#9c27b0);">⚠️ <strong>PM Note:</strong> Pre-screening flagged Tyler Brooks — eviction on record from Nov 2021. Showing confirmed but application will be auto-declined per screening rules (no evictions within 5 years).</div>
+            <div class="msg-footer"><span style="color:#f59e0b;">Internal note — not sent to prospect</span></div>
+          </div>
+        </div>
+        <div class="thread-input">
+          <button style="padding:8px;border:1px solid #e8ecf1;border-radius:8px;background:white;cursor:pointer;color:#6b7a99;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.49"/></svg>
+          </button>
+          <textarea rows="1" placeholder="Type a message..."></textarea>
+          <button class="help-write-btn">✦ Help me write</button>
+          <button class="send-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div><!-- end thread-leasing -->
+
+      <!-- PATRICIA MOORE thread (payment plan) -->
+      <div class="conv-thread" id="thread-patricia" style="display:none;">
+        <div class="thread-header">
+          <div class="thread-avatar" style="background:#e3f2fd;color:#1565c0;">PM</div>
+          <div class="thread-header-info">
+            <h4>Patricia Moore <span style="font-size:11px;padding:2px 8px;border-radius:4px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;font-weight:500;">Managed by AI Agent</span></h4>
+            <p>Unit 14A · 155 Pine St · +1 786 555 0614</p>
+          </div>
+          <div class="thread-actions">
+            <button class="take-over">Take over from agent</button>
+          </div>
+        </div>
+        <div class="thread-messages">
+          <div class="thread-date">Mar 21, 2026</div>
+          <div class="thread-msg outbound agent" style="background:transparent;">
+            <div class="msg-sender" style="justify-content:flex-end;color:rgba(255,255,255,0.7);"><span class="agent-tag">AI Agent</span> Rent Collection Agent</div>
+            <div class="msg-bubble" style="background:linear-gradient(135deg,#e65100,#f57c00);">Hi Patricia, this is a reminder that your rent of $1,650 for Unit 14A was due on March 15. Please submit payment at your earliest convenience.</div>
+            <div class="msg-footer"><span class="delivered">✓✓</span> Delivered 7:00 AM</div>
+          </div>
+          <div class="thread-msg inbound">
+            <div class="msg-sender">Patricia Moore · Tenant</div>
+            <div class="msg-bubble">I'm so sorry, I'm going through a really tough time financially. I lost my job last month and I'm actively looking. Is there any way I can pay in installments? I've always paid on time before this.</div>
+            <div class="msg-footer">7:15 AM</div>
+          </div>
+          <div class="thread-msg outbound agent" style="background:transparent;">
+            <div class="msg-sender" style="justify-content:flex-end;color:rgba(255,255,255,0.7);"><span class="agent-tag">AI Agent</span> Rent Collection Agent</div>
+            <div class="msg-bubble" style="background:linear-gradient(135deg,#e65100,#f57c00);">I completely understand, Patricia. You've been an excellent tenant with a perfect payment history, and we want to work with you. I can offer a 3-installment payment plan:<br><br>• $550 due Feb 7<br>• $550 due Feb 14<br>• $550 due Feb 21<br><br>The late fee will be waived under this plan. Would this work for you?</div>
+            <div class="msg-footer"><span class="delivered">✓✓</span> Delivered 7:16 AM</div>
+          </div>
+          <div class="thread-msg inbound">
+            <div class="msg-sender">Patricia Moore · Tenant</div>
+            <div class="msg-bubble">Yes, that would be wonderful! Thank you so much for understanding. I'll make the first payment on the 7th.</div>
+            <div class="msg-footer">7:30 AM</div>
+          </div>
+          <div class="thread-msg outbound agent" style="background:transparent;">
+            <div class="msg-sender" style="justify-content:flex-end;color:rgba(255,255,255,0.7);"><span class="agent-tag">AI Agent</span> Rent Collection Agent</div>
+            <div class="msg-bubble" style="background:linear-gradient(135deg,#e65100,#f57c00);">You're all set, Patricia! I've set up the payment plan. You'll receive reminders before each installment date. Wishing you the best with the job search — don't hesitate to reach out if you need anything.</div>
+            <div class="msg-footer"><span class="delivered">✓✓</span> Delivered 7:31 AM</div>
+          </div>
+        </div>
+        <div class="thread-input">
+          <button style="padding:8px;border:1px solid #e8ecf1;border-radius:8px;background:white;cursor:pointer;color:#6b7a99;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.49"/></svg>
+          </button>
+          <textarea rows="1" placeholder="Type a message..."></textarea>
+          <button class="help-write-btn">✦ Help me write</button>
+          <button class="send-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div><!-- end thread-patricia -->
+
+      <!-- ============ RIGHT: Workflow Progress Drawer ============ -->
+      <div class="wf-drawer" id="wfDrawer">
+        <div class="wf-drawer-header">
+          <div>
+            <h3>Sarah Thompson</h3>
+            <div style="font-size:11px;color:#6b7a99;margin-top:2px;">Unit 4B · 123 Main St · 2 active workflows</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <button class="wf-drawer-toggle" onclick="toggleWfDrawer()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Workflow tabs -->
+        <div class="wf-tabs">
+          <button class="wf-tab active" onclick="switchWfTab('maintenance', this)">
+            <span class="tab-icon">🔧</span> Maintenance <span class="tab-step">10/12</span>
+          </button>
+          <button class="wf-tab" onclick="switchWfTab('renewal', this)">
+            <span class="tab-icon">📋</span> Renewal <span class="tab-step">2/5</span>
+          </button>
+        </div>
+
+        <div class="wf-drawer-content">
+          <!-- MAINTENANCE WORKFLOW PANEL -->
+          <div class="wf-panel active" id="panel-maintenance">
+          <div style="font-size:11px;color:#6b7a99;margin-bottom:12px;">WO #4521 · <span class="wf-status active">Active</span></div>
+          <div class="wf-steps" id="wfSteps">
+
+            <!-- Step 1: Trigger — COMPLETED -->
+            <div class="wf-step completed">
+              <div class="wf-step-line">
+                <div class="wf-step-dot"></div>
+                <div class="wf-step-connector"></div>
+              </div>
+              <div class="wf-step-body">
+                <div class="wf-step-card">
+                  <span class="step-tag trigger">TRIGGER</span>
+                  <h5>Tenant submits request</h5>
+                  <p>Sarah reported a leaky kitchen sink</p>
+                  <div class="step-result">✓ Completed · 10:02 AM</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 2: Triage — COMPLETED -->
+            <div class="wf-step completed">
+              <div class="wf-step-line">
+                <div class="wf-step-dot"></div>
+                <div class="wf-step-connector"></div>
+              </div>
+              <div class="wf-step-body">
+                <div class="wf-step-card">
+                  <span class="step-tag ai-decision">AI DECISION</span>
+                  <h5>Triage request</h5>
+                  <p>Standard priority · Plumbing · Not emergency</p>
+                  <div class="step-result">✓ Triaged · 10:02 AM</div>
+                  <a href="audit-log.html?focus=d1" style="font-size:10px;color:#4C6FFF;text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:4px;" onclick="event.stopPropagation()">📋 Audit log</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 3: Create WO — COMPLETED -->
+            <div class="wf-step completed">
+              <div class="wf-step-line">
+                <div class="wf-step-dot"></div>
+                <div class="wf-step-connector"></div>
+              </div>
+              <div class="wf-step-body">
+                <div class="wf-step-card">
+                  <span class="step-tag agent-action">AGENT ACTION</span>
+                  <h5>Create work order</h5>
+                  <p>WO #4521 · Plumbing · Standard priority</p>
+                  <div class="step-result">✓ Created · 10:02 AM</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 4: Select vendor — COMPLETED -->
+            <div class="wf-step completed">
+              <div class="wf-step-line">
+                <div class="wf-step-dot"></div>
+                <div class="wf-step-connector"></div>
+              </div>
+              <div class="wf-step-body">
+                <div class="wf-step-card">
+                  <span class="step-tag ai-decision">AI DECISION</span>
+                  <h5>Select vendor</h5>
+                  <p>Mike's Plumbing (preferred, 4.8★, 2.1 mi)</p>
+                  <div class="step-result">✓ Selected · 10:03 AM</div>
+                  <a href="audit-log.html?focus=d2" style="font-size:10px;color:#4C6FFF;text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:4px;" onclick="event.stopPropagation()">📋 Audit log</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 5: Request estimate — COMPLETED -->
+            <div class="wf-step completed">
+              <div class="wf-step-line">
+                <div class="wf-step-dot"></div>
+                <div class="wf-step-connector"></div>
+              </div>
+              <div class="wf-step-body">
+                <div class="wf-step-card">
+                  <span class="step-tag communication">COMMUNICATION</span>
+                  <h5>Request estimate from vendor</h5>
+                  <p>SMS sent to Mike's Plumbing</p>
+                  <div class="step-result">✓ Sent · 10:03 AM</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 6: Wait for estimate — COMPLETED -->
+            <div class="wf-step completed">
+              <div class="wf-step-line">
+                <div class="wf-step-dot"></div>
+                <div class="wf-step-connector"></div>
+              </div>
+              <div class="wf-step-body">
+                <div class="wf-step-card">
+                  <span class="step-tag wait">WAIT FOR RESPONSE</span>
+                  <h5>Wait for vendor estimate</h5>
+                  <p>Vendor replied: $350, available tomorrow</p>
+                  <div class="step-result">✓ Received · 10:15 AM</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 7: Condition — COMPLETED -->
+            <div class="wf-step completed">
+              <div class="wf-step-line">
+                <div class="wf-step-dot"></div>
+                <div class="wf-step-connector"></div>
+              </div>
+              <div class="wf-step-body">
+                <div class="wf-step-card">
+                  <span class="step-tag condition">CONDITION</span>
+                  <h5>Owner approval needed?</h5>
+                  <p>$350 &lt; $500 threshold → Skipped approval</p>
+                  <div class="step-result">✓ No approval needed · 10:15 AM</div>
+                  <a href="audit-log.html?focus=d3" style="font-size:10px;color:#4C6FFF;text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:4px;" onclick="event.stopPropagation()">📋 Audit log</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 8: Schedule — COMPLETED -->
+            <div class="wf-step completed">
+              <div class="wf-step-line">
+                <div class="wf-step-dot"></div>
+                <div class="wf-step-connector"></div>
+              </div>
+              <div class="wf-step-body">
+                <div class="wf-step-card">
+                  <span class="step-tag communication">COMMUNICATION</span>
+                  <h5>Schedule with tenant & vendor</h5>
+                  <p>Tenant chose 1:00 PM, Mar 20</p>
+                  <div class="step-result">✓ Scheduled · 10:20 AM</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 9: Wait for completion — COMPLETED -->
+            <div class="wf-step completed">
+              <div class="wf-step-line">
+                <div class="wf-step-dot"></div>
+                <div class="wf-step-connector"></div>
+              </div>
+              <div class="wf-step-body">
+                <div class="wf-step-card">
+                  <span class="step-tag wait">WAIT FOR RESPONSE</span>
+                  <h5>Wait for completion</h5>
+                  <p>Vendor visited Mar 20 at 1:00 PM</p>
+                  <div class="step-result">✓ Completed · Mar 20</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 10: Verify — CURRENT -->
+            <div class="wf-step current">
+              <div class="wf-step-line">
+                <div class="wf-step-dot"></div>
+                <div class="wf-step-connector"></div>
+              </div>
+              <div class="wf-step-body">
+                <div class="current-label">You are here</div>
+                <div class="wf-step-card">
+                  <span class="step-tag communication">COMMUNICATION</span>
+                  <h5>Verify with tenant</h5>
+                  <p>Asked Sarah if the leak has been fixed</p>
+                  <div class="step-waiting"><span class="pulse"></span> Waiting for tenant response</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 11: Close & bill — PENDING -->
+            <div class="wf-step">
+              <div class="wf-step-line">
+                <div class="wf-step-dot"></div>
+                <div class="wf-step-connector"></div>
+              </div>
+              <div class="wf-step-body">
+                <div class="wf-step-card">
+                  <span class="step-tag agent-action">AGENT ACTION</span>
+                  <h5>Close & bill</h5>
+                  <p>Mark resolved, send $350 invoice to owner</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 12: Handoff — PENDING -->
+            <div class="wf-step">
+              <div class="wf-step-line">
+                <div class="wf-step-dot" style="border-color:#e65100;"></div>
+              </div>
+              <div class="wf-step-body">
+                <div class="wf-step-card" style="border: 1px dashed #ffcc80; background: #fff8f0;">
+                  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+                    <span style="font-size:12px;">🔧</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#e65100" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    <span style="font-size:12px;">💰</span>
+                  </div>
+                  <span class="step-tag" style="background:#fff3e0;color:#e65100;">HANDOFF</span>
+                  <h5>Hand off to Billing Agent</h5>
+                  <p>Track owner payment on $350 invoice. If unpaid after 7 days, send reminder.</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          </div><!-- end panel-maintenance -->
+
+          <!-- RENEWAL WORKFLOW PANEL -->
+          <div class="wf-panel" id="panel-renewal">
+          <div style="font-size:11px;color:#6b7a99;margin-bottom:12px;">Lease #892 · Expires Jun 30, 2026 · <span class="wf-status active">Active</span></div>
+          <div class="wf-steps">
+
+            <!-- Step 1: Trigger — COMPLETED -->
+            <div class="wf-step completed">
+              <div class="wf-step-line">
+                <div class="wf-step-dot"></div>
+                <div class="wf-step-connector"></div>
+              </div>
+              <div class="wf-step-body">
+                <div class="wf-step-card">
+                  <span class="step-tag trigger">TRIGGER</span>
+                  <h5>Lease expiring in 90 days</h5>
+                  <p>Sarah's lease expires Jun 30, 2026</p>
+                  <div class="step-result">✓ Triggered · Mar 20</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 2: Send offer — COMPLETED -->
+            <div class="wf-step completed">
+              <div class="wf-step-line">
+                <div class="wf-step-dot"></div>
+                <div class="wf-step-connector"></div>
+              </div>
+              <div class="wf-step-body">
+                <div class="wf-step-card">
+                  <span class="step-tag communication">COMMUNICATION</span>
+                  <h5>Send renewal offer</h5>
+                  <p>Offered $1,650/mo (3% increase)</p>
+                  <div class="step-result">✓ Sent · Mar 20, 11:30 AM</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 3: Negotiate — CURRENT -->
+            <div class="wf-step current">
+              <div class="wf-step-line">
+                <div class="wf-step-dot"></div>
+                <div class="wf-step-connector"></div>
+              </div>
+              <div class="wf-step-body">
+                <div class="current-label">You are here</div>
+                <div class="wf-step-card">
+                  <span class="step-tag ai-decision">AI DECISION</span>
+                  <h5>Negotiate terms</h5>
+                  <p>Tenant requested lower rate. Agent offered $1,620/mo based on tenant history.</p>
+                  <div class="step-waiting"><span class="pulse"></span> Waiting for tenant decision</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 4: Generate lease — PENDING -->
+            <div class="wf-step">
+              <div class="wf-step-line">
+                <div class="wf-step-dot"></div>
+                <div class="wf-step-connector"></div>
+              </div>
+              <div class="wf-step-body">
+                <div class="wf-step-card">
+                  <span class="step-tag agent-action">AGENT ACTION</span>
+                  <h5>Generate renewal lease</h5>
+                  <p>Create new lease with agreed terms</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 5: E-sign — PENDING -->
+            <div class="wf-step">
+              <div class="wf-step-line">
+                <div class="wf-step-dot"></div>
+              </div>
+              <div class="wf-step-body">
+                <div class="wf-step-card">
+                  <span class="step-tag communication">COMMUNICATION</span>
+                  <h5>Send for e-signature</h5>
+                  <p>Send lease to tenant for signing</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          </div><!-- end panel-renewal -->
+
+        </div>
+
+        <div class="wf-drawer-links">
+          <a id="link-command" href="command-center.html" title="View in Command Center">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            Command Center
+          </a>
+          <a id="link-audit" href="audit-log.html" title="View in Audit Log">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            Audit Log
+          </a>
+        </div>
+        <div class="wf-drawer-footer" id="wfFooter">
+          <span id="footerStep">Step 10 of 12</span>
+          <div class="wf-progress"><div class="wf-progress-bar" id="footerBar" style="width: 83%"></div></div>
+          <span id="footerPct">83%</span>
+        </div>
+      </div>
+
+      <button class="open-wf-btn" onclick="toggleWfDrawer()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        Workflow
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleWfDrawer() {
+  document.getElementById('wfDrawer').classList.toggle('collapsed');
+}
+
+function switchWfTab(tab, btn) {
+  // Update tab active state
+  document.querySelectorAll('.wf-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+
+  // Show correct panel
+  document.querySelectorAll('.wf-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + tab).classList.add('active');
+
+  // Update footer
+  if (tab === 'maintenance') {
+    document.getElementById('footerStep').textContent = 'Step 10 of 12';
+    document.getElementById('footerBar').style.width = '83%';
+    document.getElementById('footerPct').textContent = '83%';
+  } else {
+    document.getElementById('footerStep').textContent = 'Step 2 of 5';
+    document.getElementById('footerBar').style.width = '40%';
+    document.getElementById('footerPct').textContent = '40%';
+  }
+
+  // Scroll to current step
+  setTimeout(() => {
+    const panel = document.getElementById('panel-' + tab);
+    const current = panel.querySelector('.wf-step.current');
+    if (current) current.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }, 100);
+}
+
+function takeOver() {
+  const btn = event.target;
+  if (btn.textContent === 'Take over from agent') {
+    btn.textContent = 'Return to agent';
+    btn.style.background = '#ff6b6b';
+    btn.style.borderColor = '#ff6b6b';
+
+    // Add system message
+    const msg = document.createElement('div');
+    msg.className = 'thread-msg outbound system';
+    msg.innerHTML = `
+      <div class="msg-sender" style="justify-content:flex-end;color:rgba(255,255,255,0.7);"><span class="system-tag" style="background:rgba(255,255,255,0.2);color:white;">System</span></div>
+      <div class="msg-bubble">PM Sahar Ben has taken over this conversation. Agent is paused.</div>
+      <div class="msg-footer">Just now</div>
+    `;
+    // Remove the waiting placeholder
+    const messages = document.getElementById('threadMessages');
+    const lastMsg = messages.lastElementChild;
+    if (lastMsg && lastMsg.style.opacity === '0.6') lastMsg.remove();
+    messages.appendChild(msg);
+    messages.scrollTop = messages.scrollHeight;
+  } else {
+    btn.textContent = 'Take over from agent';
+    btn.style.background = '#4C6FFF';
+    btn.style.borderColor = '#4C6FFF';
+
+    const msg = document.createElement('div');
+    msg.className = 'thread-msg outbound system';
+    msg.innerHTML = `
+      <div class="msg-sender" style="justify-content:flex-end;color:rgba(255,255,255,0.7);"><span class="system-tag" style="background:rgba(255,255,255,0.2);color:white;">System</span></div>
+      <div class="msg-bubble">Agent has resumed control of this conversation.</div>
+      <div class="msg-footer">Just now</div>
+    `;
+    const messages = document.getElementById('threadMessages');
+    messages.appendChild(msg);
+    messages.scrollTop = messages.scrollHeight;
+  }
+}
+
+function showConversation(id) {
+  // Highlight active conversation in left panel
+  document.querySelectorAll('.conv-item').forEach(el => el.classList.remove('active'));
+  if (event && event.currentTarget) {
+    event.currentTarget.classList.add('active');
+  } else {
+    // Find by data-conv attribute
+    const item = document.querySelector('.conv-item[data-conv="' + id + '"]');
+    if (item) item.classList.add('active');
+  }
+
+  // Hide all threads, show selected
+  document.querySelectorAll('.conv-thread').forEach(t => t.style.display = 'none');
+  const thread = document.getElementById('thread-' + id);
+  if (thread) {
+    thread.style.display = 'flex';
+  } else {
+    // Fallback to sarah for unknown conversations
+    document.getElementById('thread-sarah').style.display = 'flex';
+  }
+
+  // Show/hide workflow drawer based on conversation type
+  const hasWorkflow = ['sarah', 'maria'].includes(id);
+  if (hasWorkflow) {
+    document.getElementById('wfDrawer').classList.remove('collapsed');
+  } else {
+    document.getElementById('wfDrawer').classList.add('collapsed');
+  }
+
+  // Update drawer links with context params
+  var convToCommand = {
+    sarah: 'command-center.html?focus=card1',
+    maria: 'command-center.html?focus=card1',
+    james: 'command-center.html?focus=card2',
+    owner: 'command-center.html?focus=card1',
+    abc: 'command-center.html?focus=card1',
+    leasing: 'command-center.html?focus=card3',
+    patricia: 'command-center.html',
+  };
+  var convToAudit = {
+    sarah: 'audit-log.html?focus=d1',
+    maria: 'audit-log.html?focus=d3',
+    james: 'audit-log.html?focus=d4',
+    owner: 'audit-log.html?focus=d1',
+    abc: 'audit-log.html?focus=d2',
+    leasing: 'audit-log.html?focus=d5',
+    patricia: 'audit-log.html?focus=d6',
+  };
+  var cmdLink = document.getElementById('link-command');
+  var auditLink = document.getElementById('link-audit');
+  if (cmdLink) cmdLink.href = convToCommand[id] || 'command-center.html';
+  if (auditLink) auditLink.href = convToAudit[id] || 'audit-log.html';
+}
+
+// Handle query params from Command Center links
+window.addEventListener('load', () => {
+  const params = new URLSearchParams(window.location.search);
+  const conv = params.get('conv');
+  if (conv) {
+    showConversation(conv);
+  }
+
+  // Scroll to current step
+  setTimeout(() => {
+    const currentStep = document.querySelector('.wf-panel.active .wf-step.current');
+    if (currentStep) {
+      currentStep.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+  }, 300);
+});
+</script>
+
+<script src="cori.js"></script>
+</body>
+</html>

@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DoorLoop – AI Agents</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fb; color: #1a2b4a; height: 100vh; overflow: hidden; }
+
+  /* Layout */
+  .app { display: flex; height: 100vh; }
+  .sidebar { width: 56px; background: #1a2b4a; display: flex; flex-direction: column; align-items: center; padding: 12px 0; gap: 8px; flex-shrink: 0; }
+  .sidebar .logo { width: 32px; height: 32px; background: #4C6FFF; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px; cursor: pointer; }
+  .sidebar .nav-item { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #8896b3; cursor: pointer; transition: all 0.2s; position: relative; }
+  .sidebar .nav-item:hover { background: rgba(255,255,255,0.1); color: white; }
+  .sidebar .nav-item.active { background: rgba(76,111,255,0.2); color: #4C6FFF; }
+  .sidebar .nav-item .badge { position: absolute; top: 2px; right: 2px; width: 14px; height: 14px; background: #ff4757; border-radius: 50%; font-size: 8px; color: white; display: flex; align-items: center; justify-content: center; }
+  .sidebar .spacer { flex: 1; }
+
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .topbar { height: 56px; background: white; border-bottom: 1px solid #e8ecf1; display: flex; align-items: center; padding: 0 24px; gap: 16px; flex-shrink: 0; }
+  .topbar .search { flex: 1; max-width: 500px; margin: 0 auto; }
+  .topbar .search input { width: 100%; padding: 8px 16px; border: 1px solid #e8ecf1; border-radius: 8px; font-size: 13px; background: #f5f7fb; }
+  .topbar .search input:focus { outline: none; border-color: #4C6FFF; background: white; }
+  .topbar-title { font-size: 14px; font-weight: 600; }
+  .topbar-right { font-size: 13px; color: #6b7a99; }
+  .topbar-back { display: none; align-items: center; gap: 6px; font-size: 14px; font-weight: 500; color: #4C6FFF; cursor: pointer; background: none; border: none; }
+  .topbar-back:hover { color: #3a5ae0; }
+
+  /* ===================== LANDING PAGE ===================== */
+  .landing-page { flex: 1; overflow-y: auto; padding: 48px 60px; animation: fadeIn 0.3s ease; display: flex; flex-direction: column; align-items: center; }
+  .landing-page.hidden { display: none; }
+  .landing-header { margin-bottom: 40px; text-align: center; }
+  .landing-header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+  .landing-header p { font-size: 15px; color: #6b7a99; max-width: 560px; line-height: 1.6; margin: 0 auto; }
+
+  .agents-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 900px; }
+  .agent-tile { background: white; border: 1px solid #e8ecf1; border-radius: 16px; padding: 28px 24px; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
+  .agent-tile:hover { border-color: #4C6FFF; box-shadow: 0 8px 24px rgba(76,111,255,0.1); transform: translateY(-2px); }
+  .agent-tile .tile-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 16px; }
+  .agent-tile .tile-icon.maintenance { background: #fff3e0; }
+  .agent-tile .tile-icon.renewal { background: #e8f5e9; }
+  .agent-tile .tile-icon.moveout { background: #fce4ec; }
+  .agent-tile .tile-icon.movein { background: #e3f2fd; }
+  .agent-tile .tile-icon.leasing { background: #ede7f6; }
+  .agent-tile .tile-icon.delinquency { background: #fff8e1; }
+  .agent-tile h3 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+  .agent-tile .tile-desc { font-size: 13px; color: #6b7a99; line-height: 1.5; margin-bottom: 16px; }
+  .agent-tile .tile-features { display: flex; flex-wrap: wrap; gap: 6px; }
+  .agent-tile .tile-feature { font-size: 11px; padding: 3px 8px; background: #f5f7fb; border-radius: 4px; color: #6b7a99; }
+  .agent-tile .tile-status { position: absolute; top: 16px; right: 16px; font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 500; }
+  .agent-tile .tile-status.ready { background: #e8f5e9; color: #2e7d32; }
+  .agent-tile .tile-status.soon { background: #f5f7fb; color: #9aa5b8; }
+  .agent-tile .tile-cta { margin-top: 20px; font-size: 13px; font-weight: 600; color: #4C6FFF; display: flex; align-items: center; gap: 4px; }
+
+  /* ===================== CHAT VIEW ===================== */
+  .chat-view { flex: 1; display: none; overflow: hidden; animation: fadeIn 0.3s ease; }
+  .chat-view.visible { display: flex; }
+  .content-area { flex: 1; display: flex; overflow: hidden; }
+
+  .chat-panel { flex: 1; display: flex; flex-direction: column; background: #f5f7fb; }
+  .chat-messages { flex: 1; overflow-y: auto; padding: 20px 32px; display: flex; flex-direction: column; gap: 16px; }
+  .chat-input-area { padding: 16px 32px 24px; }
+  .chat-input-wrap { background: white; border: 1px solid #e8ecf1; border-radius: 12px; padding: 12px 16px; display: flex; align-items: flex-end; gap: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+  .chat-input-wrap textarea { flex: 1; border: none; outline: none; font-size: 14px; resize: none; font-family: inherit; min-height: 20px; max-height: 120px; line-height: 1.4; }
+  .chat-input-wrap .send-btn { width: 36px; height: 36px; background: #4C6FFF; border: none; border-radius: 8px; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .chat-input-wrap .send-btn:hover { background: #3a5ae0; }
+  .chat-input-wrap .attach-btn { width: 36px; height: 36px; background: none; border: 1px solid #e8ecf1; border-radius: 8px; color: #6b7a99; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+  /* Messages */
+  .msg { display: flex; gap: 12px; max-width: 85%; animation: fadeIn 0.3s ease; }
+  .msg.ai { align-self: flex-start; }
+  .msg.user { align-self: flex-end; flex-direction: row-reverse; }
+  .msg .avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .msg.ai .avatar { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+  .msg.user .avatar { background: #4C6FFF; color: white; }
+  .msg .bubble { padding: 12px 16px; border-radius: 12px; font-size: 14px; line-height: 1.5; }
+  .msg.ai .bubble { background: white; border: 1px solid #e8ecf1; border-top-left-radius: 4px; }
+  .msg.user .bubble { background: #4C6FFF; color: white; border-top-right-radius: 4px; }
+
+  /* Rule cards grid */
+  .rules-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .rule-card { background: #fafbfd; border: 1px solid #e8ecf1; border-radius: 8px; padding: 10px 12px; position: relative; border-left: 4px solid #ccc; }
+  .rule-card .rule-title { font-size: 12px; font-weight: 700; margin-bottom: 4px; }
+  .rule-card .rule-detail { font-size: 12px; color: #6b7a99; line-height: 1.4; }
+  .rule-card .rule-edit { position: absolute; top: 8px; right: 10px; font-size: 11px; color: #4C6FFF; cursor: pointer; text-decoration: none; font-weight: 500; }
+  .rule-card .rule-edit:hover { text-decoration: underline; }
+  .rule-card.emergency { border-left-color: #e53e3e; }
+  .rule-card.sla { border-left-color: #ed8936; }
+  .rule-card.approval { border-left-color: #4C6FFF; }
+  .rule-card.vendors { border-left-color: #38a169; }
+  .rule-card.comms { border-left-color: #805ad5; }
+  .rule-card.verification { border-left-color: #319795; }
+
+  .quick-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .quick-actions button { padding: 8px 16px; border: 1px solid #e8ecf1; border-radius: 8px; background: white; font-size: 13px; cursor: pointer; transition: all 0.2s; color: #1a2b4a; }
+  .quick-actions button:hover { border-color: #4C6FFF; color: #4C6FFF; background: #f0f3ff; }
+
+  /* Workflow drawer */
+  .workflow-drawer { width: 420px; background: white; border-left: 1px solid #e8ecf1; display: flex; flex-direction: column; flex-shrink: 0; transition: width 0.3s ease; overflow: hidden; }
+  .workflow-drawer.collapsed { width: 0; border: none; }
+  .drawer-header { padding: 16px 20px; border-bottom: 1px solid #e8ecf1; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .drawer-header h3 { font-size: 15px; font-weight: 600; }
+  .drawer-toggle { width: 28px; height: 28px; border: 1px solid #e8ecf1; border-radius: 6px; background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #6b7a99; font-size: 12px; }
+  .drawer-toggle:hover { background: #f5f7fb; }
+  .drawer-content { flex: 1; overflow-y: auto; padding: 20px; }
+  .drawer-footer { padding: 12px 20px; border-top: 1px solid #e8ecf1; display: flex; gap: 8px; flex-shrink: 0; }
+  .drawer-footer button { flex: 1; padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; }
+  .drawer-footer .btn-primary { background: #4C6FFF; color: white; border: none; }
+  .drawer-footer .btn-primary:hover { background: #3a5ae0; }
+  .drawer-footer .btn-secondary { background: white; color: #1a2b4a; border: 1px solid #e8ecf1; }
+
+  /* Workflow nodes */
+  .workflow-nodes { display: flex; flex-direction: column; align-items: center; gap: 0; }
+  .workflow-node { width: 100%; background: white; border: 1px solid #e8ecf1; border-radius: 10px; padding: 14px 16px; cursor: pointer; transition: all 0.2s; position: relative; }
+  .workflow-node:hover { border-color: #4C6FFF; box-shadow: 0 2px 8px rgba(76,111,255,0.08); }
+  .workflow-node.active { border-color: #4C6FFF; box-shadow: 0 0 0 2px rgba(76,111,255,0.15); }
+  .workflow-node.building { border-color: #4C6FFF; border-style: dashed; opacity: 0; animation: nodeAppear 0.5s ease forwards; }
+  .node-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .node-tag.trigger { background: #fff8e1; color: #f57f17; }
+  .node-tag.ai-decision { background: #f3e5f5; color: #7b1fa2; }
+  .node-tag.agent-action { background: #e3f2fd; color: #1565c0; }
+  .node-tag.communication { background: #e8f5e9; color: #2e7d32; }
+  .node-tag.wait { background: #fce4ec; color: #c62828; }
+  .node-tag.condition { background: #fff3e0; color: #e65100; }
+  .workflow-node h4 { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .workflow-node p { font-size: 12px; color: #6b7a99; line-height: 1.4; }
+  .workflow-node .config { font-size: 11px; color: #9aa5b8; margin-top: 8px; padding-top: 8px; border-top: 1px solid #f0f2f5; }
+  .node-connector { width: 2px; height: 24px; background: #d0d7e2; position: relative; }
+  .node-connector::after { content: ''; position: absolute; bottom: -3px; left: -3px; width: 8px; height: 8px; border-radius: 50%; background: #d0d7e2; }
+
+  /* Checklist */
+  .checklist { margin-top: 12px; }
+  .checklist-item { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 13px; }
+  .checklist-item .check { width: 18px; height: 18px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
+  .checklist-item .check.done { background: #4caf50; color: white; }
+  .checklist-item .check.missing { background: #ff9800; color: white; }
+
+  /* Simulation */
+  .sim-timeline { margin-top: 12px; }
+  .sim-step { display: flex; gap: 10px; padding: 8px 0; font-size: 13px; border-left: 2px solid #e8ecf1; margin-left: 8px; padding-left: 16px; position: relative; }
+  .sim-step::before { content: ''; position: absolute; left: -5px; top: 12px; width: 8px; height: 8px; border-radius: 50%; background: #4C6FFF; }
+  .sim-step.active::before { background: #4caf50; box-shadow: 0 0 0 3px rgba(76,207,97,0.2); }
+  .sim-step .time { color: #6b7a99; min-width: 55px; flex-shrink: 0; }
+
+  /* Typing */
+  .typing { display: flex; gap: 4px; padding: 8px 0; }
+  .typing span { width: 6px; height: 6px; background: #6b7a99; border-radius: 50%; animation: typingDot 1.4s infinite; }
+  .typing span:nth-child(2) { animation-delay: 0.2s; }
+  .typing span:nth-child(3) { animation-delay: 0.4s; }
+
+  /* Phase indicator */
+  .phase-indicator { display: flex; gap: 4px; margin: 16px 0 8px; align-items: center; }
+  .phase-dot { width: 8px; height: 8px; border-radius: 50%; background: #e8ecf1; }
+  .phase-dot.active { background: #4C6FFF; }
+  .phase-dot.done { background: #4caf50; }
+  .phase-label { font-size: 11px; color: #6b7a99; margin-left: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+
+  /* Open drawer button */
+  .open-drawer-btn { position: fixed; right: 16px; top: 72px; padding: 8px 14px; background: white; border: 1px solid #e8ecf1; border-radius: 8px; font-size: 12px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: none; z-index: 10; color: #1a2b4a; }
+  .open-drawer-btn:hover { border-color: #4C6FFF; color: #4C6FFF; }
+  .workflow-drawer.collapsed ~ .open-drawer-btn { display: flex; align-items: center; gap: 6px; }
+
+  .icon-svg { width: 18px; height: 18px; }
+
+  /* Animations */
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes nodeAppear { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes typingDot { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #d0d7e2; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="logo" onclick="goToLanding()">D</div>
+    <div class="nav-item active" title="AI Agents" onclick="goToLanding()">
+      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    </div>
+    <div class="nav-item" title="Communication Center" onclick="window.location.href='communication-center.html'">
+      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span class="badge">3</span>
+    </div>
+    <div class="nav-item" title="Command Center" onclick="window.location.href='command-center.html'">
+      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    </div>
+    <div class="nav-item" title="Audit Log" onclick="window.location.href='audit-log.html'">
+      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    </div>
+    <div class="nav-item" title="Performance Overview" onclick="window.location.href='performance-overview.html'">
+      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    </div>
+    <div class="spacer"></div>
+  </nav>
+
+  <div class="main">
+    <!-- Top bar -->
+    <div class="topbar">
+      <button class="topbar-back" id="backBtn" onclick="goToLanding()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        AI Agents
+      </button>
+      <span class="topbar-title" id="topbarTitle">AI Agents</span>
+      <div class="search"><input type="text" placeholder="Search anything &#8984;K" /></div>
+      <span class="topbar-right">Help & training</span>
+    </div>
+
+    <!-- ============ LANDING PAGE ============ -->
+    <div class="landing-page" id="landingPage">
+      <div class="landing-header">
+        <h1>AI Agents</h1>
+        <p>Set up autonomous agents that handle your day-to-day operations — from maintenance requests to lease renewals. Each agent learns your preferences and works 24/7.</p>
+      </div>
+
+      <div class="agents-grid">
+        <!-- Maintenance -->
+        <div class="agent-tile" onclick="openAgent('maintenance')">
+          <span class="tile-status ready">Ready to set up</span>
+          <div class="tile-icon maintenance">🔧</div>
+          <h3>Maintenance</h3>
+          <p class="tile-desc">Handles the full repair lifecycle — triage, vendor coordination, owner approval, scheduling, and billing.</p>
+          <div class="tile-features">
+            <span class="tile-feature">Auto-triage</span>
+            <span class="tile-feature">Vendor dispatch</span>
+            <span class="tile-feature">Owner approval</span>
+            <span class="tile-feature">SMS/Email</span>
+          </div>
+          <div class="tile-cta">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>
+
+        <!-- Renewal -->
+        <div class="agent-tile" onclick="openAgent('renewal')">
+          <span class="tile-status soon">Coming soon</span>
+          <div class="tile-icon renewal">📋</div>
+          <h3>Renewal</h3>
+          <p class="tile-desc">Automates the lease renewal process — sends offers, negotiates terms, and handles paperwork.</p>
+          <div class="tile-features">
+            <span class="tile-feature">Auto-offers</span>
+            <span class="tile-feature">Rent adjustment</span>
+            <span class="tile-feature">E-sign</span>
+          </div>
+          <div class="tile-cta">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>
+
+        <!-- Move-out -->
+        <div class="agent-tile" onclick="openAgent('moveout')">
+          <span class="tile-status soon">Coming soon</span>
+          <div class="tile-icon moveout">📦</div>
+          <h3>Move-out</h3>
+          <p class="tile-desc">Manages the move-out process — inspections, deposit reconciliation, and unit turnover.</p>
+          <div class="tile-features">
+            <span class="tile-feature">Inspection scheduling</span>
+            <span class="tile-feature">Deposit calc</span>
+            <span class="tile-feature">Turnover</span>
+          </div>
+          <div class="tile-cta">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>
+
+        <!-- Move-in -->
+        <div class="agent-tile" onclick="openAgent('movein')">
+          <span class="tile-status soon">Coming soon</span>
+          <div class="tile-icon movein">🏠</div>
+          <h3>Move-in</h3>
+          <p class="tile-desc">Streamlines tenant onboarding — welcome packets, utility setup, key handoff, and condition reports.</p>
+          <div class="tile-features">
+            <span class="tile-feature">Welcome flow</span>
+            <span class="tile-feature">Checklist</span>
+            <span class="tile-feature">Condition report</span>
+          </div>
+          <div class="tile-cta">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>
+
+        <!-- Leasing -->
+        <div class="agent-tile" onclick="openAgent('leasing')">
+          <span class="tile-status soon">Coming soon</span>
+          <div class="tile-icon leasing">🔑</div>
+          <h3>Leasing</h3>
+          <p class="tile-desc">Drives the prospect-to-lease pipeline — showings, applications, screening, and lease signing.</p>
+          <div class="tile-features">
+            <span class="tile-feature">Lead follow-up</span>
+            <span class="tile-feature">Showings</span>
+            <span class="tile-feature">Screening</span>
+            <span class="tile-feature">E-sign</span>
+          </div>
+          <div class="tile-cta">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>
+
+        <!-- Delinquency -->
+        <div class="agent-tile" onclick="openAgent('delinquency')">
+          <span class="tile-status soon">Coming soon</span>
+          <div class="tile-icon delinquency">💰</div>
+          <h3>Delinquency</h3>
+          <p class="tile-desc">Automates rent collection — payment reminders, late notices, payment plans, and escalation.</p>
+          <div class="tile-features">
+            <span class="tile-feature">Auto-reminders</span>
+            <span class="tile-feature">Late notices</span>
+            <span class="tile-feature">Payment plans</span>
+          </div>
+          <div class="tile-cta">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ CHAT VIEW ============ -->
+    <div class="chat-view" id="chatView">
+      <div class="content-area">
+        <div class="chat-panel">
+          <div class="chat-messages" id="chatMessages"></div>
+          <div class="chat-input-area">
+            <div class="chat-input-wrap">
+              <button class="attach-btn" title="Upload policy document">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.49"/></svg>
+              </button>
+              <textarea id="chatInput" rows="1" placeholder="Type your message..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();handleUserInput()}"></textarea>
+              <button class="send-btn" onclick="handleUserInput()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="workflow-drawer" id="workflowDrawer">
+          <div class="drawer-header">
+            <h3 id="drawerTitle">Maintenance Workflow</h3>
+            <button class="drawer-toggle" onclick="toggleDrawer()" title="Collapse">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+          <div class="drawer-content" id="drawerContent">
+            <div class="workflow-nodes" id="workflowNodes"></div>
+          </div>
+          <div class="drawer-footer">
+            <button class="btn-secondary" onclick="goToLanding()">Back to agents</button>
+            <button class="btn-primary" id="activateBtn" style="display:none" onclick="activateAgent()">Activate Agent</button>
+          </div>
+        </div>
+
+        <button class="open-drawer-btn" onclick="toggleDrawer()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          Workflow
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const chatMessages = document.getElementById('chatMessages');
+const workflowNodes = document.getElementById('workflowNodes');
+let demoPhase = 'start';
+
+const agentMeta = {
+  maintenance: { name: 'Maintenance Agent', drawerTitle: 'Maintenance Workflow' },
+  renewal: { name: 'Renewal Agent', drawerTitle: 'Renewal Workflow' },
+  moveout: { name: 'Move-out Agent', drawerTitle: 'Move-out Workflow' },
+  movein: { name: 'Move-in Agent', drawerTitle: 'Move-in Workflow' },
+  leasing: { name: 'Leasing Agent', drawerTitle: 'Leasing Workflow' },
+  delinquency: { name: 'Delinquency Agent', drawerTitle: 'Delinquency Workflow' },
+};
+
+const workflowData = [
+  { tag: 'trigger', tagLabel: 'TRIGGER', title: 'Tenant submits maintenance request', desc: 'Triggered when a new maintenance request is created', config: 'All properties · All unit types' },
+  { tag: 'ai-decision', tagLabel: 'AI DECISION', title: 'Triage request', desc: 'Agent analyzes request + photos, determines severity and type', config: 'Emergency auto-dispatch: ON · SLA: 2hr/24hr/72hr' },
+  { tag: 'agent-action', tagLabel: 'AGENT ACTION', title: 'Create work order', desc: 'Agent creates work order with category, priority, and description', config: 'Auto-categorize from request text + images' },
+  { tag: 'ai-decision', tagLabel: 'AI DECISION', title: 'Select vendor', desc: 'Agent picks best vendor based on issue type, proximity, rating', config: "Preferred: Mike's Plumbing, HVAC Pro, SparkFix Electric" },
+  { tag: 'communication', tagLabel: 'COMMUNICATION', title: 'Request estimate from vendor', desc: 'SMS vendor with job details, request estimate', config: 'Channel: SMS · Template: Vendor Estimate Request' },
+  { tag: 'wait', tagLabel: 'WAIT FOR RESPONSE', title: 'Wait for vendor estimate', desc: 'Flow pauses until vendor replies with estimate', config: 'Timeout: 24hr · Fallback: Try next vendor' },
+  { tag: 'condition', tagLabel: 'CONDITION', title: 'Owner approval needed?', desc: 'Check if estimate exceeds owner approval threshold', config: 'Threshold: $500 · If above → request approval' },
+  { tag: 'communication', tagLabel: 'COMMUNICATION', title: 'Request owner approval', desc: 'SMS owner with estimate details for approval', config: 'Channel: SMS · Skip if below threshold' },
+  { tag: 'communication', tagLabel: 'COMMUNICATION', title: 'Schedule with tenant & vendor', desc: 'Coordinate available times between both parties', config: 'Channel: SMS · Auto-suggest 3 time slots' },
+  { tag: 'wait', tagLabel: 'WAIT FOR RESPONSE', title: 'Wait for completion', desc: 'After scheduled date, follow up on resolution', config: 'Follow-up: 1 day after scheduled fix' },
+  { tag: 'communication', tagLabel: 'COMMUNICATION', title: 'Verify with tenant', desc: 'Ask tenant if issue has been resolved', config: 'Channel: SMS · If no → escalate to PM' },
+  { tag: 'agent-action', tagLabel: 'AGENT ACTION', title: 'Close & bill', desc: 'Mark work order resolved, generate bill for owner', config: 'Auto-close work order · Send invoice' },
+];
+
+// ============ NAVIGATION ============
+
+function goToLanding() {
+  document.getElementById('landingPage').classList.remove('hidden');
+  document.getElementById('chatView').classList.remove('visible');
+  document.getElementById('backBtn').style.display = 'none';
+  document.getElementById('topbarTitle').style.display = '';
+  document.getElementById('topbarTitle').textContent = 'AI Agents';
+  chatMessages.innerHTML = '';
+  workflowNodes.innerHTML = '';
+  document.getElementById('activateBtn').style.display = 'none';
+  demoPhase = 'start';
+}
+
+function openAgent(type) {
+  const meta = agentMeta[type];
+
+  // Switch views
+  document.getElementById('landingPage').classList.add('hidden');
+  document.getElementById('chatView').classList.add('visible');
+  document.getElementById('backBtn').style.display = 'flex';
+  document.getElementById('topbarTitle').style.display = 'none';
+  document.getElementById('drawerTitle').textContent = meta.drawerTitle;
+
+  // Reset chat
+  chatMessages.innerHTML = '';
+  workflowNodes.innerHTML = '';
+  document.getElementById('activateBtn').style.display = 'none';
+
+  if (type === 'maintenance') {
+    startMaintenanceSetup();
+  } else {
+    startComingSoonSetup(type);
+  }
+}
+
+// ============ COMING SOON ============
+
+function startComingSoonSetup(type) {
+  const meta = agentMeta[type];
+  addMessage('ai', `Welcome to <strong>${meta.name}</strong> setup! This agent is currently in development and will be available soon.<br><br>In the meantime, the <strong>Maintenance Agent</strong> is ready to go. You can go back and try it out.`);
+}
+
+// ============ MAINTENANCE SETUP ============
+
+async function startMaintenanceSetup() {
+  demoPhase = 'policies';
+
+  addMessage('ai', `Welcome! Let's set up your <strong>Maintenance Agent</strong>. This agent will handle the full repair lifecycle — from tenant request to resolution and billing.<br><br>First, do you have any maintenance policies or guidelines you'd like me to read?<br><br><a href="sample-maintenance-policy.html" target="_blank" style="color:#4C6FFF;text-decoration:none;font-size:13px;">📄 View sample policy</a>`, `
+    <div class="quick-actions">
+      <button onclick="uploadPolicies()">📄 Upload documents</button>
+      <button onclick="skipPolicies()">Skip for now</button>
+    </div>
+  `);
+}
+
+// ============ CHAT HELPERS ============
+
+function addMessage(type, content, extra = '') {
+  const msg = document.createElement('div');
+  msg.className = `msg ${type}`;
+  msg.innerHTML = `
+    <div class="avatar">${type === 'ai' ? '✦' : 'S'}</div>
+    <div class="bubble">${content}${extra}</div>
+  `;
+  chatMessages.appendChild(msg);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+  return msg;
+}
+
+function addPhaseIndicator(phases, activeIndex, label) {
+  const div = document.createElement('div');
+  div.className = 'phase-indicator';
+  div.innerHTML = phases.map((_, i) =>
+    `<div class="phase-dot ${i < activeIndex ? 'done' : i === activeIndex ? 'active' : ''}"></div>`
+  ).join('') + `<span class="phase-label">${label}</span>`;
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function showTyping() {
+  const div = document.createElement('div');
+  div.className = 'msg ai';
+  div.id = 'typingIndicator';
+  div.innerHTML = `<div class="avatar">✦</div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function hideTyping() {
+  const el = document.getElementById('typingIndicator');
+  if (el) el.remove();
+}
+
+function addWorkflowNode(index) {
+  const data = workflowData[index];
+  if (workflowNodes.children.length > 0) {
+    const connector = document.createElement('div');
+    connector.className = 'node-connector';
+    workflowNodes.appendChild(connector);
+  }
+  const node = document.createElement('div');
+  node.className = 'workflow-node building';
+  node.style.animationDelay = '0.1s';
+  node.innerHTML = `
+    <span class="node-tag ${data.tag}">${data.tagLabel}</span>
+    <h4>${data.title}</h4>
+    <p>${data.desc}</p>
+    <div class="config">${data.config}</div>
+  `;
+  node.onclick = () => {
+    document.querySelectorAll('.workflow-node').forEach(n => n.classList.remove('active'));
+    node.classList.add('active');
+  };
+  workflowNodes.appendChild(node);
+  document.getElementById('drawerContent').scrollTop = document.getElementById('drawerContent').scrollHeight;
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ============ MAINTENANCE FLOW ============
+
+async function uploadPolicies() {
+  demoPhase = 'building';
+  addMessage('user', "Here's our maintenance policy document");
+
+  const fileMsg = document.createElement('div');
+  fileMsg.className = 'msg user';
+  fileMsg.innerHTML = `<div class="avatar">S</div><div class="bubble" style="border-top-right-radius:4px">📎 Maintenance_Policy_2026.pdf <span style="opacity:0.7;font-size:12px">(2.4 MB)</span></div>`;
+  fileMsg.style.flexDirection = 'row-reverse';
+  chatMessages.appendChild(fileMsg);
+
+  await sleep(1000);
+  showTyping();
+  await sleep(2000);
+  hideTyping();
+
+  addPhaseIndicator([1,2,3,4], 0, 'Phase 1: Policy Ingestion');
+
+  addMessage('ai', `I've read your maintenance policy. Here's what I found:<br><br>
+    • <strong>Emergency items</strong> (flooding, gas, fire) — immediate dispatch, no approval needed<br>
+    • <strong>Urgent items</strong> (no hot water, broken lock) — 24hr SLA<br>
+    • <strong>Standard items</strong> (leaks, appliance issues) — 72hr SLA<br>
+    • <strong>Owner approval required</strong> above <strong>$500</strong><br>
+    • <strong>Preferred vendors</strong>: Mike's Plumbing, HVAC Pro, SparkFix Electric`);
+
+  await sleep(1200);
+  showTyping();
+  await sleep(1500);
+  hideTyping();
+
+  addMessage('ai', `Here are the rules I extracted from your policy. Review and edit if needed:
+    <div class="rules-grid">
+      <div class="rule-card emergency">
+        <a class="rule-edit" onclick="alert('In the full version, you could edit this rule.')">Edit</a>
+        <div class="rule-title">🚨 Emergency Types</div>
+        <div class="rule-detail">Flooding, gas leaks, fire, no heat, electrical, broken locks, sewage</div>
+      </div>
+      <div class="rule-card sla">
+        <a class="rule-edit" onclick="alert('In the full version, you could edit this rule.')">Edit</a>
+        <div class="rule-title">⏱ SLA</div>
+        <div class="rule-detail">Emergency 2hr, Urgent 24hr, Standard 72hr</div>
+      </div>
+      <div class="rule-card approval">
+        <a class="rule-edit" onclick="alert('In the full version, you could edit this rule.')">Edit</a>
+        <div class="rule-title">💰 Owner Approval</div>
+        <div class="rule-detail">Auto &lt;$500, Approval $500–$2K, 2nd quote &gt;$2K</div>
+      </div>
+      <div class="rule-card vendors">
+        <a class="rule-edit" onclick="alert('In the full version, you could edit this rule.')">Edit</a>
+        <div class="rule-title">🔧 Preferred Vendors</div>
+        <div class="rule-detail">Mike's Plumbing, HVAC Pro, SparkFix Electric</div>
+      </div>
+      <div class="rule-card comms">
+        <a class="rule-edit" onclick="alert('In the full version, you could edit this rule.')">Edit</a>
+        <div class="rule-title">📱 Communication</div>
+        <div class="rule-detail">SMS default, acknowledge within 15 min</div>
+      </div>
+      <div class="rule-card verification">
+        <a class="rule-edit" onclick="alert('In the full version, you could edit this rule.')">Edit</a>
+        <div class="rule-title">✅ Verification</div>
+        <div class="rule-detail">Follow up after repair, 48hr reminder, then auto-close</div>
+      </div>
+    </div>`, `
+    <div class="quick-actions" style="margin-top:14px;">
+      <button onclick="buildWorkflowFromRules()">Looks good, build workflow</button>
+      <button onclick="addMessage('ai', 'Click the <strong>Edit</strong> link on any rule card above to modify it. When you\\'re happy, click <strong>Looks good</strong>.')">I want to change some rules</button>
+    </div>
+  `);
+}
+
+async function buildWorkflowFromRules() {
+  addMessage('user', "Looks good, build the workflow");
+
+  await sleep(500);
+  showTyping();
+  await sleep(800);
+  hideTyping();
+
+  addMessage('ai', `Great — building your workflow based on these rules. Watch the panel on the right →`);
+
+  await sleep(500);
+  addPhaseIndicator([1,2,3,4], 1, 'Phase 2: Building Workflow');
+
+  for (let i = 0; i < workflowData.length; i++) {
+    await sleep(600);
+    addWorkflowNode(i);
+  }
+
+  await sleep(800);
+
+  addMessage('ai', `Your maintenance workflow is built — 12 steps covering the full lifecycle. Let me walk through each decision point with you.<br><br>
+    <strong>Starting with Triage:</strong> I see your policy says emergencies should be handled immediately. Should the agent auto-dispatch a vendor for emergencies without waiting for your review?`, `
+    <div class="quick-actions">
+      <button onclick="configTriage('auto')">Yes, auto-dispatch for emergencies</button>
+      <button onclick="configTriage('notify')">No, always notify me first</button>
+    </div>
+  `);
+}
+
+async function skipPolicies() {
+  addMessage('user', "Skip for now");
+  await sleep(600);
+  showTyping();
+  await sleep(1000);
+  hideTyping();
+  addMessage('ai', `No problem! I'll ask you the key questions instead. Let me start building your workflow and we'll configure as we go.<br><br>Watch the panel on the right →`);
+
+  addPhaseIndicator([1,2,3,4], 1, 'Phase 2: Building Workflow');
+
+  for (let i = 0; i < workflowData.length; i++) {
+    await sleep(600);
+    addWorkflowNode(i);
+  }
+
+  await sleep(800);
+
+  addMessage('ai', `Workflow structure is ready! Now let's configure the rules.<br><br>
+    <strong>First question:</strong> What's the owner approval threshold? Any estimate above this amount will require the property owner's approval before proceeding.`, `
+    <div class="quick-actions">
+      <button onclick="setThreshold('250')">$250</button>
+      <button onclick="setThreshold('500')">$500</button>
+      <button onclick="setThreshold('1000')">$1,000</button>
+      <button onclick="setThreshold('custom')">Custom amount</button>
+    </div>
+  `);
+}
+
+async function configTriage(choice) {
+  addMessage('user', choice === 'auto' ? "Yes, auto-dispatch for emergencies" : "No, always notify me first");
+  await sleep(800); showTyping(); await sleep(1000); hideTyping();
+
+  const nodes = document.querySelectorAll('.workflow-node');
+  if (nodes[1]) nodes[1].classList.add('active');
+
+  addMessage('ai', `Got it — emergency auto-dispatch is <strong>${choice === 'auto' ? 'ON' : 'OFF'}</strong>. I've updated the Triage node.<br><br>
+    <strong>Next: Vendor selection.</strong> How should the agent pick vendors?`, `
+    <div class="quick-actions">
+      <button onclick="configVendor('preferred')">Use my preferred vendor list</button>
+      <button onclick="configVendor('auto')">Auto-select by rating & proximity</button>
+      <button onclick="configVendor('both')">Preferred first, then auto-select</button>
+    </div>
+  `);
+}
+
+async function configVendor(choice) {
+  const labels = { preferred: 'Use my preferred vendor list', auto: 'Auto-select by rating & proximity', both: 'Preferred first, then auto-select' };
+  addMessage('user', labels[choice]);
+  await sleep(800); showTyping(); await sleep(1000); hideTyping();
+
+  const nodes = document.querySelectorAll('.workflow-node');
+  if (nodes[1]) nodes[1].classList.remove('active');
+  if (nodes[3]) nodes[3].classList.add('active');
+
+  addMessage('ai', `Vendor selection configured. Now let me run through the completion checklist.`);
+  await sleep(500);
+  addPhaseIndicator([1,2,3,4], 2, 'Phase 3: Validation');
+  await sleep(800);
+
+  addMessage('ai', `<strong>Configuration Checklist:</strong>
+    <div class="checklist">
+      <div class="checklist-item"><span class="check done">✓</span> Triage rules defined</div>
+      <div class="checklist-item"><span class="check done">✓</span> Vendor selection criteria set</div>
+      <div class="checklist-item"><span class="check done">✓</span> Owner approval threshold: $500</div>
+      <div class="checklist-item"><span class="check done">✓</span> Communication channels: SMS</div>
+      <div class="checklist-item"><span class="check done">✓</span> Emergency SLA: 2 hours</div>
+      <div class="checklist-item"><span class="check done">✓</span> Standard SLA: 72 hours</div>
+      <div class="checklist-item"><span class="check missing">!</span> <strong>What if vendor doesn't respond within 24hr?</strong></div>
+    </div><br>One thing missing: what should the agent do if a vendor doesn't respond within 24 hours?`, `
+    <div class="quick-actions">
+      <button onclick="configTimeout('next')">Try the next available vendor</button>
+      <button onclick="configTimeout('notify')">Notify me to handle it</button>
+      <button onclick="configTimeout('both')">Try next vendor + notify me</button>
+    </div>
+  `);
+}
+
+async function configTimeout(choice) {
+  const labels = { next: 'Try the next available vendor', notify: 'Notify me to handle it', both: 'Try next vendor + notify me' };
+  addMessage('user', labels[choice]);
+  await sleep(800); showTyping(); await sleep(1500); hideTyping();
+
+  document.querySelectorAll('.workflow-node').forEach(n => n.classList.remove('active'));
+
+  addMessage('ai', `All configured! Now let's run a simulation to see how your agent would handle a real request.`);
+  await sleep(500);
+  addPhaseIndicator([1,2,3,4], 3, 'Phase 4: Dry-Run Simulation');
+  await sleep(800);
+
+  addMessage('ai', `<strong>Simulating:</strong> "Tenant Sarah reports a leaky faucet under the kitchen sink at Unit 4B."
+    <div class="sim-timeline">
+      <div class="sim-step active"><span class="time">10:02 AM</span> Tenant submitted request (photo attached)</div>
+      <div class="sim-step active"><span class="time">10:02 AM</span> Agent triaged → <strong>Standard priority</strong> (plumbing)</div>
+      <div class="sim-step active"><span class="time">10:02 AM</span> Work order #4521 created → Category: Plumbing</div>
+      <div class="sim-step active"><span class="time">10:02 AM</span> SMS to tenant: "We've received your request"</div>
+      <div class="sim-step active"><span class="time">10:03 AM</span> Agent selected: <strong>Mike's Plumbing</strong> (preferred, 4.8★)</div>
+      <div class="sim-step active"><span class="time">10:03 AM</span> SMS to vendor: "New job — leaky faucet at Unit 4B"</div>
+      <div class="sim-step active"><span class="time">10:15 AM</span> Vendor replied: estimate <strong>$350</strong></div>
+      <div class="sim-step active"><span class="time">10:15 AM</span> $350 < $500 → <strong>No owner approval needed</strong></div>
+      <div class="sim-step active"><span class="time">10:16 AM</span> SMS to tenant: scheduling for tomorrow</div>
+      <div class="sim-step active"><span class="time">10:20 AM</span> Tenant confirmed: 1pm</div>
+      <div class="sim-step active"><span class="time">+1 day</span> Follow-up: "Has the leak been fixed?" → "Yes!"</div>
+      <div class="sim-step active"><span class="time">+1 day</span> Work order <strong>resolved</strong> ✓ · Invoice sent: $350</div>
+    </div><br>
+    <strong>Everything looks good!</strong> Ready to activate?`, `
+    <div class="quick-actions">
+      <button onclick="activateFromChat()">✓ Activate agent</button>
+      <button onclick="addMessage('ai', 'Sure! Click any node in the workflow panel to adjust. When ready, click Activate.')">Let me tweak first</button>
+    </div>
+  `);
+
+  document.getElementById('activateBtn').style.display = '';
+}
+
+async function activateFromChat() {
+  addMessage('user', "Activate the agent");
+  await sleep(600); showTyping(); await sleep(1000); hideTyping();
+
+  addMessage('ai', `<strong>Your Maintenance Agent is now active!</strong><br><br>
+    It's monitoring incoming maintenance requests across all your properties. I'll handle everything according to your rules.<br><br>
+    If I hit something I don't know, I'll ask you right here. You can also come back anytime to adjust.`, `
+    <div class="quick-actions" style="margin-top:12px;">
+      <button onclick="window.location.href='communication-center.html'" style="background:#4C6FFF;color:white;border-color:#4C6FFF;">Open Communication Center →</button>
+    </div>
+  `);
+  demoPhase = 'done';
+}
+
+function activateAgent() { activateFromChat(); }
+
+async function setThreshold(val) {
+  addMessage('user', val === 'custom' ? '$750' : `$${val}`);
+  await sleep(800); showTyping(); await sleep(1000); hideTyping();
+
+  addMessage('ai', `Owner approval threshold set to <strong>${val === 'custom' ? '$750' : '$' + val}</strong>.<br><br>
+    <strong>Next: Emergency handling.</strong> Should the agent auto-dispatch a vendor for emergencies (flooding, gas leaks, fire) without waiting for your review?`, `
+    <div class="quick-actions">
+      <button onclick="configTriage('auto')">Yes, auto-dispatch for emergencies</button>
+      <button onclick="configTriage('notify')">No, always notify me first</button>
+    </div>
+  `);
+}
+
+function toggleDrawer() {
+  document.getElementById('workflowDrawer').classList.toggle('collapsed');
+}
+
+function handleUserInput() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  addMessage('user', text);
+  input.value = '';
+
+  setTimeout(async () => {
+    showTyping(); await sleep(1000); hideTyping();
+    if (demoPhase === 'done') {
+      addMessage('ai', `Your agent is active. You can ask me things like:<br>
+        • "What's happening with the leak at Unit 4B?"<br>
+        • "Change the approval threshold to $750"<br>
+        • "Show me this week's maintenance summary"`);
+    } else {
+      addMessage('ai', `Got it. For the best demo experience, try the buttons above to walk through the guided setup!`);
+    }
+  }, 200);
+}
+</script>
+
+<script src="cori.js"></script>
+</body>
+</html>
