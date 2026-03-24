@@ -280,6 +280,29 @@
   .team-member-name { font-weight: 500; color: #1a2b4a; display: flex; align-items: center; gap: 8px; }
   .team-avatar { width: 24px; height: 24px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; color: #475569; flex-shrink: 0; }
 
+  /* Conversation drawer */
+  .conv-drawer-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); z-index: 500; }
+  .conv-drawer-overlay.open { display: block; }
+  .conv-drawer { position: fixed; top: 0; right: -440px; width: 440px; height: 100vh; background: white; box-shadow: -4px 0 20px rgba(0,0,0,0.15); z-index: 501; transition: right 0.3s ease; display: flex; flex-direction: column; }
+  .conv-drawer.open { right: 0; }
+  .conv-drawer-header { padding: 16px 20px; border-bottom: 1px solid #e8ecf1; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+  .conv-drawer-header .cd-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: white; flex-shrink: 0; }
+  .conv-drawer-header .cd-info { flex: 1; }
+  .conv-drawer-header .cd-name { font-size: 14px; font-weight: 600; color: #1a2b4a; }
+  .conv-drawer-header .cd-detail { font-size: 11px; color: #6b7a99; }
+  .conv-drawer-header .cd-close { width: 28px; height: 28px; border-radius: 6px; border: 1px solid #e8ecf1; background: white; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; color: #94a3b8; }
+  .conv-drawer-header .cd-close:hover { background: #f5f7fb; color: #1a2b4a; }
+  .conv-drawer-messages { flex: 1; overflow-y: auto; padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
+  .cd-msg { max-width: 85%; padding: 10px 14px; border-radius: 12px; font-size: 12px; line-height: 1.5; }
+  .cd-msg.inbound { background: #f1f5f9; color: #1a2b4a; align-self: flex-start; border-bottom-left-radius: 4px; }
+  .cd-msg.outbound { background: #3b82f6; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+  .cd-msg.agent { background: #eff6ff; color: #1a2b4a; align-self: flex-end; border-bottom-right-radius: 4px; border: 1px solid #bfdbfe; }
+  .cd-msg .msg-label { font-size: 10px; font-weight: 600; margin-bottom: 4px; opacity: 0.7; }
+  .cd-msg .msg-time { font-size: 9px; opacity: 0.5; margin-top: 4px; }
+  .conv-drawer-footer { padding: 12px 20px; border-top: 1px solid #e8ecf1; display: flex; gap: 8px; flex-shrink: 0; }
+  .conv-drawer-footer input { flex: 1; padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 12px; font-family: inherit; outline: none; }
+  .conv-drawer-footer button { padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
+
   /* ============================ */
   /* TAB 4: AUDIT LOG             */
   /* ============================ */
@@ -800,7 +823,7 @@
               <span>3</span>
             </div>
             <div class="kanban-col-body">
-              <div class="conv-card" onclick="showToast('Opening conversation')">
+              <div class="conv-card" onclick="openDrawer('maria')">
                 <div class="cc-top">
                   <span class="cc-tenant">Maria Lopez</span>
                   <span class="cc-property">Evergreen 3A</span>
@@ -809,7 +832,7 @@
                 <div class="cc-preview">No hot water since 6 AM. Water heater diagnosed as failed. Waiting on owner approval for $2,800 replacement quote.</div>
                 <div class="cc-footer"><span>2 min ago</span><span>Sarah J.</span></div>
               </div>
-              <div class="conv-card" onclick="showToast('Opening conversation')">
+              <div class="conv-card" onclick="openDrawer('james')">
                 <div class="cc-top">
                   <span class="cc-tenant">James Wilson</span>
                   <span class="cc-property">Pine St 7B</span>
@@ -818,7 +841,7 @@
                 <div class="cc-preview">Rent $1,450 is 5 days past due. 2 reminder texts sent with no reply. 3rd late payment in 6 months.</div>
                 <div class="cc-footer"><span>34 min ago</span><span>Sarah J.</span></div>
               </div>
-              <div class="conv-card" onclick="showToast('Opening conversation')">
+              <div class="conv-card" onclick="openDrawer('patricia')">
                 <div class="cc-top">
                   <span class="cc-tenant">Patricia Moore</span>
                   <span class="cc-property">Oak Tower 14C</span>
@@ -837,7 +860,7 @@
               <span>12</span>
             </div>
             <div class="kanban-col-body">
-              <div class="conv-card" onclick="showToast('Opening conversation')">
+              <div class="conv-card" onclick="openDrawer('defaultConv')">
                 <div class="cc-top">
                   <span class="cc-tenant">Robert Chen</span>
                   <span class="cc-property">Cedar Hts 8A</span>
@@ -846,7 +869,7 @@
                 <div class="cc-preview">Applicant screening in progress. Background check returned, waiting on employment verification.</div>
                 <div class="cc-footer"><span>42 min ago</span><span>Lisa T.</span></div>
               </div>
-              <div class="conv-card" onclick="showToast('Opening conversation')">
+              <div class="conv-card" onclick="openDrawer('defaultConv')">
                 <div class="cc-top">
                   <span class="cc-tenant">Angela Davis</span>
                   <span class="cc-property">Maple Gdn 18</span>
@@ -855,7 +878,7 @@
                 <div class="cc-preview">Renewal offer sent with 4% increase. Tenant reviewing terms. Follow-up scheduled for tomorrow.</div>
                 <div class="cc-footer"><span>1 hr ago</span><span>Sarah J.</span></div>
               </div>
-              <div class="conv-card" onclick="showToast('Opening conversation')">
+              <div class="conv-card" onclick="openDrawer('defaultConv')">
                 <div class="cc-top">
                   <span class="cc-tenant">Kevin Park</span>
                   <span class="cc-property">Elm Park 2D</span>
@@ -864,7 +887,7 @@
                 <div class="cc-preview">Tenant requesting 6% cap on increase. Negotiation in progress, counter-offer being prepared.</div>
                 <div class="cc-footer"><span>1.5 hr ago</span><span>Sarah J.</span></div>
               </div>
-              <div class="conv-card" onclick="showToast('Opening conversation')">
+              <div class="conv-card" onclick="openDrawer('defaultConv')">
                 <div class="cc-top">
                   <span class="cc-tenant">Diana Ross</span>
                   <span class="cc-property">Harbor View 11A</span>
@@ -883,7 +906,7 @@
               <span>28</span>
             </div>
             <div class="kanban-col-body">
-              <div class="conv-card" onclick="showToast('Opening conversation')">
+              <div class="conv-card" onclick="openDrawer('defaultConv')">
                 <div class="cc-top">
                   <span class="cc-tenant">Tom Baker</span>
                   <span class="cc-property">Ash Grove 12B</span>
@@ -892,7 +915,7 @@
                 <div class="cc-preview">Garbage disposal replaced. Tenant confirmed working. Cost: $180, auto-approved.</div>
                 <div class="cc-footer"><span>45 min ago</span><span>Auto</span></div>
               </div>
-              <div class="conv-card" onclick="showToast('Opening conversation')">
+              <div class="conv-card" onclick="openDrawer('defaultConv')">
                 <div class="cc-top">
                   <span class="cc-tenant">Sarah Kim</span>
                   <span class="cc-property">Magnolia 4A</span>
@@ -901,7 +924,7 @@
                 <div class="cc-preview">Late payment received via ACH. $35 late fee applied per lease terms. Balance cleared.</div>
                 <div class="cc-footer"><span>1 hr ago</span><span>Auto</span></div>
               </div>
-              <div class="conv-card" onclick="showToast('Opening conversation')">
+              <div class="conv-card" onclick="openDrawer('defaultConv')">
                 <div class="cc-top">
                   <span class="cc-tenant">Mark Johnson</span>
                   <span class="cc-property">Evergreen 7D</span>
@@ -1395,7 +1418,70 @@ function selectType(card) {
   document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
   card.classList.add('selected');
 }
+
+// Conversation drawer
+var convData = {
+  maria: { name: 'Maria Lopez', initials: 'ML', color: '#ef4444', detail: 'Evergreen 3A \u00b7 Maintenance', messages: [
+    { type: 'inbound', label: 'Maria Lopez', text: 'Hi, I have no hot water since this morning. The water heater seems to be making weird noises.', time: '6:14 AM' },
+    { type: 'agent', label: '\ud83e\udd16 Maintenance Agent', text: 'Thank you for reporting this, Maria. I\'m looking into it right now. Can you confirm \u2014 is there any water leaking from the heater?', time: '6:15 AM' },
+    { type: 'inbound', label: 'Maria', text: 'No leaking but there\'s no hot water at all', time: '6:18 AM' },
+    { type: 'agent', label: '\ud83e\udd16 Maintenance Agent', text: 'I\'ve classified this as urgent. Your water heater was installed in 2014 and may need replacement. I\'m contacting ABC Plumbing now for availability and a quote.', time: '6:20 AM' },
+    { type: 'agent', label: '\ud83e\udd16 Maintenance Agent', text: 'ABC Plumbing can come today 2\u20134 PM. Quote: $2,800 for full replacement. Since this exceeds the $500 approval threshold, I\'m requesting owner approval now.', time: '7:45 AM' },
+    { type: 'outbound', label: 'Sarah Johnson (PM)', text: 'Maria, we\'re working on getting this approved. Will update you shortly.', time: '8:01 AM' },
+  ]},
+  james: { name: 'James Wilson', initials: 'JW', color: '#f59e0b', detail: 'Pine St 7B \u00b7 Rent Collection', messages: [
+    { type: 'agent', label: '\ud83e\udd16 Collection Agent', text: 'Hi James, this is a reminder that your rent of $1,450 for February is past due. Please make your payment at your earliest convenience.', time: 'Feb 3, 9:00 AM' },
+    { type: 'agent', label: '\ud83e\udd16 Collection Agent', text: 'Hi James, your rent payment of $1,450 is now 3 days past due. A late fee will be applied after 5 days. Please pay online or contact us.', time: 'Feb 5, 8:00 AM' },
+    { type: 'agent', label: '\ud83e\udd16 Collection Agent', text: 'James, your rent is now 5 days past due. This is your 3rd late payment in 6 months. I\'m escalating this to your property manager for next steps.', time: 'Today, 8:00 AM' },
+  ]},
+  patricia: { name: 'Patricia Moore', initials: 'PM', color: '#8b5cf6', detail: 'Oak Tower 14C \u00b7 Maintenance', messages: [
+    { type: 'inbound', label: 'Patricia Moore', text: 'There\'s black mold growing around my bathroom vent. It looks like it\'s been spreading. Should I be worried?', time: '7:30 AM' },
+    { type: 'agent', label: '\ud83e\udd16 Maintenance Agent', text: 'Thank you for reporting this, Patricia. Mold around ventilation can be a health concern. I\'m flagging this as urgent and escalating to your PM \u2014 mold remediation requires licensed contractors per Florida statute 468.84.', time: '7:31 AM' },
+    { type: 'agent', label: '\ud83e\udd16 Maintenance Agent', text: 'In the meantime, please keep the bathroom well-ventilated. Avoid using bleach-based cleaners on the affected area. A specialist will assess the situation.', time: '7:32 AM' },
+  ]},
+  defaultConv: { name: 'Conversation', initials: '?', color: '#6b7a99', detail: 'Details', messages: [
+    { type: 'agent', label: '\ud83e\udd16 Agent', text: 'This conversation is being handled by the AI agent. Click on a specific card to see the full thread.', time: 'Now' },
+  ]}
+};
+
+function openDrawer(convId) {
+  var data = convData[convId] || convData.defaultConv;
+  document.getElementById('cdName').textContent = data.name;
+  document.getElementById('cdDetail').innerHTML = data.detail;
+  document.getElementById('cdAvatar').textContent = data.initials;
+  document.getElementById('cdAvatar').style.background = data.color;
+  var msgHtml = '';
+  data.messages.forEach(function(m) {
+    msgHtml += '<div class="cd-msg ' + m.type + '"><div class="msg-label">' + m.label + '</div>' + m.text + '<div class="msg-time">' + m.time + '</div></div>';
+  });
+  document.getElementById('cdMessages').innerHTML = msgHtml;
+  document.getElementById('drawerOverlay').classList.add('open');
+  document.getElementById('convDrawer').classList.add('open');
+}
+
+function closeDrawer() {
+  document.getElementById('drawerOverlay').classList.remove('open');
+  document.getElementById('convDrawer').classList.remove('open');
+}
 </script>
+<!-- Conversation Drawer -->
+<div class="conv-drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="conv-drawer" id="convDrawer">
+  <div class="conv-drawer-header">
+    <div class="cd-avatar" id="cdAvatar" style="background:#3b82f6;">ML</div>
+    <div class="cd-info">
+      <div class="cd-name" id="cdName">Maria Lopez</div>
+      <div class="cd-detail" id="cdDetail">Evergreen 3A &middot; Maintenance</div>
+    </div>
+    <div class="cd-close" onclick="closeDrawer()">&times;</div>
+  </div>
+  <div class="conv-drawer-messages" id="cdMessages"></div>
+  <div class="conv-drawer-footer">
+    <input type="text" placeholder="Type a message...">
+    <button onclick="showToast('Message sent')">Send</button>
+  </div>
+</div>
+
 <script src="cori.js"></script>
 </body>
 </html>
