@@ -125,6 +125,57 @@
   .setup-stat { font-size: 12px; color: #6b7a99; flex: 1; }
   .setup-stat strong { color: #3b82f6; }
 
+  /* Wizard stepper */
+  .wizard-stepper { display: flex; align-items: center; justify-content: center; padding: 24px 0 32px; }
+  .wizard-step { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+  .wizard-step .step-circle { width: 36px; height: 36px; border-radius: 50%; border: 2px solid #334155; background: #1e293b; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: #64748b; transition: all 0.3s; z-index: 1; }
+  .wizard-step.active .step-circle { border-color: #3b82f6; color: #3b82f6; box-shadow: 0 0 0 4px rgba(59,130,246,0.15); background: #0f1729; }
+  .wizard-step.completed .step-circle { border-color: #3b82f6; background: #3b82f6; color: white; }
+  .wizard-step .step-label { font-size: 10px; font-weight: 500; color: #64748b; margin-top: 8px; white-space: nowrap; }
+  .wizard-step.active .step-label { color: #3b82f6; font-weight: 600; }
+  .wizard-step.completed .step-label { color: #3b82f6; }
+  .wizard-line { width: 80px; height: 2px; background: #334155; margin: 0 -4px; margin-bottom: 20px; }
+  .wizard-line.completed { background: #3b82f6; }
+  .wizard-panel { display: none; max-width: 720px; margin: 0 auto; }
+  .wizard-panel.active { display: block; }
+  .wizard-heading { font-size: 18px; font-weight: 700; color: #1a2b4a; margin-bottom: 20px; }
+  .wizard-nav { display: flex; justify-content: flex-end; gap: 12px; margin-top: 32px; padding-top: 20px; border-top: 1px solid #e8ecf1; }
+  .type-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .type-card { padding: 20px; border: 2px solid #e8ecf1; border-radius: 10px; cursor: pointer; transition: all 0.2s; display: flex; align-items: flex-start; gap: 12px; }
+  .type-card:hover { border-color: #93c5fd; background: #f0f5ff; }
+  .type-card.selected { border-color: #3b82f6; background: #eff6ff; box-shadow: 0 0 0 1px #3b82f6; }
+  .type-card .tc-check { width: 20px; height: 20px; border: 2px solid #cbd5e1; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; margin-top: 2px; }
+  .type-card.selected .tc-check { border-color: #3b82f6; background: #3b82f6; }
+  .type-card .tc-check::after { content: '\2713'; color: white; font-size: 11px; font-weight: 700; display: none; }
+  .type-card.selected .tc-check::after { display: block; }
+  .type-card .tc-icon { font-size: 28px; }
+  .type-card .tc-name { font-size: 14px; font-weight: 600; color: #1a2b4a; }
+  .type-card .tc-desc { font-size: 12px; color: #6b7a99; margin-top: 2px; }
+  .assign-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .assign-section { background: #fafbfd; border: 1px solid #e8ecf1; border-radius: 10px; padding: 20px; }
+  .assign-section h3 { font-size: 13px; font-weight: 600; color: #1a2b4a; margin-bottom: 14px; }
+  .assign-row { margin-bottom: 14px; }
+  .assign-row label { display: block; font-size: 11px; font-weight: 600; color: #6b7a99; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #475569; margin-bottom: 6px; }
+  .checkbox-row input { accent-color: #3b82f6; }
+  .select-links { display: flex; gap: 12px; margin-bottom: 10px; }
+  .select-links a { font-size: 11px; color: #3b82f6; text-decoration: none; font-weight: 500; cursor: pointer; }
+  .prop-count { font-size: 12px; color: #6b7a99; margin-top: 10px; }
+  .prop-count strong { color: #3b82f6; }
+  .review-card { background: #fafbfd; border: 1px solid #e8ecf1; border-radius: 10px; padding: 24px; margin-bottom: 20px; }
+  .review-row { display: flex; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
+  .review-row:last-child { border: none; }
+  .review-label { width: 160px; font-size: 12px; font-weight: 600; color: #6b7a99; flex-shrink: 0; }
+  .review-value { font-size: 12px; color: #1a2b4a; }
+  .workflow-preview { background: white; border: 1px solid #e8ecf1; border-radius: 10px; padding: 20px; }
+  .workflow-preview h3 { font-size: 13px; font-weight: 600; color: #1a2b4a; margin-bottom: 16px; }
+  .wf-step { display: flex; align-items: center; gap: 10px; padding: 8px 0; position: relative; }
+  .wf-step::before { content: ''; position: absolute; left: 11px; top: 28px; width: 2px; height: calc(100% - 8px); background: #e2e8f0; }
+  .wf-step:last-child::before { display: none; }
+  .wf-dot { width: 24px; height: 24px; border-radius: 50%; background: #eff6ff; border: 2px solid #3b82f6; display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; z-index: 1; }
+  .wf-step-name { font-size: 12px; font-weight: 500; color: #1a2b4a; }
+  .wf-step-type { font-size: 10px; color: #6b7a99; }
+
   /* ============================ */
   /* TAB 2: COMMAND CENTER        */
   /* ============================ */
@@ -325,7 +376,7 @@
     <div class="tab-bar">
       <div class="tab active" data-tab="setup" onclick="switchTab('setup')">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        Agent Setup
+        Agent Wizard
       </div>
       <div class="tab" data-tab="command" onclick="switchTab('command')">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
@@ -348,149 +399,111 @@
     <!-- =============================== -->
     <div class="tab-panel active" id="panel-setup">
       <div class="panel-content">
-        <div class="setup-layout">
-          <!-- Left: Document Upload -->
-          <div class="setup-section">
-            <div class="setup-section-header">
-              <div class="section-icon">&#128196;</div>
-              Policy Documents
-            </div>
-            <div class="setup-section-body">
-              <div class="drop-zone" id="dropZone">
-                <div class="dz-icon">&#128451;</div>
-                <div class="dz-title">Drop your policy documents here or browse</div>
-                <div class="dz-sub">We'll auto-extract rules, SLAs, and vendor preferences</div>
-                <div class="dz-formats">
-                  <span class="dz-format">PDF</span>
-                  <span class="dz-format">DOCX</span>
-                  <span class="dz-format">TXT</span>
-                  <span class="dz-format">CSV</span>
-                </div>
-              </div>
-
-              <div class="templates-label">Or start from a template</div>
-              <div class="template-grid">
-                <div class="template-card selected" onclick="selectTemplate(this)">
-                  <div class="tc-icon maint">&#128295;</div>
-                  <div><div class="tc-name">Maintenance</div><div class="tc-desc">Work orders, vendors, SLAs</div></div>
-                </div>
-                <div class="template-card" onclick="selectTemplate(this)">
-                  <div class="tc-icon renewal">&#128196;</div>
-                  <div><div class="tc-name">Renewal</div><div class="tc-desc">Lease renewals, pricing</div></div>
-                </div>
-                <div class="template-card" onclick="selectTemplate(this)">
-                  <div class="tc-icon delinq">&#128176;</div>
-                  <div><div class="tc-name">Delinquency</div><div class="tc-desc">Collections, notices</div></div>
-                </div>
-                <div class="template-card" onclick="selectTemplate(this)">
-                  <div class="tc-icon leasing">&#128273;</div>
-                  <div><div class="tc-name">Leasing</div><div class="tc-desc">Showings, screening</div></div>
-                </div>
-                <div class="template-card" onclick="selectTemplate(this)">
-                  <div class="tc-icon inspect">&#128269;</div>
-                  <div><div class="tc-name">Inspections</div><div class="tc-desc">Move-in/out, annual</div></div>
-                </div>
-                <div class="template-card" onclick="selectTemplate(this)">
-                  <div class="tc-icon report">&#128202;</div>
-                  <div><div class="tc-name">Owner Reporting</div><div class="tc-desc">Statements, distributions</div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Right: Configuration Panel -->
-          <div class="setup-section">
-            <div class="setup-section-header">
-              <div class="section-icon">&#9881;</div>
-              Configuration Panel
-            </div>
-            <div class="setup-section-body">
-              <!-- Emergency Types -->
-              <div class="config-section">
-                <div class="config-label">Emergency Types</div>
-                <div class="tag-list">
-                  <span class="tag">Water Leak <span class="tag-remove" onclick="this.parentElement.remove()">&times;</span></span>
-                  <span class="tag">Fire/Smoke <span class="tag-remove" onclick="this.parentElement.remove()">&times;</span></span>
-                  <span class="tag">Gas Leak <span class="tag-remove" onclick="this.parentElement.remove()">&times;</span></span>
-                  <span class="tag">No Heat (Winter) <span class="tag-remove" onclick="this.parentElement.remove()">&times;</span></span>
-                  <span class="tag">Electrical Hazard <span class="tag-remove" onclick="this.parentElement.remove()">&times;</span></span>
-                  <span class="tag">Sewage Backup <span class="tag-remove" onclick="this.parentElement.remove()">&times;</span></span>
-                </div>
-              </div>
-
-              <!-- SLA Targets -->
-              <div class="config-section">
-                <div class="config-label">SLA Targets</div>
-                <table class="sla-table">
-                  <thead><tr><th>Priority</th><th>Response</th><th>Resolution</th></tr></thead>
-                  <tbody>
-                    <tr><td class="sla-label"><span class="sla-dot red"></span>Emergency</td><td><input type="text" value="30 min"></td><td><input type="text" value="2 hr"></td></tr>
-                    <tr><td class="sla-label"><span class="sla-dot yellow"></span>Urgent</td><td><input type="text" value="2 hr"></td><td><input type="text" value="24 hr"></td></tr>
-                    <tr><td class="sla-label"><span class="sla-dot blue"></span>Standard</td><td><input type="text" value="4 hr"></td><td><input type="text" value="72 hr"></td></tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <!-- Approval Threshold -->
-              <div class="config-section">
-                <div class="config-label">Approval Threshold</div>
-                <div class="threshold-row">
-                  <span style="font-size:12px;color:#1a2b4a;font-weight:500;">$</span>
-                  <input type="number" class="threshold-input" value="500">
-                  <span class="threshold-hint">Auto-approve below this amount</span>
-                </div>
-              </div>
-
-              <!-- Vendor Preferences -->
-              <div class="config-section">
-                <div class="config-label">Vendor Preferences (drag to reorder)</div>
-                <ul class="vendor-list">
-                  <li><span class="drag-handle">&#9776;</span><span class="vendor-name">ABC Plumbing</span><span class="vendor-rating">&#9733; 4.8</span></li>
-                  <li><span class="drag-handle">&#9776;</span><span class="vendor-name">FastFix Electric</span><span class="vendor-rating">&#9733; 4.7</span></li>
-                  <li><span class="drag-handle">&#9776;</span><span class="vendor-name">ProHVAC Services</span><span class="vendor-rating">&#9733; 4.6</span></li>
-                  <li><span class="drag-handle">&#9776;</span><span class="vendor-name">CleanPro Janitorial</span><span class="vendor-rating">&#9733; 4.5</span></li>
-                </ul>
-              </div>
-
-              <!-- Team Assignment -->
-              <div class="config-section">
-                <div class="config-label">Team Assignment</div>
-                <select class="config-select">
-                  <option>Maintenance Team</option>
-                  <option>Leasing Team</option>
-                  <option>Collections Team</option>
-                  <option>Operations Team</option>
-                  <option>All Teams</option>
-                </select>
-              </div>
-
-              <!-- Active Properties -->
-              <div class="config-section">
-                <div class="config-label">Active Properties</div>
-                <div class="property-tags">
-                  <span class="property-tag selected" onclick="this.classList.toggle('selected')">Evergreen Complex (142 units)</span>
-                  <span class="property-tag selected" onclick="this.classList.toggle('selected')">Pine Street Apts (88 units)</span>
-                  <span class="property-tag selected" onclick="this.classList.toggle('selected')">Oak Avenue Tower (210 units)</span>
-                  <span class="property-tag selected" onclick="this.classList.toggle('selected')">Maple Gardens (64 units)</span>
-                  <span class="property-tag" onclick="this.classList.toggle('selected')">Willow Creek (156 units)</span>
-                  <span class="property-tag selected" onclick="this.classList.toggle('selected')">Cedar Heights (187 units)</span>
-                  <span class="property-tag" onclick="this.classList.toggle('selected')">Birch Landing (72 units)</span>
-                  <span class="property-tag selected" onclick="this.classList.toggle('selected')">Elm Park Estates (96 units)</span>
-                  <span class="property-tag" onclick="this.classList.toggle('selected')">Spruce Point (48 units)</span>
-                  <span class="property-tag selected" onclick="this.classList.toggle('selected')">Ash Grove (90 units)</span>
-                  <span class="property-tag selected" onclick="this.classList.toggle('selected')">Magnolia Place (122 units)</span>
-                  <span class="property-tag selected" onclick="this.classList.toggle('selected')">Harbor View (98 units)</span>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div class="wizard-stepper">
+          <div class="wizard-step active" onclick="goToStep(1)"><div class="step-circle">1</div><div class="step-label">Select Type</div></div>
+          <div class="wizard-line"></div>
+          <div class="wizard-step" onclick="goToStep(2)"><div class="step-circle">2</div><div class="step-label">Upload Policies</div></div>
+          <div class="wizard-line"></div>
+          <div class="wizard-step" onclick="goToStep(3)"><div class="step-circle">3</div><div class="step-label">Configure Rules</div></div>
+          <div class="wizard-line"></div>
+          <div class="wizard-step" onclick="goToStep(4)"><div class="step-circle">4</div><div class="step-label">Assign Team</div></div>
+          <div class="wizard-line"></div>
+          <div class="wizard-step" onclick="goToStep(5)"><div class="step-circle">5</div><div class="step-label">Review &amp; Launch</div></div>
         </div>
 
-        <!-- Bottom: Actions -->
-        <div class="setup-footer">
-          <div class="setup-stat">This agent will manage approximately <strong>847 active units</strong> across <strong>12 properties</strong></div>
-          <button class="btn btn-secondary" onclick="showToast('Preview generated')">Preview Workflow</button>
-          <button class="btn btn-primary" onclick="showToast('Agent created successfully')">Create Agent</button>
+        <div class="wizard-panel active" id="wiz-step-1">
+          <div class="wizard-heading">What type of agent do you want to create?</div>
+          <div class="type-grid">
+            <div class="type-card selected" onclick="selectType(this)"><div class="tc-check"></div><div><div class="tc-icon">&#128295;</div><div class="tc-name">Maintenance</div><div class="tc-desc">Work orders, vendor dispatch, SLA tracking</div></div></div>
+            <div class="type-card" onclick="selectType(this)"><div class="tc-check"></div><div><div class="tc-icon">&#128196;</div><div class="tc-name">Renewal</div><div class="tc-desc">Lease renewals, pricing analysis</div></div></div>
+            <div class="type-card" onclick="selectType(this)"><div class="tc-check"></div><div><div class="tc-icon">&#128176;</div><div class="tc-name">Delinquency</div><div class="tc-desc">Collections, payment plans, notices</div></div></div>
+            <div class="type-card" onclick="selectType(this)"><div class="tc-check"></div><div><div class="tc-icon">&#128273;</div><div class="tc-name">Leasing</div><div class="tc-desc">Showings, screening, applications</div></div></div>
+            <div class="type-card" onclick="selectType(this)"><div class="tc-check"></div><div><div class="tc-icon">&#128230;</div><div class="tc-name">Move-in/out</div><div class="tc-desc">Inspections, deposits, turnover</div></div></div>
+            <div class="type-card" onclick="selectType(this)"><div class="tc-check"></div><div><div class="tc-icon">&#128202;</div><div class="tc-name">Owner Reporting</div><div class="tc-desc">Statements, distributions</div></div></div>
+          </div>
+          <div class="wizard-nav"><button class="btn btn-primary" onclick="nextStep()">Next &rarr;</button></div>
+        </div>
+
+        <div class="wizard-panel" id="wiz-step-2">
+          <div class="wizard-heading">Upload your maintenance policies</div>
+          <div class="drop-zone" id="dropZone" style="max-width:600px;margin:0 auto 24px;">
+            <div class="dz-icon">&#128451;</div>
+            <div class="dz-title">Drop your policy documents here or browse</div>
+            <div class="dz-sub">We'll auto-extract rules, SLAs, and vendor preferences</div>
+            <div class="dz-formats"><span class="dz-format">PDF</span><span class="dz-format">DOCX</span><span class="dz-format">TXT</span><span class="dz-format">CSV</span></div>
+          </div>
+          <div style="text-align:center;margin-bottom:12px;font-size:12px;color:#6b7a99;">Or start from our best-practice template</div>
+          <div style="text-align:center;"><button class="btn btn-secondary" onclick="showToast('Default template loaded')">Use Default Template</button></div>
+          <div style="text-align:center;margin-top:10px;font-size:11px;color:#94a3b8;">You can always edit rules in the next step</div>
+          <div class="wizard-nav"><button class="btn btn-secondary" onclick="prevStep()">&larr; Back</button><button class="btn btn-primary" onclick="nextStep()">Next &rarr;</button></div>
+        </div>
+
+        <div class="wizard-panel" id="wiz-step-3">
+          <div class="wizard-heading">Configure agent rules</div>
+          <div style="background:#fafbfd;border:1px solid #e8ecf1;border-radius:10px;padding:20px;margin-bottom:16px;">
+            <div class="config-label">Emergency Types</div>
+            <div class="tag-list"><span class="tag">Water Leak <span class="tag-remove" onclick="this.parentElement.remove()">&times;</span></span><span class="tag">Fire/Smoke <span class="tag-remove" onclick="this.parentElement.remove()">&times;</span></span><span class="tag">Gas Leak <span class="tag-remove" onclick="this.parentElement.remove()">&times;</span></span><span class="tag">No Heat <span class="tag-remove" onclick="this.parentElement.remove()">&times;</span></span><span class="tag">Electrical <span class="tag-remove" onclick="this.parentElement.remove()">&times;</span></span><span class="tag">Sewage <span class="tag-remove" onclick="this.parentElement.remove()">&times;</span></span></div>
+          </div>
+          <div style="background:#fafbfd;border:1px solid #e8ecf1;border-radius:10px;padding:20px;margin-bottom:16px;">
+            <div class="config-label">SLA Targets</div>
+            <table class="sla-table"><thead><tr><th>Priority</th><th>Response</th><th>Resolution</th></tr></thead><tbody><tr><td class="sla-label"><span class="sla-dot red"></span>Emergency</td><td><input type="text" value="30 min"></td><td><input type="text" value="2 hr"></td></tr><tr><td class="sla-label"><span class="sla-dot yellow"></span>Urgent</td><td><input type="text" value="2 hr"></td><td><input type="text" value="24 hr"></td></tr><tr><td class="sla-label"><span class="sla-dot blue"></span>Standard</td><td><input type="text" value="4 hr"></td><td><input type="text" value="72 hr"></td></tr></tbody></table>
+          </div>
+          <div style="background:#fafbfd;border:1px solid #e8ecf1;border-radius:10px;padding:20px;margin-bottom:16px;">
+            <div class="config-label">Approval Threshold</div>
+            <div class="threshold-row"><span style="font-size:12px;color:#1a2b4a;font-weight:500;">$</span><input type="number" class="threshold-input" value="500"><span class="threshold-hint">Auto-approve below this amount</span></div>
+          </div>
+          <div style="background:#fafbfd;border:1px solid #e8ecf1;border-radius:10px;padding:20px;">
+            <div class="config-label">Vendor Preferences</div>
+            <ul class="vendor-list"><li><span class="drag-handle">&#9776;</span><span class="vendor-name">ABC Plumbing</span><span class="vendor-rating">&#9733; 4.8</span></li><li><span class="drag-handle">&#9776;</span><span class="vendor-name">FastFix Electric</span><span class="vendor-rating">&#9733; 4.7</span></li><li><span class="drag-handle">&#9776;</span><span class="vendor-name">ProHVAC Services</span><span class="vendor-rating">&#9733; 4.6</span></li><li><span class="drag-handle">&#9776;</span><span class="vendor-name">CleanPro Janitorial</span><span class="vendor-rating">&#9733; 4.5</span></li></ul>
+          </div>
+          <div class="wizard-nav"><button class="btn btn-secondary" onclick="prevStep()">&larr; Back</button><button class="btn btn-primary" onclick="nextStep()">Next &rarr;</button></div>
+        </div>
+
+        <div class="wizard-panel" id="wiz-step-4">
+          <div class="wizard-heading">Assign team and properties</div>
+          <div class="assign-layout">
+            <div class="assign-section">
+              <h3>Team Assignment</h3>
+              <div class="assign-row"><label>Primary Team</label><select class="config-select"><option>Maintenance Team</option><option>Leasing Team</option><option>Collections Team</option><option>Operations Team</option></select></div>
+              <div class="assign-row"><label>Escalation Contact</label><select class="config-select"><option>Sarah Johnson (PM)</option><option>Mike Chen (Supervisor)</option><option>Lisa Park (Regional)</option></select></div>
+              <div class="assign-row"><label>Notifications</label><div class="checkbox-row"><input type="checkbox" checked> Email alerts</div><div class="checkbox-row"><input type="checkbox" checked> SMS alerts</div><div class="checkbox-row"><input type="checkbox" checked> In-app notifications</div></div>
+            </div>
+            <div class="assign-section">
+              <h3>Select Properties</h3>
+              <div class="select-links"><a onclick="document.querySelectorAll('.wiz-prop').forEach(p=>p.classList.add('selected'))">Select all</a><a onclick="document.querySelectorAll('.wiz-prop').forEach(p=>p.classList.remove('selected'))">Deselect all</a></div>
+              <div class="property-tags"><span class="property-tag wiz-prop selected" onclick="this.classList.toggle('selected')">Evergreen (142)</span><span class="property-tag wiz-prop selected" onclick="this.classList.toggle('selected')">Pine Street (88)</span><span class="property-tag wiz-prop selected" onclick="this.classList.toggle('selected')">Oak Tower (210)</span><span class="property-tag wiz-prop selected" onclick="this.classList.toggle('selected')">Maple Gardens (64)</span><span class="property-tag wiz-prop" onclick="this.classList.toggle('selected')">Willow Creek (156)</span><span class="property-tag wiz-prop selected" onclick="this.classList.toggle('selected')">Cedar Heights (187)</span><span class="property-tag wiz-prop" onclick="this.classList.toggle('selected')">Birch Landing (72)</span><span class="property-tag wiz-prop selected" onclick="this.classList.toggle('selected')">Elm Park (96)</span><span class="property-tag wiz-prop selected" onclick="this.classList.toggle('selected')">Ash Grove (90)</span><span class="property-tag wiz-prop selected" onclick="this.classList.toggle('selected')">Magnolia (122)</span></div>
+              <div class="prop-count">Selected: <strong>8 properties (847 units)</strong></div>
+            </div>
+          </div>
+          <div class="wizard-nav"><button class="btn btn-secondary" onclick="prevStep()">&larr; Back</button><button class="btn btn-primary" onclick="nextStep()">Next &rarr;</button></div>
+        </div>
+
+        <div class="wizard-panel" id="wiz-step-5">
+          <div class="wizard-heading">Review your Maintenance Agent</div>
+          <div class="review-card">
+            <div class="review-row"><div class="review-label">Agent Type</div><div class="review-value">&#128295; Maintenance</div></div>
+            <div class="review-row"><div class="review-label">Policy</div><div class="review-value">maintenance-policy.pdf (uploaded)</div></div>
+            <div class="review-row"><div class="review-label">Emergency Types</div><div class="review-value"><span class="tag">Water Leak</span> <span class="tag">Fire/Smoke</span> <span class="tag">Gas Leak</span> <span class="tag">No Heat</span> <span class="tag">Electrical</span> <span class="tag">Sewage</span></div></div>
+            <div class="review-row"><div class="review-label">SLA</div><div class="review-value">Emergency: 30min/2hr &middot; Urgent: 2hr/24hr &middot; Standard: 4hr/72hr</div></div>
+            <div class="review-row"><div class="review-label">Approval</div><div class="review-value">$500 auto-approve threshold</div></div>
+            <div class="review-row"><div class="review-label">Vendors</div><div class="review-value">4 configured</div></div>
+            <div class="review-row"><div class="review-label">Team</div><div class="review-value">Maintenance Team &middot; Escalation: Sarah Johnson</div></div>
+            <div class="review-row"><div class="review-label">Properties</div><div class="review-value">8 selected (847 units)</div></div>
+          </div>
+          <div class="workflow-preview">
+            <h3>Generated Workflow</h3>
+            <div class="wf-step"><div class="wf-dot">&#9889;</div><div><div class="wf-step-name">Tenant submits request</div><div class="wf-step-type">Trigger</div></div></div>
+            <div class="wf-step"><div class="wf-dot">&#129302;</div><div><div class="wf-step-name">Triage request</div><div class="wf-step-type">AI Decision</div></div></div>
+            <div class="wf-step"><div class="wf-dot">&#128221;</div><div><div class="wf-step-name">Create work order</div><div class="wf-step-type">Agent Action</div></div></div>
+            <div class="wf-step"><div class="wf-dot">&#129302;</div><div><div class="wf-step-name">Select vendor</div><div class="wf-step-type">AI Decision</div></div></div>
+            <div class="wf-step"><div class="wf-dot">&#128172;</div><div><div class="wf-step-name">Request estimate</div><div class="wf-step-type">Communication</div></div></div>
+            <div class="wf-step"><div class="wf-dot">&#9202;</div><div><div class="wf-step-name">Owner approval</div><div class="wf-step-type">Wait for Response</div></div></div>
+            <div class="wf-step"><div class="wf-dot">&#128172;</div><div><div class="wf-step-name">Schedule fix</div><div class="wf-step-type">Communication</div></div></div>
+            <div class="wf-step"><div class="wf-dot">&#9202;</div><div><div class="wf-step-name">Wait for completion</div><div class="wf-step-type">Wait for Response</div></div></div>
+            <div class="wf-step"><div class="wf-dot">&#128172;</div><div><div class="wf-step-name">Verify with tenant</div><div class="wf-step-type">Communication</div></div></div>
+            <div class="wf-step"><div class="wf-dot">&#128221;</div><div><div class="wf-step-name">Close &amp; bill</div><div class="wf-step-type">Agent Action</div></div></div>
+          </div>
+          <div class="wizard-nav"><button class="btn btn-secondary" onclick="prevStep()">&larr; Back to Edit</button><button class="btn btn-primary" onclick="showToast('Maintenance Agent launched!');this.textContent='Launched!';this.style.background='#16a34a';">Launch Agent &#128640;</button></div>
         </div>
       </div>
     </div>
@@ -1361,6 +1374,26 @@ function filterAudit() {
     if (detailRow && !show) { detailRow.classList.remove('open'); detailRow.style.display = 'none'; }
     else if (detailRow) { detailRow.style.display = ''; }
   });
+}
+
+// Wizard navigation
+let currentStep = 1;
+function showStep(n) {
+  document.querySelectorAll('.wizard-panel').forEach((p,i) => p.classList.toggle('active', i === n-1));
+  document.querySelectorAll('.wizard-step').forEach((s,i) => {
+    s.classList.remove('active','completed');
+    if (i < n-1) s.classList.add('completed');
+    if (i === n-1) s.classList.add('active');
+  });
+  document.querySelectorAll('.wizard-line').forEach((l,i) => l.classList.toggle('completed', i < n-1));
+  currentStep = n;
+}
+function nextStep() { if (currentStep < 5) showStep(currentStep + 1); }
+function prevStep() { if (currentStep > 1) showStep(currentStep - 1); }
+function goToStep(n) { if (n <= currentStep) showStep(n); }
+function selectType(card) {
+  document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
 }
 </script>
 <script src="cori.js"></script>

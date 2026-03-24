@@ -173,6 +173,23 @@
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #e7e5e4; border-radius: 3px; }
 
+  /* Setting rows */
+  .setting-row { display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid #f5f5f4; gap: 12px; transition: all 0.2s; }
+  .setting-row:hover { background: #fafaf9; }
+
+  /* Toggle switch */
+  .toggle { position: relative; display: inline-block; width: 48px; height: 28px; flex-shrink: 0; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #d6d3d1; transition: 0.2s; border-radius: 28px; }
+  .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px; background: white; transition: 0.2s; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+  .toggle input:checked + .slider { background: #8b5cf6; }
+  .toggle input:checked + .slider:before { transform: translateX(20px); }
+
+  /* Segmented control */
+  .seg-control { display: flex; background: #f5f5f4; border-radius: 10px; padding: 3px; }
+  .seg-btn { padding: 6px 16px; border: none; background: none; font-size: 13px; font-weight: 600; color: #78716c; cursor: pointer; border-radius: 8px; font-family: inherit; transition: all 0.2s; }
+  .seg-btn.active { background: #8b5cf6; color: white; box-shadow: 0 1px 3px rgba(139,92,246,0.3); }
+
   /* Responsive nudge */
   @media (max-width: 768px) {
     .content-area { padding: 24px; }
@@ -197,7 +214,7 @@
   <!-- Tab bar -->
   <div class="tab-bar">
     <div class="logo">DoorLoop</div>
-    <button class="tab active" data-tab="get-started">Get Started</button>
+    <button class="tab active" data-tab="get-started">Agent Settings</button>
     <button class="tab" data-tab="my-agents">My Agents<span class="tab-dot"></span></button>
     <button class="tab" data-tab="inbox">Inbox<span class="tab-dot"></span></button>
     <button class="tab" data-tab="history">History</button>
@@ -205,45 +222,77 @@
 
   <div class="content-area">
 
-    <!-- ==================== TAB 1: GET STARTED ==================== -->
+    <!-- ==================== TAB 1: AGENT SETTINGS ==================== -->
     <div class="tab-content active" id="tab-get-started">
-      <div class="hero-emoji">&#x1F3E0;&#x2728;&#x1F916;</div>
-      <h1 class="hero-headline">Drop your policy and let AI do the rest</h1>
-      <p class="hero-sub">No setup. No forms. Just one file and you're live.</p>
+      <div style="max-width:680px;margin:0 auto;">
 
-      <div class="drop-zone" id="dropZone" onclick="simulateUpload()">
-        <div class="dz-prompt">
-          <div class="dz-icon">&#x1F4C4;</div>
-          <div class="dz-main">Drop a PDF, Word doc, or just paste text</div>
-          <div class="dz-sub">We'll read it and set up your agents automatically</div>
+        <!-- Section 1: Your Agents -->
+        <div style="margin-bottom:32px;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#a8a29e;margin-bottom:14px;">Your Agents</div>
+          <div style="background:white;border-radius:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04);overflow:hidden;">
+            <div class="setting-row" style="border-left:3px solid #8b5cf6;"><div style="display:flex;align-items:center;gap:12px;flex:1;"><span style="font-size:22px;">&#x1F527;</span><div><div style="font-weight:600;font-size:15px;color:#1c1917;">Maintenance</div><div style="font-size:13px;color:#78716c;">Handle repair requests end-to-end</div></div></div><label class="toggle"><input type="checkbox" checked onchange="this.closest('.setting-row').style.borderLeftColor=this.checked?'#8b5cf6':'transparent'"><span class="slider"></span></label></div>
+            <div class="setting-row" style="border-left:3px solid #8b5cf6;"><div style="display:flex;align-items:center;gap:12px;flex:1;"><span style="font-size:22px;">&#x1F4CB;</span><div><div style="font-weight:600;font-size:15px;color:#1c1917;">Renewal</div><div style="font-size:13px;color:#78716c;">Automate lease renewals</div></div></div><label class="toggle"><input type="checkbox" checked onchange="this.closest('.setting-row').style.borderLeftColor=this.checked?'#8b5cf6':'transparent'"><span class="slider"></span></label></div>
+            <div class="setting-row" style="border-left:3px solid #8b5cf6;"><div style="display:flex;align-items:center;gap:12px;flex:1;"><span style="font-size:22px;">&#x1F4B0;</span><div><div style="font-weight:600;font-size:15px;color:#1c1917;">Collection</div><div style="font-size:13px;color:#78716c;">Automated rent collection &amp; notices</div></div></div><label class="toggle"><input type="checkbox" checked onchange="this.closest('.setting-row').style.borderLeftColor=this.checked?'#8b5cf6':'transparent'"><span class="slider"></span></label></div>
+            <div class="setting-row" style="border-left:3px solid transparent;opacity:0.6;"><div style="display:flex;align-items:center;gap:12px;flex:1;"><span style="font-size:22px;">&#x1F511;</span><div><div style="font-weight:600;font-size:15px;color:#1c1917;">Leasing</div><div style="font-size:13px;color:#78716c;">Prospect to signed lease</div></div></div><label class="toggle"><input type="checkbox" onchange="this.closest('.setting-row').style.opacity=this.checked?'1':'0.6';this.closest('.setting-row').style.borderLeftColor=this.checked?'#8b5cf6':'transparent'"><span class="slider"></span></label></div>
+            <div class="setting-row" style="border-left:3px solid transparent;opacity:0.6;"><div style="display:flex;align-items:center;gap:12px;flex:1;"><span style="font-size:22px;">&#x1F4E6;</span><div><div style="font-weight:600;font-size:15px;color:#1c1917;">Move-in/out</div><div style="font-size:13px;color:#78716c;">Streamline tenant transitions</div></div></div><label class="toggle"><input type="checkbox" onchange="this.closest('.setting-row').style.opacity=this.checked?'1':'0.6';this.closest('.setting-row').style.borderLeftColor=this.checked?'#8b5cf6':'transparent'"><span class="slider"></span></label></div>
+            <div class="setting-row" style="border-left:3px solid transparent;opacity:0.6;border-bottom:none;"><div style="display:flex;align-items:center;gap:12px;flex:1;"><span style="font-size:22px;">&#x1F4CA;</span><div><div style="font-weight:600;font-size:15px;color:#1c1917;">Reporting</div><div style="font-size:13px;color:#78716c;">Owner statements &amp; distributions</div></div></div><label class="toggle"><input type="checkbox" onchange="this.closest('.setting-row').style.opacity=this.checked?'1':'0.6';this.closest('.setting-row').style.borderLeftColor=this.checked?'#8b5cf6':'transparent'"><span class="slider"></span></label></div>
+          </div>
         </div>
-        <div class="progress-area" id="progressArea">
-          <div class="progress-step" id="ps1">&#x1F4D6; Reading your policy...</div>
-          <div class="progress-step" id="ps2">&#x1F50D; Found 12 rules...</div>
-          <div class="progress-step" id="ps3">&#x1F916; Creating 3 agents...</div>
-          <div class="progress-step" id="ps4" style="font-size: 20px;">&#x2705; Done! Your agents are live.</div>
-          <div class="progress-bar-track"><div class="progress-bar-fill" id="progressFill"></div></div>
-        </div>
-      </div>
 
-      <div class="agent-preview-row">
-        <div class="agent-preview-card">
-          <div class="ap-emoji">&#x1F527;</div>
-          <div class="ap-name">Maintenance Agent</div>
-          <div class="ap-desc">Handles repairs</div>
+        <!-- Section 2: Approval Rules -->
+        <div style="margin-bottom:32px;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#a8a29e;margin-bottom:14px;">Approval Rules</div>
+          <div style="background:white;border-radius:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04);overflow:hidden;">
+            <div class="setting-row"><div style="flex:1;"><div style="font-weight:600;font-size:14px;">Owner approval threshold</div><div style="font-size:13px;color:#78716c;">Require owner OK above this amount</div></div><div style="display:flex;align-items:center;gap:4px;"><span style="font-size:14px;color:#78716c;">$</span><input type="number" value="500" style="width:80px;padding:8px 10px;border:1.5px solid #e7e5e4;border-radius:10px;font-size:15px;font-family:inherit;text-align:center;outline:none;" onfocus="this.style.borderColor='#8b5cf6'" onblur="this.style.borderColor='#e7e5e4'"></div></div>
+            <div class="setting-row"><div style="flex:1;"><div style="font-weight:600;font-size:14px;">Auto-dispatch for emergencies</div><div style="font-size:13px;color:#78716c;">Skip approval for urgent issues</div></div><label class="toggle"><input type="checkbox" checked><span class="slider"></span></label></div>
+            <div class="setting-row" style="border-bottom:none;"><div style="flex:1;"><div style="font-weight:600;font-size:14px;">Require second quote above</div><div style="font-size:13px;color:#78716c;">Get a backup estimate for large jobs</div></div><div style="display:flex;align-items:center;gap:4px;"><span style="font-size:14px;color:#78716c;">$</span><input type="number" value="2000" style="width:80px;padding:8px 10px;border:1.5px solid #e7e5e4;border-radius:10px;font-size:15px;font-family:inherit;text-align:center;outline:none;" onfocus="this.style.borderColor='#8b5cf6'" onblur="this.style.borderColor='#e7e5e4'"></div></div>
+          </div>
         </div>
-        <div class="agent-preview-card">
-          <div class="ap-emoji">&#x1F4CB;</div>
-          <div class="ap-name">Renewal Agent</div>
-          <div class="ap-desc">Manages renewals</div>
+
+        <!-- Section 3: Communication -->
+        <div style="margin-bottom:32px;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#a8a29e;margin-bottom:14px;">Communication</div>
+          <div style="background:white;border-radius:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04);overflow:hidden;">
+            <div class="setting-row"><div style="flex:1;"><div style="font-weight:600;font-size:14px;">Default channel</div></div><div class="seg-control"><button class="seg-btn active" onclick="selectSeg(this)">SMS</button><button class="seg-btn" onclick="selectSeg(this)">Email</button><button class="seg-btn" onclick="selectSeg(this)">Both</button></div></div>
+            <div class="setting-row"><div style="flex:1;"><div style="font-weight:600;font-size:14px;">Acknowledge requests within</div></div><select style="padding:8px 12px;border:1.5px solid #e7e5e4;border-radius:10px;font-size:14px;font-family:inherit;background:white;color:#1c1917;outline:none;"><option>5 min</option><option selected>15 min</option><option>30 min</option><option>1 hour</option></select></div>
+            <div class="setting-row"><div style="flex:1;"><div style="font-weight:600;font-size:14px;">Follow up after repair</div><div style="font-size:13px;color:#78716c;">Ask tenant if issue is resolved</div></div><label class="toggle"><input type="checkbox" checked><span class="slider"></span></label></div>
+            <div class="setting-row" style="border-bottom:none;"><div style="flex:1;"><div style="font-weight:600;font-size:14px;">Tenant can reply to agent</div><div style="font-size:13px;color:#78716c;">Enable two-way AI conversations</div></div><label class="toggle"><input type="checkbox" checked><span class="slider"></span></label></div>
+          </div>
         </div>
-        <div class="agent-preview-card">
-          <div class="ap-emoji">&#x1F4B0;</div>
-          <div class="ap-name">Collection Agent</div>
-          <div class="ap-desc">Collects rent</div>
+
+        <!-- Section 4: Vendors -->
+        <div style="margin-bottom:32px;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#a8a29e;margin-bottom:14px;">Vendors</div>
+          <div style="background:white;border-radius:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04);overflow:hidden;">
+            <div class="setting-row"><div style="display:flex;align-items:center;gap:10px;flex:1;"><div style="font-weight:600;font-size:14px;">Mike's Plumbing</div><span style="font-size:12px;color:#78716c;background:#f5f5f4;padding:2px 8px;border-radius:6px;">Plumbing</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="color:#f59e0b;font-size:13px;">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span style="cursor:pointer;color:#d6d3d1;font-size:18px;" onclick="this.closest('.setting-row').style.display='none'">&times;</span></div></div>
+            <div class="setting-row"><div style="display:flex;align-items:center;gap:10px;flex:1;"><div style="font-weight:600;font-size:14px;">HVAC Pro</div><span style="font-size:12px;color:#78716c;background:#f5f5f4;padding:2px 8px;border-radius:6px;">HVAC</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="color:#f59e0b;font-size:13px;">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span style="cursor:pointer;color:#d6d3d1;font-size:18px;" onclick="this.closest('.setting-row').style.display='none'">&times;</span></div></div>
+            <div class="setting-row" style="border-bottom:none;"><div style="display:flex;align-items:center;gap:10px;flex:1;"><div style="font-weight:600;font-size:14px;">SparkFix Electric</div><span style="font-size:12px;color:#78716c;background:#f5f5f4;padding:2px 8px;border-radius:6px;">Electrical</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="color:#f59e0b;font-size:13px;">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span style="cursor:pointer;color:#d6d3d1;font-size:18px;" onclick="this.closest('.setting-row').style.display='none'">&times;</span></div></div>
+          </div>
+          <div style="text-align:center;margin-top:10px;"><button style="background:none;border:1.5px dashed #d6d3d1;border-radius:12px;padding:10px 24px;font-size:14px;color:#8b5cf6;font-weight:600;cursor:pointer;font-family:inherit;" onmouseover="this.style.borderColor='#8b5cf6'" onmouseout="this.style.borderColor='#d6d3d1'">+ Add vendor</button></div>
         </div>
+
+        <!-- Section 5: Policy Document -->
+        <div style="margin-bottom:32px;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#a8a29e;margin-bottom:14px;">Policy Document</div>
+          <div style="background:white;border-radius:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04);padding:20px;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+              <span style="font-size:28px;">&#x1F4C4;</span>
+              <div style="flex:1;"><div style="font-weight:600;font-size:14px;">maintenance-policy.pdf</div><div style="font-size:13px;color:#78716c;">Uploaded Mar 19 &middot; <a href="sample-maintenance-policy.html" target="_blank" style="color:#8b5cf6;text-decoration:none;font-weight:500;">Replace</a></div></div>
+            </div>
+            <div style="font-size:13px;color:#78716c;margin-bottom:10px;">12 rules extracted &middot; <a href="#" style="color:#8b5cf6;text-decoration:none;font-weight:500;" onclick="event.preventDefault();document.getElementById('rulesDetail').style.display=document.getElementById('rulesDetail').style.display==='none'?'block':'none';">View rules &#x2192;</a></div>
+            <div id="rulesDetail" style="display:none;background:#fafaf9;border-radius:12px;padding:14px;font-size:13px;color:#57534e;line-height:1.8;">
+              <div>&#x1F6A8; Emergency types: <strong>6 defined</strong></div>
+              <div>&#x23F1; SLAs: <strong>3 priority levels</strong></div>
+              <div>&#x1F527; Vendor preferences: <strong>3 vendors</strong></div>
+              <div>&#x1F4B3; Billing rules: <strong>Auto-invoice after completion</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Save Button -->
+        <button id="saveBtn" onclick="var b=this;b.style.background='#16a34a';b.innerHTML='&#x2713; Agents Active';setTimeout(function(){b.style.background='#8b5cf6';b.innerHTML='Save &amp; Activate Agents';},2000);" style="width:100%;padding:16px;background:#8b5cf6;color:white;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.3s;">Save &amp; Activate Agents</button>
+        <div style="text-align:center;margin-top:10px;font-size:12px;color:#a8a29e;">Last saved: 2 minutes ago &middot; All changes auto-save</div>
       </div>
-      <p class="agent-hint">AI will determine which agents you need from your policy</p>
     </div>
 
     <!-- ==================== TAB 2: MY AGENTS ==================== -->
@@ -609,6 +658,12 @@ function selectConv(el) {
 /* ---- Mini timeline toggle ---- */
 function toggleTimeline() {
   document.getElementById('miniTimeline').classList.toggle('show');
+}
+
+/* ---- Segmented control ---- */
+function selectSeg(btn) {
+  btn.parentElement.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
 }
 </script>
 <script src="cori.js"></script>
