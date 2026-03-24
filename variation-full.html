@@ -1,77 +1,758 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <title>DoorLoop AI Command Center – Full Vision</title>
-    <!-- Note: This variation is a complete React app. The full source is loaded inline below. -->
-    <script>
-    // Redirect notice: This file should be loaded from the artifact source
-    // For the prototype, we'll load it via iframe from the original
-    </script>
-    <style>
-      body { margin: 0; padding: 0; font-family: Inter, -apple-system, sans-serif; }
-      .redirect-notice {
-        display: flex; flex-direction: column; align-items: center; justify-content: center;
-        height: 100vh; background: #f4f6f9; text-align: center; padding: 40px;
-      }
-      .redirect-notice h1 { font-size: 28px; font-weight: 700; color: #1a2b4a; margin-bottom: 8px; }
-      .redirect-notice p { font-size: 15px; color: #64748b; max-width: 500px; line-height: 1.6; margin-bottom: 24px; }
-      .redirect-notice a {
-        display: inline-block; padding: 12px 28px; background: #4C6FFF; color: white;
-        border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 14px;
-        transition: background 0.2s;
-      }
-      .redirect-notice a:hover { background: #3b5ce6; }
-      .var-bar {
-        position: fixed; top: 0; left: 0; right: 0; height: 36px; background: #0f1729;
-        display: flex; align-items: center; justify-content: center; gap: 4px; z-index: 9999;
-      }
-      .var-bar a, .var-bar span {
-        font-size: 11px; font-weight: 500; padding: 4px 14px; border-radius: 6px;
-        text-decoration: none; color: #8896b3; transition: all 0.15s;
-      }
-      .var-bar a:hover { color: white; background: rgba(255,255,255,0.1); }
-      .var-bar span.active { color: white; background: #4C6FFF; }
-      .content { margin-top: 36px; }
-    </style>
-  </head>
-  <body>
-    <div class="var-bar">
-      <a href="maintenance-agent-prototype.html">Variation 1: Standard</a>
-      <a href="variation-enterprise.html">Variation 2: Enterprise</a>
-      <a href="variation-simple.html">Variation 3: Simple</a>
-      <span class="active">Variation 4: Full Vision</span>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V4: Full Vision — DoorLoop AI Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: #F8F9FB; color: #1a1a2e; line-height: 1.5; }
+
+/* Variation Bar */
+.var-bar { height: 36px; background: #0a0f1e; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.var-bar a, .var-bar span { font-size: 11px; color: #8896b3; text-decoration: none; padding: 4px 10px; border-radius: 999px; transition: color .15s; }
+.var-bar a:hover { color: #c0cadf; }
+.var-bar .active { background: #4C6FFF; color: #fff; font-weight: 600; }
+
+/* Container */
+.container { max-width: 720px; margin: 0 auto; padding: 24px; }
+
+/* Tab Navigation */
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 28px; }
+.tab-btn { padding: 7px 14px; font-size: 12px; font-weight: 600; border-radius: 999px; border: 1.5px solid #ddd; background: transparent; color: #6b7280; cursor: pointer; transition: all .15s; font-family: inherit; }
+.tab-btn:hover { border-color: #b4b4b4; }
+.tab-btn.active { background: #EEEDFE; color: #3C3489; border-color: #534AB7; }
+
+/* Slide panels */
+.slide { display: none; }
+.slide.active { display: block; }
+
+/* Subtitle */
+.slide-subtitle { font-size: 12px; color: #8b8fa3; margin-bottom: 18px; letter-spacing: .3px; }
+
+/* Owner badges */
+.badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
+.badge-sahar { background: #E1F5EE; color: #0F6E56; }
+.badge-sahar .dot { width: 6px; height: 6px; border-radius: 50%; background: #1D9E75; }
+.badge-karin { background: #FBEAF0; color: #993556; }
+.badge-karin .dot { width: 6px; height: 6px; border-radius: 50%; background: #D4537E; }
+
+/* Owner legend */
+.owner-legend { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; font-size: 11px; color: #8b8fa3; }
+
+/* Building block cards */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.block-card { border-radius: 12px; padding: 20px; text-align: center; }
+.block-card .num { font-size: 11px; font-weight: 600; opacity: .5; margin-bottom: 4px; }
+.block-card .name { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+.block-card .badge { font-size: 10px; }
+
+.footer-note { font-size: 11px; color: #8b8fa3; line-height: 1.6; border-top: 1px solid #e5e7eb; padding-top: 14px; margin-top: 8px; }
+
+/* Explanation cards */
+.explain-card { display: flex; gap: 14px; margin-bottom: 14px; background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px 18px; }
+.explain-strip { width: 4px; min-height: 100%; border-radius: 4px; flex-shrink: 0; }
+.explain-header { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+.explain-title { font-size: 14px; font-weight: 700; }
+.tag { font-size: 10px; font-weight: 600; background: #EEEDFE; color: #534AB7; padding: 2px 8px; border-radius: 999px; }
+.explain-body { font-size: 13px; color: #5f6577; line-height: 1.6; }
+
+/* Open questions */
+.question-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; margin-bottom: 16px; }
+.question-header { padding: 16px 20px; color: #fff; }
+.question-header .qnum { font-size: 11px; font-weight: 600; opacity: .7; }
+.question-header .qtitle { font-size: 15px; font-weight: 700; margin-top: 2px; }
+.question-options { padding: 14px 20px; }
+.option { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+.option:last-child { border-bottom: none; }
+.option-dot { width: 7px; height: 7px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+.option-label { font-size: 13px; font-weight: 600; color: #1a1a2e; }
+.option-desc { font-size: 12px; color: #6b7280; margin-top: 2px; }
+
+/* Command center slide */
+.section-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; margin-top: 24px; }
+.section-text { font-size: 13px; color: #5f6577; line-height: 1.65; margin-bottom: 10px; }
+
+.scenario-box { background: #F0F4FF; border: 1px solid #C7D2FE; border-radius: 10px; padding: 18px 20px; margin: 16px 0; }
+.scenario-box .stitle { font-size: 13px; font-weight: 700; color: #3730A3; margin-bottom: 10px; }
+.scenario-step { display: flex; gap: 10px; margin-bottom: 8px; font-size: 13px; color: #374151; }
+.scenario-step .snum { font-weight: 700; color: #4C6FFF; flex-shrink: 0; }
+
+/* Command center mockup */
+.mockup { border: 1px solid #e0e3ea; border-radius: 12px; overflow: hidden; margin: 20px 0; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+.mockup-topbar { background: #1A1F36; padding: 10px 16px; display: flex; align-items: center; gap: 8px; }
+.mockup-logo { width: 22px; height: 22px; background: #4C6FFF; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; font-weight: 700; }
+.mockup-topbar-title { color: #fff; font-size: 12px; font-weight: 600; }
+.mockup-topbar-sub { color: #8896b3; font-size: 11px; margin-left: auto; }
+
+.mockup-subheader { background: #fff; border-bottom: 1px solid #e5e7eb; padding: 14px 16px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.mockup-greeting { font-size: 14px; font-weight: 600; }
+.stat-badge { font-size: 10px; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
+.stat-act { background: #FEF2F2; color: #DC2626; }
+.stat-review { background: #FFFBEB; color: #D97706; }
+.stat-done { background: #F0FDF4; color: #16A34A; }
+
+.mockup-feed { background: #F9FAFB; padding: 12px; max-height: 480px; overflow-y: auto; }
+.feed-item { border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; }
+.feed-item.act { background: #FEF2F2; border: 1px solid #FCA5A5; }
+.feed-item.review { background: #FFFBEB; border: 1px solid #FCD34D; }
+.feed-item.done { background: #F0FDF4; border: 1px solid #86EFAC; }
+.feed-top { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+.feed-emoji { font-size: 15px; }
+.feed-agent { font-size: 12px; font-weight: 600; color: #374151; }
+.feed-priority { font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; }
+.fp-act { background: #DC2626; color: #fff; }
+.fp-review { background: #D97706; color: #fff; }
+.fp-done { background: #16A34A; color: #fff; }
+.feed-time { font-size: 10px; color: #9ca3af; margin-left: auto; }
+.feed-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+.feed-body { font-size: 12px; color: #6b7280; line-height: 1.5; margin-bottom: 10px; }
+.feed-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.btn-primary { font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 6px; border: none; background: #4C6FFF; color: #fff; cursor: pointer; font-family: inherit; }
+.btn-secondary { font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 6px; border: 1px solid #d1d5db; background: #fff; color: #374151; cursor: pointer; font-family: inherit; }
+.btn-convo { font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 6px; border: 1px solid #C4B5FD; background: #F5F3FF; color: #6D28D9; cursor: pointer; font-family: inherit; }
+
+/* Competitor section */
+.comp-cards { display: flex; flex-direction: column; gap: 10px; margin: 14px 0; }
+.comp-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px 16px; }
+.comp-name { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; margin-bottom: 6px; }
+.comp-elise { background: #DBEAFE; color: #1E40AF; }
+.comp-wonderful { background: #D1FAE5; color: #065F46; }
+.comp-aptly { background: #FEF3C7; color: #92400E; }
+.comp-text { font-size: 12px; color: #5f6577; line-height: 1.55; }
+.callout-purple { background: #EEEDFE; border-radius: 10px; padding: 14px 18px; font-size: 12px; color: #3C3489; font-weight: 500; line-height: 1.6; margin: 14px 0; }
+
+/* Audit log slide */
+.comparison-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+.compare-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; text-align: center; }
+.compare-icon { font-size: 22px; margin-bottom: 6px; }
+.compare-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.compare-desc { font-size: 11px; color: #6b7280; }
+.compare-amber { border-color: #FCD34D; }
+.compare-purple { border-color: #C4B5FD; }
+
+.qa-box { background: #F5F3FF; border: 1px solid #C4B5FD; border-radius: 10px; padding: 16px 20px; margin: 16px 0; }
+.qa-item { margin-bottom: 12px; }
+.qa-item:last-child { margin-bottom: 0; }
+.qa-q { font-size: 12px; font-weight: 700; color: #5B21B6; margin-bottom: 3px; }
+.qa-a { font-size: 12px; color: #4B5563; line-height: 1.5; }
+
+/* Audit log mockup */
+.audit-toolbar { background: #fff; border-bottom: 1px solid #e5e7eb; padding: 10px 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.audit-search { padding: 5px 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 11px; font-family: inherit; width: 160px; }
+.filter-btn { font-size: 10px; font-weight: 600; padding: 4px 10px; border-radius: 999px; border: 1px solid #d1d5db; background: #fff; color: #6b7280; cursor: pointer; font-family: inherit; transition: all .15s; }
+.filter-btn.active { background: #1A1F36; color: #fff; border-color: #1A1F36; }
+.audit-stats { background: #F9FAFB; border-bottom: 1px solid #e5e7eb; padding: 8px 16px; display: flex; gap: 16px; font-size: 11px; color: #6b7280; }
+.audit-stats strong { color: #1a1a2e; }
+
+.audit-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.audit-table th { text-align: left; padding: 8px 10px; background: #F9FAFB; border-bottom: 1px solid #e5e7eb; font-size: 10px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: .5px; }
+.audit-table td { padding: 8px 10px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+.audit-row { cursor: pointer; transition: background .1s; }
+.audit-row:hover { background: #F9FAFB; }
+.audit-expand { color: #9ca3af; font-size: 10px; width: 20px; }
+.by-badge { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+.by-ai { background: #DBEAFE; color: #1E40AF; }
+.by-human { background: #F3E8FF; color: #6D28D9; }
+.result-badge { font-size: 9px; font-weight: 600; padding: 2px 8px; border-radius: 999px; }
+.result-approved { background: #D1FAE5; color: #065F46; }
+.result-sent { background: #DBEAFE; color: #1E40AF; }
+.result-escalated { background: #FEF3C7; color: #92400E; }
+.result-completed { background: #E0E7FF; color: #3730A3; }
+
+.audit-detail { display: none; background: #F9FAFB; }
+.audit-detail td { padding: 12px 16px; font-size: 12px; color: #4B5563; line-height: 1.6; border-bottom: 1px solid #e5e7eb; }
+.audit-detail.open { display: table-row; }
+
+.audit-footer { padding: 10px 16px; font-size: 11px; color: #9ca3af; background: #fff; border-top: 1px solid #e5e7eb; }
+.audit-footer span { color: #4C6FFF; cursor: pointer; margin: 0 4px; }
+</style>
+</head>
+<body>
+
+<!-- Variation Bar -->
+<div class="var-bar">
+  <a href="maintenance-agent-prototype.html">V1: Standard</a>
+  <a href="variation-enterprise.html">V2: Enterprise</a>
+  <a href="variation-simple.html">V3: Simple</a>
+  <span class="active">V4: Full Vision</span>
+</div>
+
+<div class="container">
+
+  <!-- Tab Navigation -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="0">1. Building blocks</button>
+    <button class="tab-btn" data-tab="1">2. Explanations</button>
+    <button class="tab-btn" data-tab="2">3. Open questions</button>
+    <button class="tab-btn" data-tab="3">4. Command center</button>
+    <button class="tab-btn" data-tab="4">5. Audit log</button>
+  </div>
+
+  <!-- SLIDE 1: Building Blocks -->
+  <div class="slide active" id="slide-0">
+    <div class="slide-subtitle">Agentic product structure &middot; DoorLoop</div>
+    <div class="owner-legend">
+      <span class="badge badge-sahar"><span class="dot"></span> Sahar</span>
+      <span class="badge badge-karin"><span class="dot"></span> Karin</span>
+      <span style="color:#8b8fa3; font-size:11px;">squad ownership</span>
     </div>
-    <div class="content">
-      <div class="redirect-notice">
-        <div style="font-size: 48px; margin-bottom: 16px;">🏠✨🤖</div>
-        <h1>DoorLoop AI – Full Vision Prototype</h1>
-        <p>
-          This is the complete React-based prototype with product tour, 9 AI agents,
-          configurable rules, per-property overrides, conversations, and full navigation.
-          It includes a cinematic presentation mode.
-        </p>
-        <p style="font-size: 13px; color: #94a3b8;">
-          Features: Command Center • 9 Agent Configs • Conversations • Properties • Tenants •
-          Rent Collection • Leasing Pipeline • Lease Renewals • Owner Relations •
-          Accounting • Vendor Management • Activity Log • Product Tour
-        </p>
-        <a href="https://claude.ai/artifacts/0f708bc6-0a42-4d16-b94d-9b6ba81614ef" target="_blank">
-          Open Full Vision Prototype →
-        </a>
-        <div style="margin-top: 16px; display: flex; gap: 12px;">
-          <a href="maintenance-agent-prototype.html" style="background: #1a2b4a; font-size: 13px; padding: 10px 20px;">
-            ← Back to Standard
-          </a>
-          <a href="variation-enterprise.html" style="background: #1a2b4a; font-size: 13px; padding: 10px 20px;">
-            Enterprise →
-          </a>
+
+    <div class="grid-2">
+      <div class="block-card" style="background:#EEEDFE; color:#3C3489;">
+        <div class="num">01</div>
+        <div class="name">Agent builder</div>
+        <div style="font-size:11px; opacity:.65; margin-bottom:8px;">incl. knowledge base</div>
+        <span class="badge badge-sahar"><span class="dot"></span> Sahar</span>
+      </div>
+      <div class="block-card" style="background:#FAECE7; color:#712B13;">
+        <div class="num">02</div>
+        <div class="name">Workflow engine</div>
+        <span class="badge badge-karin"><span class="dot"></span> Karin</span>
+      </div>
+    </div>
+
+    <div class="grid-3">
+      <div class="block-card" style="background:#E6F1FB; color:#0C447C;">
+        <div class="num">03</div>
+        <div class="name">Communication center</div>
+        <span class="badge badge-sahar"><span class="dot"></span> Sahar</span>
+      </div>
+      <div class="block-card" style="background:#FAEEDA; color:#633806;">
+        <div class="num">04</div>
+        <div class="name">Command center</div>
+        <span class="badge badge-karin"><span class="dot"></span> Karin</span>
+      </div>
+      <div class="block-card" style="background:#F1EFE8; color:#444441;">
+        <div class="num">05</div>
+        <div class="name">Audit log</div>
+        <span class="badge badge-karin"><span class="dot"></span> Karin</span>
+      </div>
+    </div>
+
+    <div class="footer-note">Knowledge base is part of the agent builder. Workflow engine is the connective tissue between all blocks.</div>
+  </div>
+
+  <!-- SLIDE 2: Explanations -->
+  <div class="slide" id="slide-1">
+    <div class="slide-subtitle">Explanations &middot; Building blocks</div>
+
+    <div class="explain-card">
+      <div class="explain-strip" style="background:#534AB7;"></div>
+      <div>
+        <div class="explain-header">
+          <span class="explain-title">Agent builder</span>
+          <span class="tag">incl. knowledge base</span>
+          <span class="badge badge-sahar"><span class="dot"></span> Sahar</span>
+        </div>
+        <div class="explain-body">Where PMs create and configure agents. Includes templates (pre-built agent configurations per use case), natural language setup, and agent preview. The knowledge base lives here too &mdash; PMs upload their policies, SOPs, and property-specific rules as part of building their agent. The agent is configured based on those policies, and may generate workflows automatically from them. All agents share one infrastructure.</div>
+      </div>
+    </div>
+
+    <div class="explain-card">
+      <div class="explain-strip" style="background:#993C1D;"></div>
+      <div>
+        <div class="explain-header">
+          <span class="explain-title">Workflow engine</span>
+          <span class="badge badge-karin"><span class="dot"></span> Karin</span>
+        </div>
+        <div class="explain-body">The execution layer that connects everything. Every agent action, escalation, communication, and resolution runs through a workflow. Workflows are retryable, traceable, and auditable. Key open question: are workflows PM-built (no-code canvas), AI-generated from the knowledge base, or invisible to the PM entirely?</div>
+      </div>
+    </div>
+
+    <div class="explain-card">
+      <div class="explain-strip" style="background:#185FA5;"></div>
+      <div>
+        <div class="explain-header">
+          <span class="explain-title">Communication center</span>
+          <span class="badge badge-sahar"><span class="dot"></span> Sahar</span>
+        </div>
+        <div class="explain-body">Agents communicate with all stakeholders &mdash; tenants, owners, vendors, prospects &mdash; across all channels: voice, SMS, email, and tenant portal. PM has full visibility into what agents are saying and to whom. For review and oversight, not for doing the work.</div>
+      </div>
+    </div>
+
+    <div class="explain-card">
+      <div class="explain-strip" style="background:#854F0B;"></div>
+      <div>
+        <div class="explain-header">
+          <span class="explain-title">Command center</span>
+          <span class="badge badge-karin"><span class="dot"></span> Karin</span>
+        </div>
+        <div class="explain-body">The single screen where a PM manages their agent team. Live view of every active agent and thread. Escalation controls &mdash; approve, override, reassign &mdash; without leaving the page. Distinct from the audit log: the command center is real-time and action-oriented. North star: % of escalations resolved without leaving this screen.</div>
+      </div>
+    </div>
+
+    <div class="explain-card">
+      <div class="explain-strip" style="background:#5F5E5A;"></div>
+      <div>
+        <div class="explain-header">
+          <span class="explain-title">Audit log</span>
+          <span class="badge badge-karin"><span class="dot"></span> Karin</span>
+        </div>
+        <div class="explain-body">Every decision &mdash; human and AI &mdash; logged, timestamped, and searchable. Generated by the workflow engine at every step. Historical and accountability-oriented, not real-time. Answers the question: what happened, when, and why?</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: Open Questions -->
+  <div class="slide" id="slide-2">
+    <div class="slide-subtitle">Open questions &middot; Key decisions</div>
+
+    <div class="question-card">
+      <div class="question-header" style="background:#534AB7;">
+        <div class="qnum">Question 1</div>
+        <div class="qtitle">Who builds workflows?</div>
+      </div>
+      <div class="question-options">
+        <div class="option">
+          <div class="option-dot" style="background:#534AB7;"></div>
+          <div>
+            <div class="option-label">DoorLoop pre-builds them</div>
+            <div class="option-desc">Pre-configured per use case. PM turns them on. Simple, not flexible.</div>
+          </div>
+        </div>
+        <div class="option">
+          <div class="option-dot" style="background:#534AB7;"></div>
+          <div>
+            <div class="option-label">PM builds them</div>
+            <div class="option-desc">No-code drag-and-drop canvas. Maximum flexibility, requires PM effort.</div>
+          </div>
+        </div>
+        <div class="option">
+          <div class="option-dot" style="background:#534AB7;"></div>
+          <div>
+            <div class="option-label">AI generates from knowledge base</div>
+            <div class="option-desc">PM describes intent in the agent builder. AI generates the workflow automatically. Most differentiated &mdash; and ties agent builder directly to workflow engine.</div>
+          </div>
         </div>
       </div>
     </div>
-  </body>
+
+    <div class="question-card">
+      <div class="question-header" style="background:#993C1D;">
+        <div class="qnum">Question 2</div>
+        <div class="qtitle">Do we allow PMs to edit workflows?</div>
+      </div>
+      <div class="question-options">
+        <div class="option">
+          <div class="option-dot" style="background:#993C1D;"></div>
+          <div>
+            <div class="option-label">Yes &mdash; full editing canvas</div>
+            <div class="option-desc">PMs see and modify every step. Powerful but complex.</div>
+          </div>
+        </div>
+        <div class="option">
+          <div class="option-dot" style="background:#993C1D;"></div>
+          <div>
+            <div class="option-label">Yes &mdash; guided editing only</div>
+            <div class="option-desc">PMs can tweak parameters but not structure. Safer UX.</div>
+          </div>
+        </div>
+        <div class="option">
+          <div class="option-dot" style="background:#993C1D;"></div>
+          <div>
+            <div class="option-label">No &mdash; workflows are invisible</div>
+            <div class="option-desc">AI runs workflows in the background. PM only sees outcomes and escalations in the command center.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-card">
+      <div class="question-header" style="background:#185FA5;">
+        <div class="qnum">Question 3</div>
+        <div class="qtitle">Are all agents conversational?</div>
+      </div>
+      <div class="question-options">
+        <div class="option">
+          <div class="option-dot" style="background:#185FA5;"></div>
+          <div>
+            <div class="option-label">Yes &mdash; all agents communicate</div>
+            <div class="option-desc">Every agent has a comms layer with tenants, owners, or vendors.</div>
+          </div>
+        </div>
+        <div class="option">
+          <div class="option-dot" style="background:#185FA5;"></div>
+          <div>
+            <div class="option-label">No &mdash; some agents are silent</div>
+            <div class="option-desc">Some agents act in the background (e.g. delinquency tracking, renewals) without outbound comms.</div>
+          </div>
+        </div>
+        <div class="option">
+          <div class="option-dot" style="background:#185FA5;"></div>
+          <div>
+            <div class="option-label">PM decides per agent</div>
+            <div class="option-desc">Communication is a configurable toggle at the agent level inside the agent builder.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: Command Center -->
+  <div class="slide" id="slide-3">
+    <div class="slide-subtitle">Building block deep-dive &middot; Command Center <span class="badge badge-karin" style="margin-left:8px;"><span class="dot"></span> Karin</span></div>
+
+    <div class="section-title">What it is</div>
+    <p class="section-text">The Command Center is the single screen where a property manager oversees their entire AI agent team in real time. It shows every active thread, every pending escalation, and every completed action &mdash; organized by urgency.</p>
+    <p class="section-text">Think of it as air traffic control for property management AI. The PM doesn't do the work &mdash; the agents do. The PM approves, overrides, and redirects from one screen. The north-star metric: % of escalations resolved without leaving this page.</p>
+
+    <div class="scenario-box">
+      <div class="stitle">A PM's morning with the Command Center</div>
+      <div class="scenario-step"><span class="snum">1.</span><span>Sarah opens DoorLoop and lands on the Command Center. She sees 2 items flagged "Act Now" in red, 1 item to "Review" in yellow, and 2 completed items in green.</span></div>
+      <div class="scenario-step"><span class="snum">2.</span><span>The top red item is an emergency maintenance request: a water heater failure. The Maintenance Agent already dispatched a vendor and got a $2,800 quote. Sarah taps "Approve &amp; send to owner" without leaving the page.</span></div>
+      <div class="scenario-step"><span class="snum">3.</span><span>The second red item is a repeat late payer. The Rent Collection Agent recommends a formal notice. Sarah reviews the history and approves. Done in 30 seconds.</span></div>
+      <div class="scenario-step"><span class="snum">4.</span><span>By 9:15am, Sarah has resolved all escalations. Her agents continue working autonomously. She checks back at lunch &mdash; two new green items. No new reds. This is the vision.</span></div>
+    </div>
+
+    <!-- Command Center Mockup -->
+    <div class="mockup">
+      <div class="mockup-topbar">
+        <div class="mockup-logo">D</div>
+        <span class="mockup-topbar-title">DoorLoop AI</span>
+        <span class="mockup-topbar-sub">Command Center</span>
+      </div>
+      <div class="mockup-subheader">
+        <span class="mockup-greeting">Good morning, Sarah</span>
+        <span class="stat-badge stat-act">2 act now</span>
+        <span class="stat-badge stat-review">1 review</span>
+        <span class="stat-badge stat-done">2 done</span>
+      </div>
+      <div class="mockup-feed">
+        <!-- Act 1 -->
+        <div class="feed-item act">
+          <div class="feed-top">
+            <span class="feed-emoji">&#x1F527;</span>
+            <span class="feed-agent">Maintenance Agent</span>
+            <span class="feed-priority fp-act">Act now</span>
+            <span class="feed-time">38 min ago</span>
+          </div>
+          <div class="feed-title">Emergency: Water heater failure &mdash; 742 Evergreen 3A</div>
+          <div class="feed-body">Vendor dispatched. Quote received: $2,800 for replacement. Tenant notified of timeline. Owner approval needed to proceed.</div>
+          <div class="feed-actions">
+            <button class="btn-primary">Approve &amp; send to owner</button>
+            <button class="btn-secondary">Get another quote</button>
+            <button class="btn-convo">View conversation</button>
+          </div>
+        </div>
+        <!-- Act 2 -->
+        <div class="feed-item act">
+          <div class="feed-top">
+            <span class="feed-emoji">&#x1F4B0;</span>
+            <span class="feed-agent">Rent Collection Agent</span>
+            <span class="feed-priority fp-act">Act now</span>
+            <span class="feed-time">1 hr ago</span>
+          </div>
+          <div class="feed-title">James Wilson (155 Pine 7B) &mdash; 3rd late payment</div>
+          <div class="feed-body">Third consecutive late payment. Agent recommends escalation to formal notice. Previous payment plan was not honored.</div>
+          <div class="feed-actions">
+            <button class="btn-primary">Send formal notice</button>
+            <button class="btn-secondary">Offer payment plan</button>
+            <button class="btn-convo">View history</button>
+          </div>
+        </div>
+        <!-- Review -->
+        <div class="feed-item review">
+          <div class="feed-top">
+            <span class="feed-emoji">&#x1F511;</span>
+            <span class="feed-agent">Leasing Agent</span>
+            <span class="feed-priority fp-review">Review</span>
+            <span class="feed-time">2 hrs ago</span>
+          </div>
+          <div class="feed-title">3 showings confirmed &mdash; 890 Oak Ave #12</div>
+          <div class="feed-body">Three prospective tenants confirmed for showings this week. Applications pre-screened and ready for review.</div>
+          <div class="feed-actions">
+            <button class="btn-primary">Review applicants</button>
+            <button class="btn-convo">View messages</button>
+          </div>
+        </div>
+        <!-- Done 1 -->
+        <div class="feed-item done">
+          <div class="feed-top">
+            <span class="feed-emoji">&#x1F4CB;</span>
+            <span class="feed-agent">Lease Renewal Agent</span>
+            <span class="feed-priority fp-done">Done</span>
+            <span class="feed-time">Yesterday</span>
+          </div>
+          <div class="feed-title">Angela Davis signed renewal</div>
+          <div class="feed-body">Lease renewed for 12 months at $2,150/mo (3% increase). Signed digitally. No escalation needed.</div>
+        </div>
+        <!-- Done 2 -->
+        <div class="feed-item done">
+          <div class="feed-top">
+            <span class="feed-emoji">&#x1F4CA;</span>
+            <span class="feed-agent">Owner Reporting Agent</span>
+            <span class="feed-priority fp-done">Done</span>
+            <span class="feed-time">Yesterday</span>
+          </div>
+          <div class="feed-title">January statements sent</div>
+          <div class="feed-body">Monthly owner statements generated and emailed to 12 property owners. All reports include P&amp;L, rent roll, and maintenance summary.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">How competitors handle this</div>
+
+    <div class="comp-cards">
+      <div class="comp-card">
+        <span class="comp-name comp-elise">EliseAI</span>
+        <div class="comp-text">Centralizes communications into one hub but focuses on conversation management, not agent oversight. PMs still manage individual threads rather than an agent team. No unified escalation view.</div>
+      </div>
+      <div class="comp-card">
+        <span class="comp-name comp-wonderful">Wonderful.ai</span>
+        <div class="comp-text">Their enterprise "Monitor" product provides a centralized inbox for AI conversations. Closer to our vision, but still conversation-centric rather than action-centric. No prioritized escalation feed.</div>
+      </div>
+      <div class="comp-card">
+        <span class="comp-name comp-aptly">Aptly</span>
+        <div class="comp-text">Aptly's Dashboard shows a Team Performance Dashboard that tracks metrics and response times. It's analytics-oriented, not action-oriented. PMs review performance after the fact, not manage in real time.</div>
+      </div>
+    </div>
+
+    <div class="callout-purple">No competitor today gives a PM a single screen to manage an agent team with prioritized escalations, inline approvals, and full audit trail. This is the gap.</div>
+  </div>
+
+  <!-- SLIDE 5: Audit Log -->
+  <div class="slide" id="slide-4">
+    <div class="slide-subtitle">Building block deep-dive &middot; Audit Log <span class="badge badge-karin" style="margin-left:8px;"><span class="dot"></span> Karin</span></div>
+
+    <div class="comparison-row">
+      <div class="compare-card compare-amber">
+        <div class="compare-icon">&#x26A1;</div>
+        <div class="compare-title">Command Center</div>
+        <div class="compare-desc">Real-time, action-oriented. What's happening now and what needs my attention.</div>
+      </div>
+      <div class="compare-card compare-purple">
+        <div class="compare-icon">&#x1F4CB;</div>
+        <div class="compare-title">Audit Log</div>
+        <div class="compare-desc">Historical, accountability-oriented. What happened, when, and why.</div>
+      </div>
+    </div>
+
+    <div class="section-title">What it is</div>
+    <p class="section-text">The Audit Log is the complete, searchable record of every decision made in your property management operation &mdash; whether by an AI agent or a human. Every workflow step, every escalation, every approval, every communication is logged with a timestamp and full context.</p>
+    <p class="section-text">It's generated automatically by the workflow engine. PMs don't create audit entries &mdash; the system does. This is how you answer: "What happened with unit 3A last Tuesday?" or "Show me every decision the maintenance agent made this month."</p>
+
+    <div class="qa-box">
+      <div style="font-size:13px; font-weight:700; color:#5B21B6; margin-bottom:12px;">When the audit log matters</div>
+      <div class="qa-item">
+        <div class="qa-q">"Why was this vendor chosen for the repair?"</div>
+        <div class="qa-a">The audit log shows the AI evaluated 3 vendors, selected ABC Plumbing based on rating (4.8), availability (same-day), and cost ($2,800 vs $3,200 average). Decision logged at 9:42am.</div>
+      </div>
+      <div class="qa-item">
+        <div class="qa-q">"Who approved the lease renewal at that rate?"</div>
+        <div class="qa-a">The log shows the AI agent proposed a 3% increase based on market comps. Sarah Chen approved at 2:15pm on Jan 12. The tenant signed digitally at 4:30pm.</div>
+      </div>
+      <div class="qa-item">
+        <div class="qa-q">"Show me everything that happened with this tenant's complaint."</div>
+        <div class="qa-a">Full timeline: tenant submitted request (8:00am), AI triaged as urgent (8:01am), vendor dispatched (8:15am), tenant notified (8:16am), vendor arrived (10:30am), resolution confirmed (2:00pm). Every step logged.</div>
+      </div>
+    </div>
+
+    <!-- Audit Log Mockup -->
+    <div class="mockup">
+      <div class="mockup-topbar">
+        <div class="mockup-logo">D</div>
+        <span class="mockup-topbar-title">DoorLoop AI</span>
+        <span class="mockup-topbar-sub">Audit Log</span>
+      </div>
+      <div class="audit-toolbar">
+        <input class="audit-search" type="text" placeholder="Search decisions...">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="ai">AI only</button>
+        <button class="filter-btn" data-filter="human">Human only</button>
+        <button class="filter-btn" data-filter="escalated">Escalated</button>
+      </div>
+      <div class="audit-stats" id="audit-stats">
+        <span><strong id="stat-shown">6</strong> decisions shown</span>
+        <span><strong>3</strong> AI</span>
+        <span><strong>2</strong> Human</span>
+        <span><strong>1</strong> Escalated</span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="audit-table">
+          <thead>
+            <tr>
+              <th style="width:20px;"></th>
+              <th>Time</th>
+              <th>Agent</th>
+              <th>Property</th>
+              <th>Decision</th>
+              <th>By</th>
+              <th>Result</th>
+            </tr>
+          </thead>
+          <tbody id="audit-body">
+            <tr class="audit-row" data-by="ai" data-esc="no" data-idx="0">
+              <td class="audit-expand">&#x25B6;</td>
+              <td>9:42 AM</td>
+              <td>Maintenance</td>
+              <td>742 Evergreen 3A</td>
+              <td>Vendor selected</td>
+              <td><span class="by-badge by-ai">AI</span></td>
+              <td><span class="result-badge result-approved">Approved</span></td>
+            </tr>
+            <tr class="audit-detail" data-idx="0">
+              <td colspan="7">
+                <strong>Vendor Selection &mdash; Water Heater Replacement</strong><br>
+                AI evaluated 3 vendors: ABC Plumbing (4.8 stars, $2,800), QuickFix (4.2 stars, $3,200), CityPipe (4.5 stars, $2,950). Selected ABC Plumbing based on rating, cost, and same-day availability. Tenant notified of ETA. Owner approval requested via Command Center.
+              </td>
+            </tr>
+
+            <tr class="audit-row" data-by="human" data-esc="yes" data-idx="1">
+              <td class="audit-expand">&#x25B6;</td>
+              <td>9:45 AM</td>
+              <td>Maintenance</td>
+              <td>742 Evergreen 3A</td>
+              <td>Repair approved</td>
+              <td><span class="by-badge by-human">Human</span></td>
+              <td><span class="result-badge result-approved">Approved</span></td>
+            </tr>
+            <tr class="audit-detail" data-idx="1">
+              <td colspan="7">
+                <strong>Human Override &mdash; Repair Approval</strong><br>
+                Sarah Chen approved the $2,800 repair via Command Center at 9:45 AM. Approval forwarded to property owner. Vendor confirmed start time: 11:00 AM. Escalation resolved in under 4 minutes.
+              </td>
+            </tr>
+
+            <tr class="audit-row" data-by="ai" data-esc="no" data-idx="2">
+              <td class="audit-expand">&#x25B6;</td>
+              <td>10:15 AM</td>
+              <td>Rent Collection</td>
+              <td>155 Pine St 7B</td>
+              <td>Late notice sent</td>
+              <td><span class="by-badge by-ai">AI</span></td>
+              <td><span class="result-badge result-sent">Sent</span></td>
+            </tr>
+            <tr class="audit-detail" data-idx="2">
+              <td colspan="7">
+                <strong>Automated Late Notice &mdash; James Wilson</strong><br>
+                Third consecutive late payment detected. AI generated formal late notice per company policy (3-strike rule). Notice sent via email and tenant portal. Payment plan option included. 5-day cure period initiated.
+              </td>
+            </tr>
+
+            <tr class="audit-row" data-by="ai" data-esc="no" data-idx="3">
+              <td class="audit-expand">&#x25B6;</td>
+              <td>11:30 AM</td>
+              <td>Leasing</td>
+              <td>890 Oak Ave #12</td>
+              <td>Showings scheduled</td>
+              <td><span class="by-badge by-ai">AI</span></td>
+              <td><span class="result-badge result-completed">Completed</span></td>
+            </tr>
+            <tr class="audit-detail" data-idx="3">
+              <td colspan="7">
+                <strong>Automated Showing Scheduling</strong><br>
+                3 prospective tenants confirmed for showings. AI coordinated availability across all parties. Background pre-screening completed: all 3 meet minimum credit and income requirements. Schedule sent to PM for awareness.
+              </td>
+            </tr>
+
+            <tr class="audit-row" data-by="human" data-esc="no" data-idx="4">
+              <td class="audit-expand">&#x25B6;</td>
+              <td>2:15 PM</td>
+              <td>Lease Renewal</td>
+              <td>320 Maple Dr 5C</td>
+              <td>Renewal approved</td>
+              <td><span class="by-badge by-human">Human</span></td>
+              <td><span class="result-badge result-approved">Approved</span></td>
+            </tr>
+            <tr class="audit-detail" data-idx="4">
+              <td colspan="7">
+                <strong>Lease Renewal &mdash; Angela Davis</strong><br>
+                AI proposed 3% rent increase ($2,087 to $2,150) based on market analysis. Sarah Chen reviewed and approved. Renewal documents generated and sent for digital signature. Tenant signed at 4:30 PM. New lease effective March 1.
+              </td>
+            </tr>
+
+            <tr class="audit-row" data-by="ai" data-esc="no" data-idx="5">
+              <td class="audit-expand">&#x25B6;</td>
+              <td>5:00 PM</td>
+              <td>Owner Reporting</td>
+              <td>All properties</td>
+              <td>Statements sent</td>
+              <td><span class="by-badge by-ai">AI</span></td>
+              <td><span class="result-badge result-sent">Sent</span></td>
+            </tr>
+            <tr class="audit-detail" data-idx="5">
+              <td colspan="7">
+                <strong>Monthly Owner Statements &mdash; January</strong><br>
+                Generated and emailed statements to 12 property owners. Each report includes P&amp;L summary, rent roll, maintenance expenses, and vacancy status. All reports delivered successfully. No bounced emails.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="audit-footer">
+        Showing <span id="audit-count">6</span> of 47 decisions today &middot; <span>Export CSV</span> &middot; <span>Filter by date range</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// Tab switching
+document.querySelectorAll('.tab-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.slide').forEach(function(s) { s.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('slide-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// Audit log row expand/collapse
+document.querySelectorAll('.audit-row').forEach(function(row) {
+  row.addEventListener('click', function() {
+    var idx = row.dataset.idx;
+    var detail = document.querySelector('.audit-detail[data-idx="' + idx + '"]');
+    var isOpen = detail.classList.contains('open');
+
+    // Close all
+    document.querySelectorAll('.audit-detail').forEach(function(d) { d.classList.remove('open'); });
+    document.querySelectorAll('.audit-row .audit-expand').forEach(function(e) { e.innerHTML = '\u25B6'; });
+
+    if (!isOpen) {
+      detail.classList.add('open');
+      row.querySelector('.audit-expand').innerHTML = '\u25BC';
+    }
+  });
+});
+
+// Audit log filter buttons
+document.querySelectorAll('.filter-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+
+    var filter = btn.dataset.filter;
+    var rows = document.querySelectorAll('.audit-row');
+    var count = 0;
+
+    // Close all detail rows
+    document.querySelectorAll('.audit-detail').forEach(function(d) { d.classList.remove('open'); });
+    document.querySelectorAll('.audit-row .audit-expand').forEach(function(e) { e.innerHTML = '\u25B6'; });
+
+    rows.forEach(function(row) {
+      var detail = document.querySelector('.audit-detail[data-idx="' + row.dataset.idx + '"]');
+      var show = false;
+
+      if (filter === 'all') show = true;
+      else if (filter === 'ai') show = row.dataset.by === 'ai';
+      else if (filter === 'human') show = row.dataset.by === 'human';
+      else if (filter === 'escalated') show = row.dataset.esc === 'yes';
+
+      row.style.display = show ? '' : 'none';
+      detail.style.display = show ? '' : 'none';
+      if (!show) detail.classList.remove('open');
+      if (show) count++;
+    });
+
+    document.getElementById('audit-count').textContent = count;
+    document.getElementById('stat-shown').textContent = count;
+  });
+});
+</script>
+<script src="cori.js"></script>
+</body>
 </html>
