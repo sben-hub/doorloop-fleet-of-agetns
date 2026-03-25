@@ -662,6 +662,374 @@ function selectSeg(btn) {
   btn.classList.add('active');
 }
 </script>
-<script src="cori.js"></script>
+
+<!-- ==================== CORI Command-K Assistant ==================== -->
+<style>
+  /* CORI Floating Pill Trigger */
+  .cori-trigger {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #8b5cf6;
+    color: white;
+    border: none;
+    border-radius: 9999px;
+    height: 44px;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 4px 24px rgba(139, 92, 246, 0.35), 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 9000;
+  }
+  .cori-trigger:hover {
+    transform: translateX(-50%) translateY(-3px);
+    box-shadow: 0 8px 32px rgba(139, 92, 246, 0.45), 0 4px 12px rgba(0,0,0,0.12);
+  }
+  .cori-trigger .cori-sparkle { font-size: 16px; line-height: 1; }
+  .cori-trigger .cori-shortcut {
+    font-size: 11px;
+    font-weight: 500;
+    background: rgba(255,255,255,0.2);
+    padding: 2px 8px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  /* CORI Backdrop */
+  .cori-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 9998;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+  }
+  .cori-backdrop.open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* CORI Modal */
+  .cori-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.95);
+    width: 560px;
+    max-height: 420px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.18), 0 8px 32px rgba(0,0,0,0.1);
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), visibility 0.2s ease;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .cori-modal.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  /* Search input row */
+  .cori-input-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 24px;
+    flex-shrink: 0;
+  }
+  .cori-input-icon {
+    font-size: 22px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .cori-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 18px;
+    font-family: inherit;
+    color: #1c1917;
+    background: transparent;
+    font-weight: 500;
+  }
+  .cori-input::placeholder { color: #c4b5a8; font-weight: 400; }
+  .cori-input-esc {
+    font-size: 11px;
+    font-weight: 600;
+    color: #a8a29e;
+    background: #f5f5f4;
+    padding: 3px 8px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    letter-spacing: 0.5px;
+  }
+
+  /* Divider */
+  .cori-divider {
+    height: 1px;
+    background: #f0eeec;
+    flex-shrink: 0;
+  }
+
+  /* Scrollable body */
+  .cori-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 8px 12px;
+  }
+
+  /* Suggestion rows */
+  .cori-suggestion {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-size: 15px;
+    color: #44403c;
+  }
+  .cori-suggestion:hover {
+    background: #f5f3ff;
+    color: #7c3aed;
+  }
+  .cori-suggestion .cs-emoji { font-size: 18px; flex-shrink: 0; }
+  .cori-suggestion .cs-text { flex: 1; font-weight: 500; }
+  .cori-suggestion .cs-arrow {
+    font-size: 14px;
+    color: #d6d3d1;
+    transition: color 0.15s, transform 0.15s;
+  }
+  .cori-suggestion:hover .cs-arrow {
+    color: #8b5cf6;
+    transform: translateX(2px);
+  }
+
+  /* Response area */
+  .cori-response-area {
+    padding: 16px 20px 8px;
+    display: none;
+  }
+  .cori-response-area.visible { display: block; }
+
+  /* Typing dots */
+  .cori-typing {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    padding: 4px 0;
+  }
+  .cori-typing span {
+    width: 8px;
+    height: 8px;
+    background: #c4b5fd;
+    border-radius: 50%;
+    animation: coriBounce 1.2s infinite;
+  }
+  .cori-typing span:nth-child(2) { animation-delay: 0.15s; }
+  .cori-typing span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes coriBounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-6px); }
+  }
+
+  /* Response text */
+  .cori-response-text {
+    font-size: 15px;
+    line-height: 1.7;
+    color: #44403c;
+    display: none;
+  }
+  .cori-response-text.visible {
+    display: block;
+    animation: coriFadeIn 0.35s ease;
+  }
+  @keyframes coriFadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Clear button */
+  .cori-clear-btn {
+    display: none;
+    margin-top: 12px;
+    padding: 7px 18px;
+    border-radius: 10px;
+    border: 1.5px solid #e7e5e4;
+    background: white;
+    font-size: 13px;
+    font-weight: 600;
+    color: #78716c;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .cori-clear-btn:hover {
+    border-color: #8b5cf6;
+    color: #8b5cf6;
+    background: #faf5ff;
+  }
+  .cori-clear-btn.visible { display: inline-block; }
+</style>
+
+<!-- CORI Trigger Pill -->
+<button class="cori-trigger" id="coriTrigger" onclick="coriOpen()">
+  <span class="cori-sparkle">&#x2728;</span>
+  Ask CORI...
+  <span class="cori-shortcut">&#x2318;K</span>
+</button>
+
+<!-- CORI Backdrop -->
+<div class="cori-backdrop" id="coriBackdrop" onclick="coriClose()"></div>
+
+<!-- CORI Modal -->
+<div class="cori-modal" id="coriModal">
+  <div class="cori-input-row">
+    <span class="cori-input-icon">&#x2728;</span>
+    <input class="cori-input" id="coriInput" type="text" placeholder="Ask CORI anything..." autocomplete="off">
+    <span class="cori-input-esc">ESC</span>
+  </div>
+  <div class="cori-divider"></div>
+  <div class="cori-body">
+    <div id="coriSuggestions">
+      <div class="cori-suggestion" onclick="coriAsk('How are my agents doing?')">
+        <span class="cs-emoji">&#x2728;</span>
+        <span class="cs-text">How are my agents doing?</span>
+        <span class="cs-arrow">&#x2192;</span>
+      </div>
+      <div class="cori-suggestion" onclick="coriAsk('Show me this month\'s performance')">
+        <span class="cs-emoji">&#x1F4CA;</span>
+        <span class="cs-text">Show me this month's performance</span>
+        <span class="cs-arrow">&#x2192;</span>
+      </div>
+      <div class="cori-suggestion" onclick="coriAsk('What needs my attention?')">
+        <span class="cs-emoji">&#x1F527;</span>
+        <span class="cs-text">What needs my attention?</span>
+        <span class="cs-arrow">&#x2192;</span>
+      </div>
+      <div class="cori-suggestion" onclick="coriAsk('Suggest improvements for my setup')">
+        <span class="cs-emoji">&#x1F4A1;</span>
+        <span class="cs-text">Suggest improvements for my setup</span>
+        <span class="cs-arrow">&#x2192;</span>
+      </div>
+    </div>
+    <div class="cori-response-area" id="coriResponseArea">
+      <div class="cori-typing" id="coriTyping">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="cori-response-text" id="coriResponseText"></div>
+      <button class="cori-clear-btn" id="coriClearBtn" onclick="coriClear()">Clear</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---- CORI Command-K Assistant ---- */
+var coriResponses = {
+  'how are my agents doing?': 'All 3 active agents are running smoothly. Maintenance handled 12 requests, Renewal sent 8 offers (5 signed!), Collection resolved 3 late payments automatically. No escalations needed today. \uD83C\uDF89',
+  'show me this month\'s performance': 'February summary: $148,200 collected (97% on time), 1 vacancy being filled, 5 renewals signed. Your agents saved you approximately 14 hours of manual work this month.',
+  'what needs my attention?': 'Two things: (1) James Wilson is late for the 3rd time \u2014 your Collection agent recommends a formal notice. (2) Water heater quote at 742 Evergreen needs owner approval ($2,800).',
+  'suggest improvements for my setup': 'Three ideas: (1) Enable weekend dispatch \u2014 you\u2019re missing 2-day windows on urgent repairs. (2) Turn on the Leasing agent \u2014 you have 2 vacancies with no automated response. (3) Set up auto-renewal for long-term tenants to reduce manual work.'
+};
+
+function coriOpen() {
+  document.getElementById('coriBackdrop').classList.add('open');
+  document.getElementById('coriModal').classList.add('open');
+  document.getElementById('coriTrigger').style.opacity = '0';
+  document.getElementById('coriTrigger').style.pointerEvents = 'none';
+  setTimeout(function() {
+    document.getElementById('coriInput').focus();
+  }, 80);
+}
+
+function coriClose() {
+  document.getElementById('coriBackdrop').classList.remove('open');
+  document.getElementById('coriModal').classList.remove('open');
+  document.getElementById('coriTrigger').style.opacity = '1';
+  document.getElementById('coriTrigger').style.pointerEvents = 'auto';
+  // Reset after close animation
+  setTimeout(function() {
+    document.getElementById('coriInput').value = '';
+    coriClear();
+  }, 250);
+}
+
+function coriClear() {
+  document.getElementById('coriSuggestions').style.display = '';
+  document.getElementById('coriResponseArea').classList.remove('visible');
+  document.getElementById('coriTyping').style.display = 'flex';
+  document.getElementById('coriResponseText').classList.remove('visible');
+  document.getElementById('coriResponseText').textContent = '';
+  document.getElementById('coriClearBtn').classList.remove('visible');
+  document.getElementById('coriInput').value = '';
+  document.getElementById('coriInput').focus();
+}
+
+function coriAsk(question) {
+  var q = question.toLowerCase().trim();
+  var responseText = coriResponses[q] || 'I can help with that! Let me look into it and get back to you shortly.';
+
+  document.getElementById('coriInput').value = question;
+  document.getElementById('coriSuggestions').style.display = 'none';
+  document.getElementById('coriResponseArea').classList.add('visible');
+  document.getElementById('coriTyping').style.display = 'flex';
+  document.getElementById('coriResponseText').classList.remove('visible');
+  document.getElementById('coriClearBtn').classList.remove('visible');
+
+  setTimeout(function() {
+    document.getElementById('coriTyping').style.display = 'none';
+    document.getElementById('coriResponseText').textContent = responseText;
+    document.getElementById('coriResponseText').classList.add('visible');
+    document.getElementById('coriClearBtn').classList.add('visible');
+  }, 1000);
+}
+
+// Keyboard shortcut: Cmd+K / Ctrl+K to open/close, Escape to close
+document.addEventListener('keydown', function(e) {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    e.preventDefault();
+    var modal = document.getElementById('coriModal');
+    if (modal.classList.contains('open')) {
+      coriClose();
+    } else {
+      coriOpen();
+    }
+  }
+  if (e.key === 'Escape') {
+    var modal = document.getElementById('coriModal');
+    if (modal.classList.contains('open')) {
+      coriClose();
+    }
+  }
+});
+
+// Enter key in input to submit
+document.getElementById('coriInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    var val = this.value.trim();
+    if (val) {
+      coriAsk(val);
+    }
+  }
+});
+</script>
+
 </body>
 </html>

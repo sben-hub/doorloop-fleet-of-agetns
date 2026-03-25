@@ -1478,6 +1478,360 @@ function closeDrawer() {
   </div>
 </div>
 
-<script src="cori.js"></script>
+<!-- CORI Drawer AI Assistant -->
+<style>
+  /* CORI Trigger Button */
+  .cori-trigger {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed, #4C6FFF);
+    border: none;
+    color: white;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(124, 58, 237, 0.4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    z-index: 9998;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .cori-trigger:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 24px rgba(124, 58, 237, 0.5);
+  }
+  .cori-trigger.hidden { display: none; }
+
+  /* Overlay */
+  .cori-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+  .cori-overlay.open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* Drawer */
+  .cori-drawer {
+    position: fixed;
+    top: 40px;
+    right: 0;
+    width: 380px;
+    height: calc(100vh - 40px);
+    background: #ffffff;
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+  }
+  .cori-drawer.open {
+    transform: translateX(0);
+  }
+
+  /* Drawer Header */
+  .cori-drawer-header {
+    height: 60px;
+    background: linear-gradient(135deg, #7c3aed, #4C6FFF);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    flex-shrink: 0;
+  }
+  .cori-drawer-header-info {
+    flex: 1;
+  }
+  .cori-drawer-header-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.2;
+  }
+  .cori-drawer-header-sub {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.2;
+  }
+  .cori-drawer-close {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+  .cori-drawer-close:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  /* Messages Area */
+  .cori-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Message Rows */
+  .cori-msg-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .cori-msg-row.user {
+    flex-direction: row-reverse;
+  }
+  .cori-msg-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed, #4C6FFF);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .cori-msg-bubble {
+    max-width: 75%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #1a2b4a;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+  }
+  .cori-msg-row.user .cori-msg-bubble {
+    background: linear-gradient(135deg, #4C6FFF, #3b82f6);
+    color: white;
+    border: none;
+  }
+  .cori-msg-bubble strong {
+    font-weight: 600;
+  }
+
+  /* Typing Indicator */
+  .cori-typing {
+    display: flex;
+    gap: 4px;
+    padding: 12px 14px;
+  }
+  .cori-typing span {
+    width: 7px;
+    height: 7px;
+    background: #94a3b8;
+    border-radius: 50%;
+    animation: coriTypingBounce 1.2s infinite;
+  }
+  .cori-typing span:nth-child(2) { animation-delay: 0.15s; }
+  .cori-typing span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes coriTypingBounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-4px); opacity: 1; }
+  }
+
+  /* Suggestions */
+  .cori-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-left: 40px;
+  }
+  .cori-suggestion {
+    padding: 6px 12px;
+    background: #ffffff;
+    border: 1px solid #c7d2fe;
+    border-radius: 16px;
+    font-size: 12px;
+    color: #4C6FFF;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .cori-suggestion:hover {
+    background: #eff6ff;
+    border-color: #4C6FFF;
+  }
+
+  /* Input Area */
+  .cori-input-area {
+    padding: 12px 16px;
+    border-top: 1px solid #e8ecf1;
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+    background: #ffffff;
+  }
+  .cori-input-area input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .cori-input-area input:focus {
+    border-color: #7c3aed;
+  }
+  .cori-input-area button {
+    padding: 0 16px;
+    background: linear-gradient(135deg, #7c3aed, #4C6FFF);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    font-family: inherit;
+  }
+  .cori-input-area button:hover {
+    opacity: 0.9;
+  }
+</style>
+
+<!-- CORI Trigger Button -->
+<button class="cori-trigger" id="coriTrigger" onclick="coriOpen()">C</button>
+
+<!-- CORI Overlay -->
+<div class="cori-overlay" id="coriOverlay" onclick="coriClose()"></div>
+
+<!-- CORI Drawer -->
+<div class="cori-drawer" id="coriDrawer">
+  <div class="cori-drawer-header">
+    <div class="cori-drawer-header-info">
+      <div class="cori-drawer-header-title">CORI</div>
+      <div class="cori-drawer-header-sub">DoorLoop AI Assistant</div>
+    </div>
+    <button class="cori-drawer-close" onclick="coriClose()">&times;</button>
+  </div>
+  <div class="cori-messages" id="coriMessages">
+    <!-- Initial message -->
+    <div class="cori-msg-row">
+      <div class="cori-msg-avatar">C</div>
+      <div class="cori-msg-bubble">I'm <strong>CORI</strong>. I can help you understand your agent performance, spot trends, and optimize your setup.</div>
+    </div>
+    <!-- Suggestions -->
+    <div class="cori-suggestions" id="coriSuggestions">
+      <button class="cori-suggestion" onclick="coriAsk(this)">How are my agents performing?</button>
+      <button class="cori-suggestion" onclick="coriAsk(this)">Which agent should I set up next?</button>
+      <button class="cori-suggestion" onclick="coriAsk(this)">Why is the escalation rate 12%?</button>
+    </div>
+  </div>
+  <div class="cori-input-area">
+    <input type="text" id="coriInput" placeholder="Ask CORI..." onkeydown="if(event.key==='Enter')coriSendInput()">
+    <button onclick="coriSendInput()">Send</button>
+  </div>
+</div>
+
+<script>
+(function() {
+  const responses = {
+    "How are my agents performing?": "Your 6 agents handled 156 active workflows this week. SLA compliance is at 96.3%. Maintenance Agent has the highest load (62 workflows) but response time is still under 5 minutes. Rent Collection is at 100/102 \u2014 2 escalations pending your review.",
+    "Which agent should I set up next?": "Based on your portfolio, I\u2019d recommend setting up the <strong>Inspection Agent</strong> next. You have 102 units with no automated inspection scheduling. Annual inspections are due for 34 units in the next 90 days.",
+    "Why is the escalation rate 12%?": "8 of 67 decisions were escalated to you this week. Main drivers: 3 maintenance quotes above threshold ($500), 2 chronic late payers, 2 lease negotiations, 1 mold report requiring licensed contractor. The mold case is unusual \u2014 without it, your rate would be 10.4%."
+  };
+
+  window.coriOpen = function() {
+    document.getElementById('coriDrawer').classList.add('open');
+    document.getElementById('coriOverlay').classList.add('open');
+    document.getElementById('coriTrigger').classList.add('hidden');
+  };
+
+  window.coriClose = function() {
+    document.getElementById('coriDrawer').classList.remove('open');
+    document.getElementById('coriOverlay').classList.remove('open');
+    document.getElementById('coriTrigger').classList.remove('hidden');
+  };
+
+  window.coriAsk = function(btn) {
+    var question = btn.textContent;
+    // Remove suggestions
+    var sugEl = document.getElementById('coriSuggestions');
+    if (sugEl) sugEl.remove();
+    // Add user message
+    addUserMsg(question);
+    // Show typing then response
+    showTypingThenRespond(question);
+  };
+
+  window.coriSendInput = function() {
+    var input = document.getElementById('coriInput');
+    var text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+    addUserMsg(text);
+    // Check if it matches a known question
+    var answer = responses[text];
+    if (answer) {
+      showTypingThenRespond(text);
+    } else {
+      showTypingThenRespond(null);
+    }
+  };
+
+  function addUserMsg(text) {
+    var msgs = document.getElementById('coriMessages');
+    var row = document.createElement('div');
+    row.className = 'cori-msg-row user';
+    row.innerHTML = '<div class="cori-msg-bubble">' + escapeHtml(text) + '</div>';
+    msgs.appendChild(row);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function showTypingThenRespond(question) {
+    var msgs = document.getElementById('coriMessages');
+    // Typing indicator
+    var typingRow = document.createElement('div');
+    typingRow.className = 'cori-msg-row';
+    typingRow.innerHTML = '<div class="cori-msg-avatar">C</div><div class="cori-msg-bubble"><div class="cori-typing"><span></span><span></span><span></span></div></div>';
+    msgs.appendChild(typingRow);
+    msgs.scrollTop = msgs.scrollHeight;
+
+    setTimeout(function() {
+      typingRow.remove();
+      var answer = question && responses[question] ? responses[question] : "I\u2019m still learning about your portfolio. Could you try asking about agent performance, setup recommendations, or escalation rates?";
+      var row = document.createElement('div');
+      row.className = 'cori-msg-row';
+      row.innerHTML = '<div class="cori-msg-avatar">C</div><div class="cori-msg-bubble">' + answer + '</div>';
+      msgs.appendChild(row);
+      msgs.scrollTop = msgs.scrollHeight;
+    }, 1000);
+  }
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+})();
+</script>
+
 </body>
 </html>
