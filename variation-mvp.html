@@ -1332,14 +1332,6 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
   </div><!-- /screen-agent-wizard -->
 
   <!-- ===== SETUP MODE MODAL ===== -->
-  <div class="setup-modal-overlay" id="setupModalOverlay" onclick="closeSetupModal(event)">
-    <div class="setup-modal" onclick="event.stopPropagation()">
-      <button class="setup-modal-close" onclick="closeSetupModal()">&times;</button>
-      <h2 id="setupModalTitle">How would you like to set up your Maintenance agent?</h2>
-      <p class="modal-subtitle">Choose your preferred setup experience</p>
-      <div class="setup-mode-cards">
-        <!-- Conversational -->
-        <div class="setup-mode-card" onclick="chooseSetupMode('chat')">
           <div class="mode-icon">&#128172;</div>
           <h3>Conversational Setup</h3>
           <div class="mode-subtitle">Chat with AI to build your agent</div>
@@ -2746,5 +2738,44 @@ document.addEventListener('DOMContentLoaded', function() {
   setTimeout(() => startAiLoop(), 3000);
 });
 </script>
+
+<!-- ===== SETUP MODE MODAL (outside .app for proper z-index) ===== -->
+<div class="setup-modal-overlay" id="setupModalOverlay" onclick="closeSetupModal(event)">
+  <div class="setup-modal" onclick="event.stopPropagation()">
+    <button class="setup-modal-close" onclick="closeSetupModal(event)">&times;</button>
+    <h2 id="setupModalTitle">How would you like to set up your Maintenance agent?</h2>
+    <p class="modal-subtitle">Choose your preferred setup experience</p>
+    <div class="setup-mode-cards">
+      <div class="setup-mode-card" onclick="chooseSetupMode('chat')">
+        <div class="mode-icon">&#128172;</div>
+        <h3>Conversational Setup</h3>
+        <div class="mode-subtitle">Chat with AI to build your agent</div>
+        <p class="mode-desc">Have a natural conversation with our AI assistant. Upload your policies, answer questions, and watch your workflow build in real-time.</p>
+        <div class="mode-tag">Recommended for tech-savvy users</div>
+        <div class="mode-preview mode-preview-chat">
+          <div class="mp-line"><span class="mp-dot ai"></span><span class="mp-bar" style="width:75%"></span></div>
+          <div class="mp-line"><span class="mp-dot user"></span><span class="mp-bar" style="width:50%"></span></div>
+          <div class="mp-line"><span class="mp-dot ai"></span><span class="mp-bar" style="width:90%"></span></div>
+          <div class="mp-line"><span class="mp-dot user"></span><span class="mp-bar" style="width:40%"></span></div>
+        </div>
+      </div>
+      <div class="setup-mode-card" onclick="chooseSetupMode('wizard')">
+        <div class="mode-icon">&#129497;</div>
+        <h3>Guided Wizard</h3>
+        <div class="mode-subtitle">Step-by-step configuration</div>
+        <p class="mode-desc">Follow a structured 5-step wizard. Select your agent type, upload policies, configure rules, assign your team, and review before launching.</p>
+        <div class="mode-tag">Recommended for quick setup</div>
+        <div class="mode-preview mode-preview-steps">
+          <div class="mp-step"><span class="mp-num">1</span> Select Type</div>
+          <div class="mp-step"><span class="mp-num">2</span> Upload</div>
+          <div class="mp-step"><span class="mp-num">3</span> Configure</div>
+          <div class="mp-step"><span class="mp-num">4</span> Team</div>
+          <div class="mp-step"><span class="mp-num">5</span> Launch</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
