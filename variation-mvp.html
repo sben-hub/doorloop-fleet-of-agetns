@@ -394,6 +394,180 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
   .kpi-row { grid-template-columns: repeat(3, 1fr); }
   .perf-agent-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ===== SETUP MODE MODAL ===== */
+.setup-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 9999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+.setup-modal-overlay.visible { opacity: 1; pointer-events: all; }
+.setup-modal { background: white; border-radius: 16px; width: 640px; max-width: 92vw; box-shadow: 0 24px 80px rgba(0,0,0,0.18); padding: 36px 40px 32px; position: relative; transform: translateY(12px) scale(0.97); transition: transform 0.25s ease; }
+.setup-modal-overlay.visible .setup-modal { transform: translateY(0) scale(1); }
+.setup-modal-close { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border-radius: 8px; border: none; background: #f5f7fb; cursor: pointer; font-size: 16px; color: #6b7a99; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+.setup-modal-close:hover { background: #e8ecf1; }
+.setup-modal h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+.setup-modal .modal-subtitle { font-size: 14px; color: #6b7a99; margin-bottom: 28px; }
+.setup-mode-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.setup-mode-card { border: 2px solid #e8ecf1; border-radius: 14px; padding: 24px 20px 20px; cursor: pointer; transition: all 0.2s; position: relative; }
+.setup-mode-card:hover { border-color: #4C6FFF; box-shadow: 0 6px 20px rgba(76,111,255,0.1); transform: translateY(-2px); }
+.setup-mode-card .mode-icon { font-size: 28px; margin-bottom: 12px; }
+.setup-mode-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.setup-mode-card .mode-subtitle { font-size: 12px; color: #4C6FFF; font-weight: 600; margin-bottom: 10px; }
+.setup-mode-card .mode-desc { font-size: 12.5px; color: #6b7a99; line-height: 1.55; margin-bottom: 14px; }
+.setup-mode-card .mode-tag { font-size: 10.5px; padding: 4px 10px; border-radius: 6px; background: #f0f4ff; color: #4C6FFF; font-weight: 600; display: inline-block; margin-bottom: 14px; }
+.setup-mode-card .mode-preview { background: #f8f9fc; border-radius: 8px; padding: 12px; min-height: 72px; }
+.mode-preview-chat .mp-line { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+.mode-preview-chat .mp-line:last-child { margin-bottom: 0; }
+.mode-preview-chat .mp-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.mode-preview-chat .mp-dot.ai { background: #4C6FFF; }
+.mode-preview-chat .mp-dot.user { background: #10b981; }
+.mode-preview-chat .mp-bar { height: 6px; border-radius: 3px; background: #e2e8f0; }
+.mode-preview-steps .mp-step { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; font-size: 11px; color: #6b7a99; }
+.mode-preview-steps .mp-step:last-child { margin-bottom: 0; }
+.mode-preview-steps .mp-num { width: 18px; height: 18px; border-radius: 50%; background: #4C6FFF; color: white; font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+/* ===== AGENT CHAT SETUP SCREEN ===== */
+.agent-chat-setup { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #f5f7fb; }
+.agent-chat-topbar { height: 56px; background: white; border-bottom: 1px solid #e8ecf1; display: flex; align-items: center; padding: 0 24px; gap: 16px; flex-shrink: 0; }
+.agent-chat-topbar .back-link { font-size: 13px; color: #6b7a99; cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 500; text-decoration: none; }
+.agent-chat-topbar .back-link:hover { color: #4C6FFF; }
+.agent-chat-topbar .topbar-title { font-size: 15px; font-weight: 600; }
+.agent-chat-body { flex: 1; display: flex; overflow: hidden; }
+.chat-setup-left { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: white; border-right: 1px solid #e8ecf1; max-width: 560px; }
+.chat-setup-messages { flex: 1; overflow-y: auto; padding: 24px 28px; display: flex; flex-direction: column; gap: 16px; }
+.csm-msg { max-width: 88%; animation: csmFadeIn 0.3s ease; }
+@keyframes csmFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.csm-msg.ai { align-self: flex-start; }
+.csm-msg.user { align-self: flex-end; }
+.csm-bubble { padding: 14px 18px; border-radius: 14px; font-size: 13.5px; line-height: 1.6; }
+.csm-msg.ai .csm-bubble { background: #f0f4ff; color: #1a2b4a; border-bottom-left-radius: 4px; }
+.csm-msg.user .csm-bubble { background: #4C6FFF; color: white; border-bottom-right-radius: 4px; }
+.csm-sender { font-size: 11px; font-weight: 600; color: #6b7a99; margin-bottom: 4px; }
+.csm-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.csm-actions .csm-btn { padding: 8px 16px; border-radius: 8px; border: 1px solid #e8ecf1; background: white; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.csm-actions .csm-btn:hover { border-color: #4C6FFF; color: #4C6FFF; }
+.csm-actions .csm-btn.primary { background: #4C6FFF; color: white; border-color: #4C6FFF; }
+.csm-actions .csm-btn.primary:hover { background: #3b5de7; }
+.csm-actions .csm-btn.ghost { background: none; border-color: transparent; color: #6b7a99; }
+.csm-actions .csm-btn.ghost:hover { color: #4C6FFF; }
+.csm-rule-card { background: white; border: 1px solid #e8ecf1; border-radius: 10px; padding: 12px 16px; margin-top: 10px; }
+.csm-rule-card .rule-label { font-size: 11px; font-weight: 600; color: #4C6FFF; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.csm-rule-card .rule-text { font-size: 12.5px; color: #1a2b4a; line-height: 1.5; }
+.csm-ready { text-align: center; padding: 20px; }
+.csm-ready .ready-icon { font-size: 40px; margin-bottom: 12px; }
+.csm-ready h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.csm-ready p { font-size: 13px; color: #6b7a99; margin-bottom: 16px; }
+.csm-ready .activate-btn { padding: 12px 32px; border-radius: 10px; background: #10b981; color: white; font-size: 14px; font-weight: 700; border: none; cursor: pointer; font-family: inherit; transition: background 0.15s; }
+.csm-ready .activate-btn:hover { background: #059669; }
+
+/* Chat setup workflow drawer (right) */
+.chat-setup-right { flex: 1; overflow-y: auto; padding: 24px; background: #f5f7fb; }
+.chat-wf-title { font-size: 14px; font-weight: 700; margin-bottom: 16px; color: #1a2b4a; display: flex; align-items: center; gap: 8px; }
+.chat-wf-title .wf-live-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; animation: wfPulse 2s infinite; }
+@keyframes wfPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+.chat-wf-nodes { display: flex; flex-direction: column; gap: 0; }
+.chat-wf-node { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; position: relative; opacity: 0.3; transform: translateX(-8px); transition: all 0.4s ease; }
+.chat-wf-node.visible { opacity: 1; transform: none; }
+.chat-wf-node .node-connector { position: absolute; left: 15px; top: 36px; bottom: -12px; width: 2px; background: #e8ecf1; }
+.chat-wf-node:last-child .node-connector { display: none; }
+.chat-wf-node .node-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; position: relative; z-index: 1; }
+.chat-wf-node .node-icon.blue { background: #e3f2fd; }
+.chat-wf-node .node-icon.orange { background: #fff3e0; }
+.chat-wf-node .node-icon.green { background: #e8f5e9; }
+.chat-wf-node .node-icon.purple { background: #ede7f6; }
+.chat-wf-node .node-icon.red { background: #fce4ec; }
+.chat-wf-node .node-label { font-size: 13px; font-weight: 600; color: #1a2b4a; }
+.chat-wf-node .node-desc { font-size: 11.5px; color: #6b7a99; margin-top: 2px; }
+
+/* ===== AGENT WIZARD SETUP SCREEN ===== */
+.agent-wizard-setup { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #f5f7fb; }
+.agent-wizard-topbar { height: 56px; background: white; border-bottom: 1px solid #e8ecf1; display: flex; align-items: center; padding: 0 24px; gap: 16px; flex-shrink: 0; }
+.agent-wizard-topbar .back-link { font-size: 13px; color: #6b7a99; cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 500; text-decoration: none; }
+.agent-wizard-topbar .back-link:hover { color: #4C6FFF; }
+.agent-wizard-topbar .topbar-title { font-size: 15px; font-weight: 600; }
+.wizard-stepper { display: flex; align-items: center; justify-content: center; padding: 20px 40px 0; gap: 0; }
+.wizard-step { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px 0; position: relative; }
+.wizard-step .step-num { width: 28px; height: 28px; border-radius: 50%; background: #e8ecf1; color: #6b7a99; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
+.wizard-step.active .step-num { background: #4C6FFF; color: white; }
+.wizard-step.completed .step-num { background: #10b981; color: white; }
+.wizard-step .step-label { font-size: 12.5px; font-weight: 600; color: #6b7a99; transition: color 0.2s; white-space: nowrap; }
+.wizard-step.active .step-label { color: #4C6FFF; }
+.wizard-step.completed .step-label { color: #10b981; }
+.wizard-step-connector { width: 40px; height: 2px; background: #e8ecf1; margin: 0 4px; flex-shrink: 0; }
+.wizard-step-connector.done { background: #10b981; }
+.wizard-body { flex: 1; overflow-y: auto; padding: 32px 60px; display: flex; flex-direction: column; align-items: center; }
+.wizard-panel { display: none; width: 100%; max-width: 780px; }
+.wizard-panel.active { display: block; }
+.wizard-panel h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+.wizard-panel .wp-subtitle { font-size: 13.5px; color: #6b7a99; margin-bottom: 24px; }
+.wizard-footer { padding: 16px 60px; background: white; border-top: 1px solid #e8ecf1; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+.wizard-footer .wiz-btn { padding: 10px 28px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid #e8ecf1; background: white; font-family: inherit; transition: all 0.15s; }
+.wizard-footer .wiz-btn:hover { border-color: #4C6FFF; color: #4C6FFF; }
+.wizard-footer .wiz-btn.primary { background: #4C6FFF; color: white; border-color: #4C6FFF; }
+.wizard-footer .wiz-btn.primary:hover { background: #3b5de7; }
+.wizard-footer .wiz-btn.success { background: #10b981; color: white; border-color: #10b981; }
+.wizard-footer .wiz-btn.success:hover { background: #059669; }
+.wizard-footer .wiz-btn:disabled { opacity: 0.4; pointer-events: none; }
+
+/* Wizard Step 1 - Select Type */
+.wiz-type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.wiz-type-card { border: 2px solid #e8ecf1; border-radius: 12px; padding: 20px 16px; cursor: pointer; transition: all 0.2s; text-align: center; }
+.wiz-type-card:hover { border-color: #4C6FFF; }
+.wiz-type-card.selected { border-color: #4C6FFF; background: #f0f4ff; }
+.wiz-type-card .wtc-icon { font-size: 28px; margin-bottom: 8px; }
+.wiz-type-card h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.wiz-type-card p { font-size: 11.5px; color: #6b7a99; line-height: 1.4; }
+
+/* Wizard Step 2 - Upload */
+.wiz-dropzone { border: 2px dashed #d0d7e2; border-radius: 12px; padding: 40px; text-align: center; margin-bottom: 16px; transition: border-color 0.2s; cursor: pointer; }
+.wiz-dropzone:hover { border-color: #4C6FFF; }
+.wiz-dropzone .dz-icon { font-size: 32px; margin-bottom: 10px; }
+.wiz-dropzone p { font-size: 13px; color: #6b7a99; }
+.wiz-dropzone .dz-cta { color: #4C6FFF; font-weight: 600; }
+.wiz-template-btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; border: 1px solid #e8ecf1; border-radius: 8px; background: white; font-size: 13px; font-weight: 600; cursor: pointer; color: #4C6FFF; font-family: inherit; transition: all 0.15s; }
+.wiz-template-btn:hover { background: #f0f4ff; }
+.wiz-uploaded-file { display: flex; align-items: center; gap: 10px; background: #f0f4ff; border-radius: 8px; padding: 12px 16px; margin-top: 12px; }
+.wiz-uploaded-file .uf-icon { font-size: 20px; }
+.wiz-uploaded-file .uf-name { font-size: 13px; font-weight: 600; flex: 1; }
+.wiz-uploaded-file .uf-check { color: #10b981; font-size: 16px; }
+
+/* Wizard Step 3 - Configure Rules */
+.wiz-rule-section { margin-bottom: 24px; }
+.wiz-rule-section h4 { font-size: 13px; font-weight: 700; margin-bottom: 10px; color: #1a2b4a; }
+.wiz-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.wiz-tag { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; background: #f0f4ff; color: #4C6FFF; cursor: pointer; border: 1px solid transparent; transition: all 0.15s; }
+.wiz-tag.active { background: #4C6FFF; color: white; }
+.wiz-sla-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.wiz-sla-table th { text-align: left; padding: 8px 12px; font-weight: 600; color: #6b7a99; font-size: 11px; text-transform: uppercase; border-bottom: 2px solid #e8ecf1; }
+.wiz-sla-table td { padding: 10px 12px; border-bottom: 1px solid #f0f2f5; }
+.wiz-sla-table .priority-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+.wiz-slider-row { display: flex; align-items: center; gap: 16px; margin-top: 8px; }
+.wiz-slider-row input[type=range] { flex: 1; accent-color: #4C6FFF; }
+.wiz-slider-row .slider-val { font-size: 16px; font-weight: 700; color: #4C6FFF; min-width: 56px; text-align: right; }
+.wiz-vendor-list { display: flex; flex-direction: column; gap: 8px; }
+.wiz-vendor-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: #f8f9fc; border-radius: 8px; }
+.wiz-vendor-item .vi-avatar { width: 32px; height: 32px; border-radius: 50%; background: #e3f2fd; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+.wiz-vendor-item .vi-name { font-size: 13px; font-weight: 600; }
+.wiz-vendor-item .vi-type { font-size: 11px; color: #6b7a99; }
+.wiz-vendor-item .vi-toggle { margin-left: auto; width: 36px; height: 20px; border-radius: 10px; background: #10b981; position: relative; cursor: pointer; }
+.wiz-vendor-item .vi-toggle::after { content: ''; position: absolute; top: 2px; right: 2px; width: 16px; height: 16px; border-radius: 50%; background: white; }
+
+/* Wizard Step 4 - Assign Team */
+.wiz-form-group { margin-bottom: 20px; }
+.wiz-form-group label { display: block; font-size: 12.5px; font-weight: 600; margin-bottom: 6px; color: #1a2b4a; }
+.wiz-form-group select, .wiz-form-group input { width: 100%; padding: 10px 14px; border: 1px solid #e8ecf1; border-radius: 8px; font-size: 13px; font-family: inherit; background: white; }
+.wiz-form-group select:focus, .wiz-form-group input:focus { outline: none; border-color: #4C6FFF; }
+.wiz-property-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.wiz-property-chip { padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 500; background: #f5f7fb; color: #1a2b4a; cursor: pointer; border: 1px solid #e8ecf1; transition: all 0.15s; }
+.wiz-property-chip.selected { background: #f0f4ff; border-color: #4C6FFF; color: #4C6FFF; }
+
+/* Wizard Step 5 - Review */
+.wiz-review-card { background: white; border: 1px solid #e8ecf1; border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+.wiz-review-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.wiz-review-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f2f5; font-size: 13px; }
+.wiz-review-row:last-child { border-bottom: none; }
+.wiz-review-row .rr-label { color: #6b7a99; }
+.wiz-review-row .rr-value { font-weight: 600; }
+.wiz-review-wf { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+.wiz-review-wf-node { display: flex; align-items: center; gap: 10px; font-size: 12.5px; }
+.wiz-review-wf-node .wrn-dot { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 11px; }
 </style>
 </head>
 <body>
@@ -854,7 +1028,7 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
             <span class="tile-feature">Owner approval</span>
             <span class="tile-feature">SMS/Email</span>
           </div>
-          <div class="tile-cta">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+          <div class="tile-cta" onclick="event.stopPropagation();openSetupModal('Maintenance')">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
         </div>
 
         <!-- Renewal -->
@@ -868,7 +1042,7 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
             <span class="tile-feature">Rent adjustment</span>
             <span class="tile-feature">E-sign</span>
           </div>
-          <div class="tile-cta">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+          <div class="tile-cta" onclick="event.stopPropagation();openSetupModal('Renewal')">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
         </div>
 
         <!-- Move-out -->
@@ -882,7 +1056,7 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
             <span class="tile-feature">Deposit calc</span>
             <span class="tile-feature">Turnover</span>
           </div>
-          <div class="tile-cta">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+          <div class="tile-cta" onclick="event.stopPropagation();openSetupModal('Move-out')">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
         </div>
 
         <!-- Move-in -->
@@ -896,7 +1070,7 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
             <span class="tile-feature">Checklist</span>
             <span class="tile-feature">Condition report</span>
           </div>
-          <div class="tile-cta">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+          <div class="tile-cta" onclick="event.stopPropagation();openSetupModal('Move-in')">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
         </div>
 
         <!-- Leasing -->
@@ -911,7 +1085,7 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
             <span class="tile-feature">Screening</span>
             <span class="tile-feature">E-sign</span>
           </div>
-          <div class="tile-cta">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+          <div class="tile-cta" onclick="event.stopPropagation();openSetupModal('Leasing')">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
         </div>
 
         <!-- Delinquency -->
@@ -925,11 +1099,277 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
             <span class="tile-feature">Late notices</span>
             <span class="tile-feature">Payment plans</span>
           </div>
-          <div class="tile-cta">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+          <div class="tile-cta" onclick="event.stopPropagation();openSetupModal('Delinquency')">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
         </div>
       </div>
     </div>
   </div><!-- /screen-agents -->
+
+  <!-- ===== SCREEN: Agent Chat Setup (V1 conversational) ===== -->
+  <div class="screen hidden" id="screen-agent-chat">
+    <div class="agent-chat-setup">
+      <div class="agent-chat-topbar">
+        <a class="back-link" onclick="switchScreen('agents')">&#8592; Back to Agents</a>
+        <span class="topbar-title" id="chatSetupTitle">Set up Maintenance Agent</span>
+      </div>
+      <div class="agent-chat-body">
+        <div class="chat-setup-left">
+          <div class="chat-setup-messages" id="chatSetupMessages">
+            <!-- Messages injected by JS -->
+          </div>
+        </div>
+        <div class="chat-setup-right">
+          <div class="chat-wf-title"><span class="wf-live-dot"></span> Workflow building in real-time</div>
+          <div class="chat-wf-nodes" id="chatWfNodes">
+            <div class="chat-wf-node" id="cwfn-trigger">
+              <div class="node-icon blue">&#128233;</div>
+              <div><div class="node-label">Trigger: Request Received</div><div class="node-desc">Tenant submits maintenance request</div></div>
+              <div class="node-connector"></div>
+            </div>
+            <div class="chat-wf-node" id="cwfn-triage">
+              <div class="node-icon orange">&#9888;&#65039;</div>
+              <div><div class="node-label">Triage &amp; Classify</div><div class="node-desc">AI categorizes urgency &amp; type</div></div>
+              <div class="node-connector"></div>
+            </div>
+            <div class="chat-wf-node" id="cwfn-approval">
+              <div class="node-icon green">&#9989;</div>
+              <div><div class="node-label">Approval Gate</div><div class="node-desc">Route based on cost threshold</div></div>
+              <div class="node-connector"></div>
+            </div>
+            <div class="chat-wf-node" id="cwfn-vendor">
+              <div class="node-icon purple">&#128736;&#65039;</div>
+              <div><div class="node-label">Vendor Dispatch</div><div class="node-desc">Assign vendor &amp; schedule</div></div>
+              <div class="node-connector"></div>
+            </div>
+            <div class="chat-wf-node" id="cwfn-notify">
+              <div class="node-icon blue">&#128172;</div>
+              <div><div class="node-label">Notify Stakeholders</div><div class="node-desc">Update tenant, owner &amp; team</div></div>
+              <div class="node-connector"></div>
+            </div>
+            <div class="chat-wf-node" id="cwfn-close">
+              <div class="node-icon red">&#128203;</div>
+              <div><div class="node-label">Close &amp; Report</div><div class="node-desc">Finalize job, collect feedback</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /screen-agent-chat -->
+
+  <!-- ===== SCREEN: Agent Wizard Setup (V2 wizard) ===== -->
+  <div class="screen hidden" id="screen-agent-wizard">
+    <div class="agent-wizard-setup">
+      <div class="agent-wizard-topbar">
+        <a class="back-link" onclick="switchScreen('agents')">&#8592; Back to Agents</a>
+        <span class="topbar-title" id="wizardSetupTitle">Set up Maintenance Agent</span>
+      </div>
+
+      <!-- Stepper -->
+      <div class="wizard-stepper" id="wizardStepper">
+        <div class="wizard-step active" onclick="goToWizStep(0)"><span class="step-num">1</span><span class="step-label">Select Type</span></div>
+        <div class="wizard-step-connector" id="wsc-0"></div>
+        <div class="wizard-step" onclick="goToWizStep(1)"><span class="step-num">2</span><span class="step-label">Upload Policies</span></div>
+        <div class="wizard-step-connector" id="wsc-1"></div>
+        <div class="wizard-step" onclick="goToWizStep(2)"><span class="step-num">3</span><span class="step-label">Configure Rules</span></div>
+        <div class="wizard-step-connector" id="wsc-2"></div>
+        <div class="wizard-step" onclick="goToWizStep(3)"><span class="step-num">4</span><span class="step-label">Assign Team</span></div>
+        <div class="wizard-step-connector" id="wsc-3"></div>
+        <div class="wizard-step" onclick="goToWizStep(4)"><span class="step-num">5</span><span class="step-label">Review &amp; Launch</span></div>
+      </div>
+
+      <!-- Wizard Body -->
+      <div class="wizard-body">
+        <!-- Step 1: Select Type -->
+        <div class="wizard-panel active" id="wizPanel0">
+          <h2>Select Agent Type</h2>
+          <p class="wp-subtitle">Choose the type of agent you want to create for your properties.</p>
+          <div class="wiz-type-grid">
+            <div class="wiz-type-card selected" onclick="selectWizType(this)"><div class="wtc-icon">&#128295;</div><h4>Maintenance</h4><p>Repair lifecycle, vendor dispatch, owner approval</p></div>
+            <div class="wiz-type-card" onclick="selectWizType(this)"><div class="wtc-icon">&#128203;</div><h4>Renewal</h4><p>Lease renewal offers, negotiation, paperwork</p></div>
+            <div class="wiz-type-card" onclick="selectWizType(this)"><div class="wtc-icon">&#128230;</div><h4>Move-out</h4><p>Inspections, deposit reconciliation, turnover</p></div>
+            <div class="wiz-type-card" onclick="selectWizType(this)"><div class="wtc-icon">&#127968;</div><h4>Move-in</h4><p>Onboarding, welcome packets, condition reports</p></div>
+            <div class="wiz-type-card" onclick="selectWizType(this)"><div class="wtc-icon">&#128273;</div><h4>Leasing</h4><p>Lead follow-up, showings, screening, e-sign</p></div>
+            <div class="wiz-type-card" onclick="selectWizType(this)"><div class="wtc-icon">&#128176;</div><h4>Delinquency</h4><p>Payment reminders, late notices, payment plans</p></div>
+          </div>
+        </div>
+
+        <!-- Step 2: Upload Policies -->
+        <div class="wizard-panel" id="wizPanel1">
+          <h2>Upload Policies</h2>
+          <p class="wp-subtitle">Upload your maintenance policies or use our default template to get started quickly.</p>
+          <div class="wiz-dropzone" id="wizDropzone" onclick="simulateWizUpload()">
+            <div class="dz-icon">&#128196;</div>
+            <p>Drag &amp; drop your policy documents here, or <span class="dz-cta">browse files</span></p>
+            <p style="font-size:11px;color:#9aa5b8;margin-top:8px;">PDF, DOCX, or TXT up to 10 MB</p>
+          </div>
+          <button class="wiz-template-btn" onclick="simulateWizUpload()">&#10024; Use Default Template</button>
+          <div class="wiz-uploaded-file" id="wizUploadedFile" style="display:none;">
+            <span class="uf-icon">&#128196;</span>
+            <span class="uf-name">Maintenance_Policy_2024.pdf</span>
+            <span class="uf-check">&#10003;</span>
+          </div>
+        </div>
+
+        <!-- Step 3: Configure Rules -->
+        <div class="wizard-panel" id="wizPanel2">
+          <h2>Configure Rules</h2>
+          <p class="wp-subtitle">Customize how your agent handles different scenarios.</p>
+
+          <div class="wiz-rule-section">
+            <h4>Emergency Types</h4>
+            <div class="wiz-tags">
+              <span class="wiz-tag active" onclick="this.classList.toggle('active')">Flooding</span>
+              <span class="wiz-tag active" onclick="this.classList.toggle('active')">Gas Leak</span>
+              <span class="wiz-tag active" onclick="this.classList.toggle('active')">Fire</span>
+              <span class="wiz-tag active" onclick="this.classList.toggle('active')">No Heat (Winter)</span>
+              <span class="wiz-tag" onclick="this.classList.toggle('active')">Electrical Hazard</span>
+              <span class="wiz-tag" onclick="this.classList.toggle('active')">Sewage Backup</span>
+              <span class="wiz-tag" onclick="this.classList.toggle('active')">Broken Lock</span>
+            </div>
+          </div>
+
+          <div class="wiz-rule-section">
+            <h4>SLA Response Times</h4>
+            <table class="wiz-sla-table">
+              <thead><tr><th>Priority</th><th>Response</th><th>Resolution</th></tr></thead>
+              <tbody>
+                <tr><td><span class="priority-dot" style="background:#ef4444"></span>Emergency</td><td>15 min</td><td>4 hours</td></tr>
+                <tr><td><span class="priority-dot" style="background:#f59e0b"></span>Urgent</td><td>2 hours</td><td>24 hours</td></tr>
+                <tr><td><span class="priority-dot" style="background:#3b82f6"></span>Normal</td><td>24 hours</td><td>3 days</td></tr>
+                <tr><td><span class="priority-dot" style="background:#6b7280"></span>Low</td><td>48 hours</td><td>7 days</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="wiz-rule-section">
+            <h4>Approval Threshold</h4>
+            <p style="font-size:12.5px;color:#6b7a99;margin-bottom:8px;">Auto-approve repairs below this amount; require owner approval above.</p>
+            <div class="wiz-slider-row">
+              <input type="range" min="100" max="2000" value="500" step="50" oninput="document.getElementById('threshVal').textContent='$'+this.value" />
+              <span class="slider-val" id="threshVal">$500</span>
+            </div>
+          </div>
+
+          <div class="wiz-rule-section">
+            <h4>Preferred Vendors</h4>
+            <div class="wiz-vendor-list">
+              <div class="wiz-vendor-item"><span class="vi-avatar">&#128295;</span><div><div class="vi-name">Mike's Plumbing</div><div class="vi-type">Plumbing</div></div><div class="vi-toggle"></div></div>
+              <div class="wiz-vendor-item"><span class="vi-avatar">&#9889;</span><div><div class="vi-name">Sparks Electric</div><div class="vi-type">Electrical</div></div><div class="vi-toggle"></div></div>
+              <div class="wiz-vendor-item"><span class="vi-avatar">&#10052;&#65039;</span><div><div class="vi-name">CoolAir HVAC</div><div class="vi-type">HVAC</div></div><div class="vi-toggle"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4: Assign Team -->
+        <div class="wizard-panel" id="wizPanel3">
+          <h2>Assign Team</h2>
+          <p class="wp-subtitle">Select who manages this agent and which properties it covers.</p>
+
+          <div class="wiz-form-group">
+            <label>Team Lead</label>
+            <select>
+              <option>John Martinez (Property Manager)</option>
+              <option>Sarah Brooks (Maintenance Lead)</option>
+              <option>Alex Rivera (Leasing Agent)</option>
+            </select>
+          </div>
+
+          <div class="wiz-form-group">
+            <label>Escalation Contact</label>
+            <select>
+              <option>Sarah Brooks (Maintenance Lead)</option>
+              <option>John Martinez (Property Manager)</option>
+            </select>
+          </div>
+
+          <div class="wiz-form-group">
+            <label>Properties</label>
+            <div class="wiz-property-chips">
+              <div class="wiz-property-chip selected" onclick="this.classList.toggle('selected')">Oakridge Complex (24 units)</div>
+              <div class="wiz-property-chip selected" onclick="this.classList.toggle('selected')">Birchwood Estates (18 units)</div>
+              <div class="wiz-property-chip" onclick="this.classList.toggle('selected')">Pine Heights (12 units)</div>
+              <div class="wiz-property-chip" onclick="this.classList.toggle('selected')">Aspen Grove (36 units)</div>
+              <div class="wiz-property-chip" onclick="this.classList.toggle('selected')">Maple View (8 units)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 5: Review & Launch -->
+        <div class="wizard-panel" id="wizPanel4">
+          <h2>Review &amp; Launch</h2>
+          <p class="wp-subtitle">Review your agent configuration before going live.</p>
+
+          <div class="wiz-review-card">
+            <h4>&#128295; Agent Configuration</h4>
+            <div class="wiz-review-row"><span class="rr-label">Agent Type</span><span class="rr-value">Maintenance</span></div>
+            <div class="wiz-review-row"><span class="rr-label">Policy</span><span class="rr-value">Maintenance_Policy_2024.pdf</span></div>
+            <div class="wiz-review-row"><span class="rr-label">Approval Threshold</span><span class="rr-value">$500</span></div>
+            <div class="wiz-review-row"><span class="rr-label">Team Lead</span><span class="rr-value">John Martinez</span></div>
+            <div class="wiz-review-row"><span class="rr-label">Escalation</span><span class="rr-value">Sarah Brooks</span></div>
+            <div class="wiz-review-row"><span class="rr-label">Properties</span><span class="rr-value">Oakridge, Birchwood</span></div>
+          </div>
+
+          <div class="wiz-review-card">
+            <h4>&#9889; Workflow Preview</h4>
+            <div class="wiz-review-wf">
+              <div class="wiz-review-wf-node"><span class="wrn-dot" style="background:#e3f2fd;">&#128233;</span> Trigger: Request Received</div>
+              <div class="wiz-review-wf-node"><span class="wrn-dot" style="background:#fff3e0;">&#9888;&#65039;</span> Triage &amp; Classify</div>
+              <div class="wiz-review-wf-node"><span class="wrn-dot" style="background:#e8f5e9;">&#9989;</span> Approval Gate ($500)</div>
+              <div class="wiz-review-wf-node"><span class="wrn-dot" style="background:#ede7f6;">&#128736;&#65039;</span> Vendor Dispatch</div>
+              <div class="wiz-review-wf-node"><span class="wrn-dot" style="background:#e3f2fd;">&#128172;</span> Notify Stakeholders</div>
+              <div class="wiz-review-wf-node"><span class="wrn-dot" style="background:#fce4ec;">&#128203;</span> Close &amp; Report</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="wizard-footer">
+        <button class="wiz-btn" id="wizBtnBack" onclick="wizardBack()" disabled>&#8592; Back</button>
+        <button class="wiz-btn primary" id="wizBtnNext" onclick="wizardNext()">Next &#8594;</button>
+      </div>
+    </div>
+  </div><!-- /screen-agent-wizard -->
+
+  <!-- ===== SETUP MODE MODAL ===== -->
+  <div class="setup-modal-overlay" id="setupModalOverlay" onclick="closeSetupModal(event)">
+    <div class="setup-modal" onclick="event.stopPropagation()">
+      <button class="setup-modal-close" onclick="closeSetupModal()">&times;</button>
+      <h2 id="setupModalTitle">How would you like to set up your Maintenance agent?</h2>
+      <p class="modal-subtitle">Choose your preferred setup experience</p>
+      <div class="setup-mode-cards">
+        <!-- Conversational -->
+        <div class="setup-mode-card" onclick="chooseSetupMode('chat')">
+          <div class="mode-icon">&#128172;</div>
+          <h3>Conversational Setup</h3>
+          <div class="mode-subtitle">Chat with AI to build your agent</div>
+          <p class="mode-desc">Have a natural conversation with our AI assistant. Upload your policies, answer questions, and watch your workflow build in real-time.</p>
+          <div class="mode-tag">Recommended for tech-savvy users</div>
+          <div class="mode-preview mode-preview-chat">
+            <div class="mp-line"><span class="mp-dot ai"></span><span class="mp-bar" style="width:75%"></span></div>
+            <div class="mp-line"><span class="mp-dot user"></span><span class="mp-bar" style="width:50%"></span></div>
+            <div class="mp-line"><span class="mp-dot ai"></span><span class="mp-bar" style="width:90%"></span></div>
+            <div class="mp-line"><span class="mp-dot user"></span><span class="mp-bar" style="width:40%"></span></div>
+          </div>
+        </div>
+        <!-- Wizard -->
+        <div class="setup-mode-card" onclick="chooseSetupMode('wizard')">
+          <div class="mode-icon">&#129497;</div>
+          <h3>Guided Wizard</h3>
+          <div class="mode-subtitle">Step-by-step configuration</div>
+          <p class="mode-desc">Follow a structured 5-step wizard. Select your agent type, upload policies, configure rules, assign your team, and review before launching.</p>
+          <div class="mode-tag">Recommended for quick setup</div>
+          <div class="mode-preview mode-preview-steps">
+            <div class="mp-step"><span class="mp-num">1</span> Select Type</div>
+            <div class="mp-step"><span class="mp-num">2</span> Upload Policies</div>
+            <div class="mp-step"><span class="mp-num">3</span> Configure Rules</div>
+            <div class="mp-step"><span class="mp-num">4</span> Assign Team</div>
+            <div class="mp-step"><span class="mp-num">5</span> Review &amp; Launch</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- ===== SCREEN: Audit Log (V1 match) ===== -->
   <div class="screen hidden" id="screen-audit">
@@ -2105,6 +2545,199 @@ function toggleMoreDrawer() {
   const drawer = document.getElementById('moreDrawer');
   overlay.classList.toggle('visible');
   drawer.classList.toggle('visible');
+}
+
+// ===== SETUP MODE MODAL =====
+let currentSetupAgent = 'Maintenance';
+
+function openSetupModal(agentName) {
+  currentSetupAgent = agentName;
+  document.getElementById('setupModalTitle').textContent = 'How would you like to set up your ' + agentName + ' agent?';
+  document.getElementById('setupModalOverlay').classList.add('visible');
+}
+
+function closeSetupModal(e) {
+  if (e && e.target && e.target !== document.getElementById('setupModalOverlay') && !e.target.classList.contains('setup-modal-close')) return;
+  document.getElementById('setupModalOverlay').classList.remove('visible');
+}
+
+function chooseSetupMode(mode) {
+  document.getElementById('setupModalOverlay').classList.remove('visible');
+  if (mode === 'chat') {
+    document.getElementById('chatSetupTitle').textContent = 'Set up ' + currentSetupAgent + ' Agent';
+    initChatSetup();
+    switchScreen('agent-chat');
+  } else {
+    document.getElementById('wizardSetupTitle').textContent = 'Set up ' + currentSetupAgent + ' Agent';
+    resetWizard();
+    switchScreen('agent-wizard');
+  }
+}
+
+// ===== CHAT SETUP (V1 conversational) =====
+let chatSetupStep = 0;
+let chatSetupTimeouts = [];
+
+function initChatSetup() {
+  // Clear previous
+  chatSetupTimeouts.forEach(t => clearTimeout(t));
+  chatSetupTimeouts = [];
+  chatSetupStep = 0;
+  const msgs = document.getElementById('chatSetupMessages');
+  msgs.innerHTML = '';
+  // Reset workflow nodes
+  document.querySelectorAll('#chatWfNodes .chat-wf-node').forEach(n => n.classList.remove('visible'));
+  // Start conversation
+  chatSetupTimeouts.push(setTimeout(() => addChatMsg('ai', '<div class="csm-sender">DoorLoop AI</div>Hi! I\'m your AI setup assistant. I\'ll help you configure your <strong>' + currentSetupAgent + ' Agent</strong> in just a few minutes.<br><br>First, do you have any existing maintenance policy documents you\'d like me to learn from?', [
+    { text: '&#128196; Upload Documents', cls: 'primary', action: 'upload' },
+    { text: 'Skip for now', cls: 'ghost', action: 'skip' }
+  ]), 500));
+  // Show first workflow node
+  chatSetupTimeouts.push(setTimeout(() => document.getElementById('cwfn-trigger').classList.add('visible'), 800));
+}
+
+function addChatMsg(type, html, buttons) {
+  const msgs = document.getElementById('chatSetupMessages');
+  const div = document.createElement('div');
+  div.className = 'csm-msg ' + type;
+  let inner = '<div class="csm-bubble">' + html + '</div>';
+  if (buttons && buttons.length) {
+    inner += '<div class="csm-actions">';
+    buttons.forEach(b => {
+      inner += '<button class="csm-btn ' + (b.cls || '') + '" onclick="handleChatAction(\'' + b.action + '\')">' + b.text + '</button>';
+    });
+    inner += '</div>';
+  }
+  div.innerHTML = inner;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function handleChatAction(action) {
+  // Disable buttons in last message
+  const msgs = document.getElementById('chatSetupMessages');
+  const lastActions = msgs.querySelectorAll('.csm-actions');
+  lastActions.forEach(a => a.querySelectorAll('.csm-btn').forEach(b => { b.disabled = true; b.style.opacity = '0.5'; b.style.pointerEvents = 'none'; }));
+
+  if (action === 'upload' || action === 'skip') {
+    if (action === 'upload') {
+      addChatMsg('user', 'I\'ll upload my policy documents.');
+    } else {
+      addChatMsg('user', 'I\'ll skip uploading for now.');
+    }
+    chatSetupTimeouts.push(setTimeout(() => {
+      document.getElementById('cwfn-triage').classList.add('visible');
+      const ruleCards = action === 'upload'
+        ? '<div class="csm-rule-card"><div class="rule-label">Extracted Rule</div><div class="rule-text">Emergency repairs (flooding, gas leak, fire) should be dispatched within 15 minutes</div></div><div class="csm-rule-card"><div class="rule-label">Extracted Rule</div><div class="rule-text">Owner approval required for repairs exceeding $500</div></div><div class="csm-rule-card"><div class="rule-label">Extracted Rule</div><div class="rule-text">Preferred vendor list: Mike\'s Plumbing, Sparks Electric, CoolAir HVAC</div></div>'
+        : '<div class="csm-rule-card"><div class="rule-label">Default Rule</div><div class="rule-text">Emergency repairs dispatched within 15 minutes</div></div><div class="csm-rule-card"><div class="rule-label">Default Rule</div><div class="rule-text">Owner approval required for repairs exceeding $500</div></div>';
+
+      addChatMsg('ai', '<div class="csm-sender">DoorLoop AI</div>Great! ' + (action === 'upload' ? 'I\'ve analyzed your documents and extracted these rules:' : 'I\'ll use our recommended defaults. Here\'s what I\'ve set up:') + ruleCards + '<br>Now, what should be the <strong>approval threshold</strong> for auto-approving repairs without owner consent?', [
+        { text: '$250', cls: '', action: 'thresh-250' },
+        { text: '$500', cls: 'primary', action: 'thresh-500' },
+        { text: '$1,000', cls: '', action: 'thresh-1000' },
+        { text: 'Custom', cls: 'ghost', action: 'thresh-custom' }
+      ]);
+    }, 1200));
+  } else if (action.startsWith('thresh-')) {
+    const val = action === 'thresh-250' ? '$250' : action === 'thresh-500' ? '$500' : action === 'thresh-1000' ? '$1,000' : '$750';
+    addChatMsg('user', val + ' approval threshold.');
+    chatSetupTimeouts.push(setTimeout(() => {
+      document.getElementById('cwfn-approval').classList.add('visible');
+      addChatMsg('ai', '<div class="csm-sender">DoorLoop AI</div>Perfect &#8212; repairs under ' + val + ' will be auto-approved. Anything above will be routed to the property owner for approval.<br><br>Should tenants receive <strong>automatic status updates</strong> via SMS and email as repairs progress?', [
+        { text: 'Yes, both SMS & Email', cls: 'primary', action: 'notify-both' },
+        { text: 'Email only', cls: '', action: 'notify-email' },
+        { text: 'SMS only', cls: '', action: 'notify-sms' }
+      ]);
+    }, 1000));
+  } else if (action.startsWith('notify-')) {
+    const channel = action === 'notify-both' ? 'SMS and email' : action === 'notify-email' ? 'email' : 'SMS';
+    addChatMsg('user', 'Yes, notify via ' + channel + '.');
+    chatSetupTimeouts.push(setTimeout(() => {
+      document.getElementById('cwfn-vendor').classList.add('visible');
+      document.getElementById('cwfn-notify').classList.add('visible');
+    }, 600));
+    chatSetupTimeouts.push(setTimeout(() => {
+      document.getElementById('cwfn-close').classList.add('visible');
+      addChatMsg('ai', '<div class="csm-ready"><div class="ready-icon">&#127881;</div><h3>Your ' + currentSetupAgent + ' Agent is ready!</h3><p>I\'ve built a complete workflow with triage, approval gates, vendor dispatch, and tenant notifications.</p><button class="activate-btn" onclick="handleChatAction(\'activate\')">Activate Agent</button></div>');
+    }, 1600));
+  } else if (action === 'activate') {
+    addChatMsg('ai', '<div class="csm-sender">DoorLoop AI</div>&#10024; Your <strong>' + currentSetupAgent + ' Agent</strong> is now live and handling requests! You can monitor it from the Communication Center or Performance dashboard.');
+    chatSetupTimeouts.push(setTimeout(() => switchScreen('agents'), 2500));
+  }
+}
+
+// ===== WIZARD SETUP (V2) =====
+let wizStep = 0;
+
+function resetWizard() {
+  wizStep = 0;
+  updateWizardUI();
+  // Reset upload state
+  document.getElementById('wizUploadedFile').style.display = 'none';
+  document.getElementById('wizDropzone').style.display = '';
+}
+
+function goToWizStep(step) {
+  if (step > wizStep + 1) return; // can't skip ahead
+  wizStep = step;
+  updateWizardUI();
+}
+
+function wizardNext() {
+  if (wizStep < 4) {
+    wizStep++;
+    updateWizardUI();
+  } else {
+    // Launch!
+    alert('Agent launched successfully!');
+    switchScreen('agents');
+  }
+}
+
+function wizardBack() {
+  if (wizStep > 0) {
+    wizStep--;
+    updateWizardUI();
+  }
+}
+
+function updateWizardUI() {
+  // Panels
+  for (let i = 0; i < 5; i++) {
+    const panel = document.getElementById('wizPanel' + i);
+    if (panel) panel.classList.toggle('active', i === wizStep);
+  }
+  // Stepper
+  const steps = document.querySelectorAll('#wizardStepper .wizard-step');
+  const connectors = document.querySelectorAll('#wizardStepper .wizard-step-connector');
+  steps.forEach((s, i) => {
+    s.classList.remove('active', 'completed');
+    if (i === wizStep) s.classList.add('active');
+    else if (i < wizStep) s.classList.add('completed');
+  });
+  connectors.forEach((c, i) => {
+    c.classList.toggle('done', i < wizStep);
+  });
+  // Buttons
+  document.getElementById('wizBtnBack').disabled = wizStep === 0;
+  const nextBtn = document.getElementById('wizBtnNext');
+  if (wizStep === 4) {
+    nextBtn.textContent = '🚀 Launch Agent';
+    nextBtn.className = 'wiz-btn success';
+  } else {
+    nextBtn.innerHTML = 'Next &#8594;';
+    nextBtn.className = 'wiz-btn primary';
+  }
+}
+
+function selectWizType(el) {
+  document.querySelectorAll('.wiz-type-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function simulateWizUpload() {
+  document.getElementById('wizDropzone').style.display = 'none';
+  document.getElementById('wizUploadedFile').style.display = 'flex';
 }
 
 // ===== INIT =====
