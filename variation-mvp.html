@@ -143,9 +143,11 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
 .internal-note .note-body { font-size: 13px; color: #5d4037; line-height: 1.5; }
 
 /* Stop AI button */
-.stop-ai-btn { position: absolute; bottom: 90px; left: 50%; transform: translateX(-50%); padding: 10px 24px; background: linear-gradient(135deg, #EDB9EC, #748AFC); color: white; border: none; border-radius: 24px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Lato', sans-serif; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 16px rgba(116,138,252,0.3); z-index: 20; transition: all 0.3s; }
-.stop-ai-btn:hover { box-shadow: 0 6px 24px rgba(116,138,252,0.45); transform: translateX(-50%) translateY(-1px); }
-.stop-ai-btn.hidden { opacity: 0; pointer-events: none; transform: translateX(-50%) translateY(10px); }
+/* Stop AI button — in normal flow at bottom, not overlapping chat */
+.stop-ai-wrap { display: flex; justify-content: center; padding: 12px 0; flex-shrink: 0; background: white; border-top: 1px solid #e8ecf1; }
+.stop-ai-wrap.hidden { display: none; }
+.stop-ai-btn { padding: 10px 24px; background: linear-gradient(135deg, #EDB9EC, #748AFC); color: white; border: none; border-radius: 24px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Lato', sans-serif; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 16px rgba(116,138,252,0.3); transition: all 0.3s; }
+.stop-ai-btn:hover { box-shadow: 0 6px 24px rgba(116,138,252,0.45); transform: translateY(-1px); }
 
 /* Chat input area */
 .chat-input { display: flex; flex-direction: column; background: white; transition: all 0.3s; }
@@ -459,11 +461,13 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
         </div>
       </div>
 
-      <!-- Stop AI button -->
-      <button class="stop-ai-btn" id="stopAiBtn" onclick="stopAI()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
-        Stop AI Assistant
-      </button>
+      <!-- Stop AI button — in normal flow, not overlapping chat -->
+      <div class="stop-ai-wrap" id="stopAiWrap">
+        <button class="stop-ai-btn" onclick="stopAI()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+          Stop AI Assistant
+        </button>
+      </div>
 
       <!-- Resume bar (hidden initially) — above the input like the reference design -->
       <div class="resume-bar hidden" id="resumeBar">
@@ -851,17 +855,17 @@ function showConversation(convId) {
   const msgs = document.getElementById('chatMessages');
   if (conv.aiActive && conv.status === 'live') {
     msgs.classList.add('ai-active');
-    document.getElementById('stopAiBtn').classList.remove('hidden');
+    document.getElementById('stopAiWrap').classList.remove('hidden');
     document.getElementById('chatInput').classList.add('hidden');
     document.getElementById('resumeBar').classList.add('hidden');
   } else if (conv.status === 'escalated') {
     msgs.classList.remove('ai-active');
-    document.getElementById('stopAiBtn').classList.add('hidden');
+    document.getElementById('stopAiWrap').classList.add('hidden');
     document.getElementById('chatInput').classList.remove('hidden');
     document.getElementById('resumeBar').classList.add('hidden');
   } else {
     msgs.classList.remove('ai-active');
-    document.getElementById('stopAiBtn').classList.add('hidden');
+    document.getElementById('stopAiWrap').classList.add('hidden');
     document.getElementById('chatInput').classList.remove('hidden');
     document.getElementById('resumeBar').classList.add('hidden');
   }
@@ -1176,7 +1180,7 @@ function stopAI() {
   if (typing) typing.remove();
 
   // Hide stop button, show input + resume bar
-  document.getElementById('stopAiBtn').classList.add('hidden');
+  document.getElementById('stopAiWrap').classList.add('hidden');
   document.getElementById('chatInput').classList.remove('hidden');
   document.getElementById('resumeBar').classList.remove('hidden');
   document.getElementById('chatMessages').classList.remove('ai-active');
@@ -1204,7 +1208,7 @@ function resumeAI() {
 
   document.getElementById('chatInput').classList.add('hidden');
   document.getElementById('resumeBar').classList.add('hidden');
-  document.getElementById('stopAiBtn').classList.remove('hidden');
+  document.getElementById('stopAiWrap').classList.remove('hidden');
   document.getElementById('chatMessages').classList.add('ai-active');
 
   // Add analyzing animation and continue loop
