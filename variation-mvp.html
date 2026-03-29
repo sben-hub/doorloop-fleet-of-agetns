@@ -251,6 +251,113 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #d0d7e2; border-radius: 3px; }
+
+/* ===== SCREEN SWITCHING ===== */
+.screen { display: flex; flex: 1; overflow: hidden; }
+.screen.hidden { display: none; }
+
+/* ===== AGENT SETUP SCREEN ===== */
+.agents-page { flex: 1; overflow-y: auto; padding: 32px 40px; background: #f5f7fb; }
+.agents-page h2 { font-size: 22px; font-weight: 700; color: #1a2b4a; margin-bottom: 4px; }
+.agents-page .subtitle { font-size: 14px; color: #6b7a99; margin-bottom: 28px; }
+.agents-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.agent-card { background: white; border: 1px solid #e8ecf1; border-radius: 12px; padding: 24px; transition: all 0.2s; position: relative; }
+.agent-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+.agent-card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.agent-card-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.agent-card-icon.maint { background: #e3f2fd; }
+.agent-card-icon.renewal { background: #e8f5e9; }
+.agent-card-icon.collection { background: #fff3e0; }
+.agent-card-icon.movein { background: #f3e5f5; }
+.agent-card-icon.leasing { background: #e0f7fa; }
+.agent-card-icon.delinq { background: #fce4ec; }
+.agent-card-title { font-size: 15px; font-weight: 700; color: #1a2b4a; }
+.agent-card-desc { font-size: 13px; color: #6b7a99; line-height: 1.5; margin-bottom: 16px; }
+.agent-card-footer { display: flex; align-items: center; justify-content: space-between; }
+.agent-status { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.3px; }
+.agent-status.active { background: #e8f5e9; color: #2e7d32; }
+.agent-status.paused { background: #fff3e0; color: #e65100; }
+.agent-status.setup { background: #e8ecf1; color: #6b7a99; }
+.agent-toggle { position: relative; width: 40px; height: 22px; cursor: pointer; }
+.agent-toggle input { opacity: 0; width: 0; height: 0; }
+.agent-toggle .slider { position: absolute; inset: 0; background: #d0d7e2; border-radius: 11px; transition: 0.3s; }
+.agent-toggle .slider:before { content: ''; position: absolute; width: 18px; height: 18px; left: 2px; bottom: 2px; background: white; border-radius: 50%; transition: 0.3s; }
+.agent-toggle input:checked + .slider { background: #4caf50; }
+.agent-toggle input:checked + .slider:before { transform: translateX(18px); }
+.agent-settings-btn { padding: 6px 14px; border: 1px solid #e8ecf1; border-radius: 6px; background: white; font-size: 12px; font-weight: 600; color: #6b7a99; cursor: pointer; font-family: 'Lato', sans-serif; transition: all 0.15s; }
+.agent-settings-btn:hover { border-color: #1665d8; color: #1665d8; }
+
+/* ===== AUDIT LOG SCREEN ===== */
+.audit-page { flex: 1; overflow-y: auto; padding: 32px 40px; background: #f5f7fb; }
+.audit-page h2 { font-size: 22px; font-weight: 700; color: #1a2b4a; margin-bottom: 4px; }
+.audit-page .subtitle { font-size: 14px; color: #6b7a99; margin-bottom: 24px; }
+.audit-filters { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.audit-search { padding: 9px 12px 9px 34px; border: 1px solid #e8ecf1; border-radius: 8px; font-size: 13px; background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239aa5b8' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") 10px center no-repeat; font-family: 'Lato', sans-serif; width: 280px; }
+.audit-search:focus { outline: none; border-color: #1665d8; }
+.audit-filter-btn { padding: 7px 16px; border: 1px solid #e8ecf1; border-radius: 6px; background: white; font-size: 12px; font-weight: 600; color: #6b7a99; cursor: pointer; font-family: 'Lato', sans-serif; transition: all 0.15s; }
+.audit-filter-btn:hover { border-color: #1665d8; color: #1665d8; }
+.audit-filter-btn.active { background: #1665d8; color: white; border-color: #1665d8; }
+.audit-stats { display: flex; gap: 16px; margin-bottom: 24px; }
+.audit-stat { background: white; border: 1px solid #e8ecf1; border-radius: 10px; padding: 16px 20px; flex: 1; }
+.audit-stat .stat-value { font-size: 24px; font-weight: 700; color: #1a2b4a; }
+.audit-stat .stat-label { font-size: 12px; color: #6b7a99; margin-top: 2px; }
+.audit-table { width: 100%; background: white; border: 1px solid #e8ecf1; border-radius: 10px; overflow: hidden; border-collapse: collapse; }
+.audit-table th { text-align: left; padding: 12px 16px; font-size: 11px; font-weight: 700; color: #6b7a99; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e8ecf1; background: #fafbfd; }
+.audit-table td { padding: 12px 16px; font-size: 13px; color: #1a2b4a; border-bottom: 1px solid #f0f2f5; }
+.audit-table tr.audit-row { cursor: pointer; transition: background 0.15s; }
+.audit-table tr.audit-row:hover { background: #f8f9fc; }
+.audit-table tr.audit-row.expanded { background: #eef2ff; }
+.audit-expand { width: 20px; color: #9aa5b8; font-size: 12px; transition: transform 0.2s; display: inline-block; }
+.audit-row.expanded .audit-expand { transform: rotate(90deg); }
+.audit-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; }
+.audit-badge.ai { background: linear-gradient(135deg, rgba(237,185,236,0.2), rgba(116,138,252,0.2)); color: #6b52ae; }
+.audit-badge.human { background: #e3f2fd; color: #1565c0; }
+.audit-result { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+.audit-result.success { background: #e8f5e9; color: #2e7d32; }
+.audit-result.pending { background: #fff3e0; color: #e65100; }
+.audit-result.escalated { background: #fce4ec; color: #c62828; }
+.audit-detail-row { display: none; }
+.audit-detail-row.visible { display: table-row; }
+.audit-detail-cell { padding: 16px 24px; background: #fafbfd; border-bottom: 1px solid #e8ecf1; }
+.audit-detail-cell .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 13px; }
+.audit-detail-cell .detail-label { font-size: 11px; font-weight: 700; color: #6b7a99; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 2px; }
+.audit-detail-cell .detail-value { color: #1a2b4a; }
+
+/* ===== PERFORMANCE SCREEN ===== */
+.perf-page { flex: 1; overflow-y: auto; padding: 32px 40px; background: #f5f7fb; }
+.perf-page h2 { font-size: 22px; font-weight: 700; color: #1a2b4a; margin-bottom: 4px; }
+.perf-page .subtitle { font-size: 14px; color: #6b7a99; margin-bottom: 28px; }
+.kpi-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-bottom: 32px; }
+.kpi-card { background: white; border: 1px solid #e8ecf1; border-radius: 10px; padding: 18px 16px; text-align: center; }
+.kpi-card .kpi-value { font-size: 28px; font-weight: 700; color: #1a2b4a; }
+.kpi-card .kpi-label { font-size: 12px; color: #6b7a99; margin-top: 4px; }
+.kpi-card .kpi-trend { font-size: 11px; font-weight: 700; margin-top: 6px; }
+.kpi-card .kpi-trend.up { color: #2e7d32; }
+.kpi-card .kpi-trend.down { color: #c62828; }
+.perf-section-title { font-size: 16px; font-weight: 700; color: #1a2b4a; margin-bottom: 16px; }
+.perf-agents-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+.perf-agent-card { background: white; border: 1px solid #e8ecf1; border-radius: 10px; padding: 18px; }
+.perf-agent-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.perf-agent-name { font-size: 14px; font-weight: 700; color: #1a2b4a; }
+.perf-agent-status { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; }
+.perf-agent-status.active { background: #e8f5e9; color: #2e7d32; }
+.perf-agent-status.inactive { background: #e8ecf1; color: #6b7a99; }
+.perf-agent-stat { display: flex; justify-content: space-between; font-size: 13px; color: #6b7a99; margin-bottom: 6px; }
+.perf-agent-stat span:last-child { font-weight: 700; color: #1a2b4a; }
+.perf-agent-bar { height: 6px; background: #e8ecf1; border-radius: 3px; overflow: hidden; margin-top: 10px; }
+.perf-agent-bar-fill { height: 100%; border-radius: 3px; background: #4caf50; }
+.activity-feed { background: white; border: 1px solid #e8ecf1; border-radius: 10px; overflow: hidden; }
+.activity-item { padding: 12px 18px; border-bottom: 1px solid #f0f2f5; display: flex; align-items: center; gap: 12px; font-size: 13px; }
+.activity-item:last-child { border-bottom: none; }
+.activity-time { font-size: 11px; color: #9aa5b8; width: 70px; flex-shrink: 0; }
+.activity-agent-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; flex-shrink: 0; }
+.activity-agent-badge.maint { background: #e3f2fd; color: #1565c0; }
+.activity-agent-badge.renewal { background: #e8f5e9; color: #2e7d32; }
+.activity-agent-badge.collection { background: #fff3e0; color: #e65100; }
+.activity-agent-badge.leasing { background: #e0f7fa; color: #00838f; }
+.activity-agent-badge.movein { background: #f3e5f5; color: #7b1fa2; }
+.activity-agent-badge.delinq { background: #fce4ec; color: #c62828; }
+.activity-text { flex: 1; color: #1a2b4a; }
 </style>
 </head>
 <body>
@@ -270,18 +377,18 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
 <div class="app">
   <!-- Sidebar -->
   <nav class="sidebar">
-    <div class="logo" onclick="window.location.href='variation-mvp.html'">D</div>
-    <div class="nav-item" title="AI Agents" onclick="window.location.href='maintenance-agent-prototype.html'">
+    <div class="logo" onclick="switchScreen('comm')">D</div>
+    <div class="nav-item" id="nav-agents" title="AI Agents" onclick="switchScreen('agents')">
       <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
     </div>
-    <div class="nav-item active" title="Communication Center" onclick="window.location.href='variation-mvp.html'">
+    <div class="nav-item active" id="nav-comm" title="Communication Center" onclick="switchScreen('comm')">
       <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       <span class="badge">3</span>
     </div>
-    <div class="nav-item" title="Audit Log" onclick="window.location.href='audit-log.html'">
+    <div class="nav-item" id="nav-audit" title="Audit Log" onclick="switchScreen('audit')">
       <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
     </div>
-    <div class="nav-item" title="Performance" onclick="window.location.href='performance-overview.html'">
+    <div class="nav-item" id="nav-perf" title="Performance" onclick="switchScreen('perf')">
       <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
     </div>
     <div class="spacer"></div>
@@ -290,6 +397,8 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
     </div>
   </nav>
 
+  <!-- ===== SCREEN: Communication Center ===== -->
+  <div class="screen" id="screen-comm">
   <div class="main-content">
     <!-- ===== LEFT: Conversation List ===== -->
     <div class="conv-list">
@@ -675,8 +784,8 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
       </div>
 
       <div class="wf-links">
-        <a href="audit-log.html">View in Audit Log</a>
-        <a href="command-center.html">View in Command Center</a>
+        <a href="#" onclick="switchScreen('audit');return false;">View in Audit Log</a>
+        <a href="#" onclick="switchScreen('perf');return false;">View in Command Center</a>
       </div>
       <div class="wf-footer">
         <span>Step 6 of 9</span>
@@ -686,6 +795,413 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
     </div>
 
   </div>
+  </div><!-- /screen-comm -->
+
+  <!-- ===== SCREEN: AI Agent Setup ===== -->
+  <div class="screen hidden" id="screen-agents">
+    <div class="agents-page">
+      <h2>AI Agents</h2>
+      <p class="subtitle">Configure and manage your AI-powered property management agents</p>
+      <div class="agents-grid">
+        <!-- Maintenance Agent -->
+        <div class="agent-card">
+          <div class="agent-card-header">
+            <div class="agent-card-icon maint">&#128295;</div>
+            <div class="agent-card-title">Maintenance Agent</div>
+          </div>
+          <div class="agent-card-desc">Automatically triages maintenance requests, dispatches vendors, coordinates scheduling, and follows up on repairs.</div>
+          <div class="agent-card-footer">
+            <span class="agent-status active">Active</span>
+            <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+            <button class="agent-settings-btn" onclick="alert('Maintenance agent settings')">Settings</button>
+          </div>
+        </div>
+        <!-- Renewal Agent -->
+        <div class="agent-card">
+          <div class="agent-card-header">
+            <div class="agent-card-icon renewal">&#128196;</div>
+            <div class="agent-card-title">Renewal Agent</div>
+          </div>
+          <div class="agent-card-desc">Monitors lease expirations, sends renewal reminders, negotiates terms, and processes lease renewals automatically.</div>
+          <div class="agent-card-footer">
+            <span class="agent-status active">Active</span>
+            <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+            <button class="agent-settings-btn" onclick="alert('Renewal agent settings')">Settings</button>
+          </div>
+        </div>
+        <!-- Collection Agent -->
+        <div class="agent-card">
+          <div class="agent-card-header">
+            <div class="agent-card-icon collection">&#128176;</div>
+            <div class="agent-card-title">Collection Agent</div>
+          </div>
+          <div class="agent-card-desc">Sends rent reminders, tracks overdue payments, escalates delinquencies, and manages payment plan negotiations.</div>
+          <div class="agent-card-footer">
+            <span class="agent-status active">Active</span>
+            <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+            <button class="agent-settings-btn" onclick="alert('Collection agent settings')">Settings</button>
+          </div>
+        </div>
+        <!-- Move-in Agent -->
+        <div class="agent-card">
+          <div class="agent-card-header">
+            <div class="agent-card-icon movein">&#127968;</div>
+            <div class="agent-card-title">Move-in Agent</div>
+          </div>
+          <div class="agent-card-desc">Manages move-in checklists, coordinates key handoffs, sends welcome packets, and schedules unit inspections.</div>
+          <div class="agent-card-footer">
+            <span class="agent-status setup">Setup Required</span>
+            <label class="agent-toggle"><input type="checkbox"><span class="slider"></span></label>
+            <button class="agent-settings-btn" onclick="alert('Move-in agent settings')">Settings</button>
+          </div>
+        </div>
+        <!-- Leasing Agent -->
+        <div class="agent-card">
+          <div class="agent-card-header">
+            <div class="agent-card-icon leasing">&#128197;</div>
+            <div class="agent-card-title">Leasing Agent</div>
+          </div>
+          <div class="agent-card-desc">Handles prospect inquiries, schedules tours, pre-screens applicants, and manages the application process.</div>
+          <div class="agent-card-footer">
+            <span class="agent-status setup">Setup Required</span>
+            <label class="agent-toggle"><input type="checkbox"><span class="slider"></span></label>
+            <button class="agent-settings-btn" onclick="alert('Leasing agent settings')">Settings</button>
+          </div>
+        </div>
+        <!-- Delinquency Agent -->
+        <div class="agent-card">
+          <div class="agent-card-header">
+            <div class="agent-card-icon delinq">&#9888;</div>
+            <div class="agent-card-title">Delinquency Agent</div>
+          </div>
+          <div class="agent-card-desc">Monitors chronic late payments, generates notices, coordinates with legal if needed, and tracks resolution progress.</div>
+          <div class="agent-card-footer">
+            <span class="agent-status setup">Setup Required</span>
+            <label class="agent-toggle"><input type="checkbox"><span class="slider"></span></label>
+            <button class="agent-settings-btn" onclick="alert('Delinquency agent settings')">Settings</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /screen-agents -->
+
+  <!-- ===== SCREEN: Audit Log ===== -->
+  <div class="screen hidden" id="screen-audit">
+    <div class="audit-page">
+      <h2>Audit Log</h2>
+      <p class="subtitle">Complete record of all AI and human decisions across your portfolio</p>
+
+      <div class="audit-filters">
+        <input class="audit-search" type="text" placeholder="Search decisions..." id="auditSearch" oninput="filterAuditRows()" />
+        <button class="audit-filter-btn active" data-audit-filter="all" onclick="setAuditFilter('all',this)">All</button>
+        <button class="audit-filter-btn" data-audit-filter="ai" onclick="setAuditFilter('ai',this)">AI Only</button>
+        <button class="audit-filter-btn" data-audit-filter="human" onclick="setAuditFilter('human',this)">Human Only</button>
+        <button class="audit-filter-btn" data-audit-filter="escalated" onclick="setAuditFilter('escalated',this)">Escalated</button>
+      </div>
+
+      <div class="audit-stats">
+        <div class="audit-stat"><div class="stat-value">156</div><div class="stat-label">Total Decisions</div></div>
+        <div class="audit-stat"><div class="stat-value">132</div><div class="stat-label">AI Decisions</div></div>
+        <div class="audit-stat"><div class="stat-value">18</div><div class="stat-label">Human Overrides</div></div>
+        <div class="audit-stat"><div class="stat-value">6</div><div class="stat-label">Escalations</div></div>
+      </div>
+
+      <table class="audit-table">
+        <thead>
+          <tr>
+            <th style="width:30px;"></th>
+            <th>Time</th>
+            <th>Agent</th>
+            <th>Property</th>
+            <th>Decision</th>
+            <th>By</th>
+            <th>Result</th>
+          </tr>
+        </thead>
+        <tbody id="auditBody">
+          <tr class="audit-row" data-by="ai" data-result="success" onclick="toggleAuditDetail(this)">
+            <td><span class="audit-expand">&#9654;</span></td>
+            <td>10:03 AM</td>
+            <td>Maintenance</td>
+            <td>Oakridge Complex, 1A</td>
+            <td>Triaged as Plumbing / Medium Urgency</td>
+            <td><span class="audit-badge ai">AI</span></td>
+            <td><span class="audit-result success">Completed</span></td>
+          </tr>
+          <tr class="audit-detail-row">
+            <td colspan="7" class="audit-detail-cell">
+              <div class="detail-grid">
+                <div><div class="detail-label">Request ID</div><div class="detail-value">#4821</div></div>
+                <div><div class="detail-label">Confidence</div><div class="detail-value">94%</div></div>
+                <div><div class="detail-label">Category</div><div class="detail-value">Plumbing - Leak</div></div>
+                <div><div class="detail-label">Processing Time</div><div class="detail-value">1.2 seconds</div></div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="audit-row" data-by="ai" data-result="success" onclick="toggleAuditDetail(this)">
+            <td><span class="audit-expand">&#9654;</span></td>
+            <td>10:05 AM</td>
+            <td>Maintenance</td>
+            <td>Oakridge Complex, 1A</td>
+            <td>Dispatched Mike's Plumbing (4.8 stars)</td>
+            <td><span class="audit-badge ai">AI</span></td>
+            <td><span class="audit-result success">Completed</span></td>
+          </tr>
+          <tr class="audit-detail-row">
+            <td colspan="7" class="audit-detail-cell">
+              <div class="detail-grid">
+                <div><div class="detail-label">Vendor</div><div class="detail-value">Mike's Plumbing</div></div>
+                <div><div class="detail-label">Estimate</div><div class="detail-value">$280</div></div>
+                <div><div class="detail-label">Selection Criteria</div><div class="detail-value">Rating, availability, specialty match</div></div>
+                <div><div class="detail-label">Alternatives Considered</div><div class="detail-value">3 vendors</div></div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="audit-row" data-by="ai" data-result="success" onclick="toggleAuditDetail(this)">
+            <td><span class="audit-expand">&#9654;</span></td>
+            <td>9:30 AM</td>
+            <td>Collection</td>
+            <td>Birchwood Estates, 2C</td>
+            <td>Sent rent reminder (3 days overdue)</td>
+            <td><span class="audit-badge ai">AI</span></td>
+            <td><span class="audit-result success">Completed</span></td>
+          </tr>
+          <tr class="audit-detail-row">
+            <td colspan="7" class="audit-detail-cell">
+              <div class="detail-grid">
+                <div><div class="detail-label">Amount Due</div><div class="detail-value">$1,850.00</div></div>
+                <div><div class="detail-label">Days Overdue</div><div class="detail-value">3</div></div>
+                <div><div class="detail-label">Channel</div><div class="detail-value">SMS + Email</div></div>
+                <div><div class="detail-label">Previous Reminders</div><div class="detail-value">1 (auto)</div></div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="audit-row" data-by="human" data-result="pending" onclick="toggleAuditDetail(this)">
+            <td><span class="audit-expand">&#9654;</span></td>
+            <td>9:15 AM</td>
+            <td>Maintenance</td>
+            <td>Pine Heights, 6F</td>
+            <td>Owner approval requested ($1,200 HVAC repair)</td>
+            <td><span class="audit-badge human">Human</span></td>
+            <td><span class="audit-result pending">Pending</span></td>
+          </tr>
+          <tr class="audit-detail-row">
+            <td colspan="7" class="audit-detail-cell">
+              <div class="detail-grid">
+                <div><div class="detail-label">Repair Type</div><div class="detail-value">HVAC - Compressor</div></div>
+                <div><div class="detail-label">Estimate</div><div class="detail-value">$1,200.00</div></div>
+                <div><div class="detail-label">Threshold</div><div class="detail-value">$500 (requires approval)</div></div>
+                <div><div class="detail-label">Owner</div><div class="detail-value">Mark Henderson</div></div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="audit-row" data-by="ai" data-result="escalated" onclick="toggleAuditDetail(this)">
+            <td><span class="audit-expand">&#9654;</span></td>
+            <td>8:56 AM</td>
+            <td>Leasing</td>
+            <td>Oakridge Complex</td>
+            <td>Prospect screening flagged for review</td>
+            <td><span class="audit-badge ai">AI</span></td>
+            <td><span class="audit-result escalated">Escalated</span></td>
+          </tr>
+          <tr class="audit-detail-row">
+            <td colspan="7" class="audit-detail-cell">
+              <div class="detail-grid">
+                <div><div class="detail-label">Applicant</div><div class="detail-value">David Taylor</div></div>
+                <div><div class="detail-label">Reason</div><div class="detail-value">Pet policy / parking questions</div></div>
+                <div><div class="detail-label">AI Confidence</div><div class="detail-value">62% (below threshold)</div></div>
+                <div><div class="detail-label">Escalated To</div><div class="detail-value">Leasing Team</div></div>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="audit-row" data-by="ai" data-result="success" onclick="toggleAuditDetail(this)">
+            <td><span class="audit-expand">&#9654;</span></td>
+            <td>8:30 AM</td>
+            <td>Collection</td>
+            <td>Aspen Grove, 3A</td>
+            <td>Payment plan created ($450/mo x 3)</td>
+            <td><span class="audit-badge ai">AI</span></td>
+            <td><span class="audit-result success">Completed</span></td>
+          </tr>
+          <tr class="audit-detail-row">
+            <td colspan="7" class="audit-detail-cell">
+              <div class="detail-grid">
+                <div><div class="detail-label">Total Owed</div><div class="detail-value">$1,350.00</div></div>
+                <div><div class="detail-label">Plan</div><div class="detail-value">3 payments of $450</div></div>
+                <div><div class="detail-label">Tenant</div><div class="detail-value">Robert Kim</div></div>
+                <div><div class="detail-label">Approval</div><div class="detail-value">Auto-approved (within policy)</div></div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div><!-- /screen-audit -->
+
+  <!-- ===== SCREEN: Performance Overview ===== -->
+  <div class="screen hidden" id="screen-perf">
+    <div class="perf-page">
+      <h2>Performance Overview</h2>
+      <p class="subtitle">Real-time metrics across all AI agents and workflows</p>
+
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-value">23</div>
+          <div class="kpi-label">Active Workflows</div>
+          <div class="kpi-trend up">+3 from last week</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">47</div>
+          <div class="kpi-label">Resolved This Week</div>
+          <div class="kpi-trend up">+12% vs last week</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">1.8d</div>
+          <div class="kpi-label">Avg Resolution Time</div>
+          <div class="kpi-trend up">-0.4d improvement</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">78%</div>
+          <div class="kpi-label">Automation Rate</div>
+          <div class="kpi-trend up">+5% vs last month</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">12%</div>
+          <div class="kpi-label">Escalation Rate</div>
+          <div class="kpi-trend down">+2% vs last month</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">$4,200</div>
+          <div class="kpi-label">Cost Savings</div>
+          <div class="kpi-trend up">+$800 vs last month</div>
+        </div>
+      </div>
+
+      <div class="perf-section-title">Agent Overview</div>
+      <div class="perf-agents-grid">
+        <div class="perf-agent-card">
+          <div class="perf-agent-header">
+            <div class="perf-agent-name">&#128295; Maintenance</div>
+            <span class="perf-agent-status active">Active</span>
+          </div>
+          <div class="perf-agent-stat"><span>Active Workflows</span><span>8</span></div>
+          <div class="perf-agent-stat"><span>Resolved (7d)</span><span>19</span></div>
+          <div class="perf-agent-stat"><span>Avg Time</span><span>1.4 days</span></div>
+          <div class="perf-agent-bar"><div class="perf-agent-bar-fill" style="width:85%;background:#4caf50;"></div></div>
+        </div>
+        <div class="perf-agent-card">
+          <div class="perf-agent-header">
+            <div class="perf-agent-name">&#128196; Renewal</div>
+            <span class="perf-agent-status active">Active</span>
+          </div>
+          <div class="perf-agent-stat"><span>Active Workflows</span><span>5</span></div>
+          <div class="perf-agent-stat"><span>Resolved (7d)</span><span>12</span></div>
+          <div class="perf-agent-stat"><span>Avg Time</span><span>2.1 days</span></div>
+          <div class="perf-agent-bar"><div class="perf-agent-bar-fill" style="width:72%;background:#4caf50;"></div></div>
+        </div>
+        <div class="perf-agent-card">
+          <div class="perf-agent-header">
+            <div class="perf-agent-name">&#128176; Collection</div>
+            <span class="perf-agent-status active">Active</span>
+          </div>
+          <div class="perf-agent-stat"><span>Active Workflows</span><span>10</span></div>
+          <div class="perf-agent-stat"><span>Resolved (7d)</span><span>16</span></div>
+          <div class="perf-agent-stat"><span>Avg Time</span><span>2.3 days</span></div>
+          <div class="perf-agent-bar"><div class="perf-agent-bar-fill" style="width:68%;background:#ff9800;"></div></div>
+        </div>
+        <div class="perf-agent-card">
+          <div class="perf-agent-header">
+            <div class="perf-agent-name">&#127968; Move-in</div>
+            <span class="perf-agent-status inactive">Inactive</span>
+          </div>
+          <div class="perf-agent-stat"><span>Active Workflows</span><span>0</span></div>
+          <div class="perf-agent-stat"><span>Resolved (7d)</span><span>0</span></div>
+          <div class="perf-agent-stat"><span>Avg Time</span><span>--</span></div>
+          <div class="perf-agent-bar"><div class="perf-agent-bar-fill" style="width:0%;"></div></div>
+        </div>
+        <div class="perf-agent-card">
+          <div class="perf-agent-header">
+            <div class="perf-agent-name">&#128197; Leasing</div>
+            <span class="perf-agent-status inactive">Inactive</span>
+          </div>
+          <div class="perf-agent-stat"><span>Active Workflows</span><span>0</span></div>
+          <div class="perf-agent-stat"><span>Resolved (7d)</span><span>0</span></div>
+          <div class="perf-agent-stat"><span>Avg Time</span><span>--</span></div>
+          <div class="perf-agent-bar"><div class="perf-agent-bar-fill" style="width:0%;"></div></div>
+        </div>
+        <div class="perf-agent-card">
+          <div class="perf-agent-header">
+            <div class="perf-agent-name">&#9888; Delinquency</div>
+            <span class="perf-agent-status inactive">Inactive</span>
+          </div>
+          <div class="perf-agent-stat"><span>Active Workflows</span><span>0</span></div>
+          <div class="perf-agent-stat"><span>Resolved (7d)</span><span>0</span></div>
+          <div class="perf-agent-stat"><span>Avg Time</span><span>--</span></div>
+          <div class="perf-agent-bar"><div class="perf-agent-bar-fill" style="width:0%;"></div></div>
+        </div>
+      </div>
+
+      <div class="perf-section-title">Recent Activity</div>
+      <div class="activity-feed">
+        <div class="activity-item">
+          <div class="activity-time">10:24 AM</div>
+          <span class="activity-agent-badge maint">Maintenance</span>
+          <div class="activity-text">Confirmed plumber appointment for Emily Smith, Unit 1A - Mar 30, 1-3 PM</div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-time">10:08 AM</div>
+          <span class="activity-agent-badge maint">Maintenance</span>
+          <div class="activity-text">Sent scheduling options to Emily Smith for kitchen sink repair</div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-time">10:03 AM</div>
+          <span class="activity-agent-badge maint">Maintenance</span>
+          <div class="activity-text">Created work order #4821 - Kitchen sink leak, Oakridge Complex 1A</div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-time">9:41 AM</div>
+          <span class="activity-agent-badge renewal">Renewal</span>
+          <div class="activity-text">Sent renewal offer to Sarah Johnson - $1,850/mo, expires Jul 31</div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-time">9:30 AM</div>
+          <span class="activity-agent-badge collection">Collection</span>
+          <div class="activity-text">Sent rent reminder to Unit 2C, Birchwood Estates - 3 days overdue</div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-time">9:15 AM</div>
+          <span class="activity-agent-badge maint">Maintenance</span>
+          <div class="activity-text">Requested owner approval for HVAC repair - $1,200 estimate, Pine Heights 6F</div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-time">8:56 AM</div>
+          <span class="activity-agent-badge leasing">Leasing</span>
+          <div class="activity-text">Escalated prospect David Taylor to leasing team - pet policy questions</div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-time">8:30 AM</div>
+          <span class="activity-agent-badge collection">Collection</span>
+          <div class="activity-text">Created payment plan for Robert Kim, Aspen Grove 3A - $450/mo x 3</div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-time">8:15 AM</div>
+          <span class="activity-agent-badge renewal">Renewal</span>
+          <div class="activity-text">Lease renewal signed - Unit 5B, Oakridge Complex, renewed at $1,720/mo</div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-time">7:45 AM</div>
+          <span class="activity-agent-badge maint">Maintenance</span>
+          <div class="activity-text">Follow-up sent to Lisa Chen - confirming AC repair completion, Pine Heights 4D</div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /screen-perf -->
+
 </div>
 
 <!-- ===== More Actions Drawer ===== -->
@@ -735,19 +1251,60 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
 </div>
 
 <script>
-// ===== MVP Toast =====
-function showMvpToast(page) {
-  let t = document.getElementById('mvpToast');
-  if (!t) {
-    t = document.createElement('div');
-    t.id = 'mvpToast';
-    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#182c4c;color:white;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;font-family:Lato,sans-serif;z-index:99999;opacity:0;transition:opacity 0.3s;pointer-events:none;';
-    document.body.appendChild(t);
-  }
-  t.textContent = page + ' — MVP focuses on Communication Center only';
-  t.style.opacity = '1';
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2500);
+// ===== SCREEN SWITCHING =====
+function switchScreen(screenId) {
+  // Hide all screens
+  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+  // Show selected screen
+  const target = document.getElementById('screen-' + screenId);
+  if (target) target.classList.remove('hidden');
+  // Update sidebar active state
+  document.querySelectorAll('.sidebar .nav-item').forEach(n => n.classList.remove('active'));
+  const navItem = document.getElementById('nav-' + screenId);
+  if (navItem) navItem.classList.add('active');
+  // Show/hide the open-wf-btn only on comm screen
+  const wfBtn = document.getElementById('openWfBtn');
+  if (wfBtn) wfBtn.style.display = screenId === 'comm' && document.getElementById('wfDrawer').classList.contains('collapsed') ? 'flex' : 'none';
+}
+
+// ===== AUDIT LOG FUNCTIONS =====
+function toggleAuditDetail(row) {
+  const detailRow = row.nextElementSibling;
+  if (!detailRow || !detailRow.classList.contains('audit-detail-row')) return;
+  row.classList.toggle('expanded');
+  detailRow.classList.toggle('visible');
+}
+
+function setAuditFilter(filter, btn) {
+  document.querySelectorAll('.audit-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.audit-row').forEach(row => {
+    const by = row.dataset.by;
+    const result = row.dataset.result;
+    const detailRow = row.nextElementSibling;
+    let show = true;
+    if (filter === 'ai') show = by === 'ai';
+    else if (filter === 'human') show = by === 'human';
+    else if (filter === 'escalated') show = result === 'escalated';
+    row.style.display = show ? '' : 'none';
+    if (detailRow && detailRow.classList.contains('audit-detail-row')) {
+      detailRow.style.display = show ? '' : 'none';
+      if (!show) { detailRow.classList.remove('visible'); row.classList.remove('expanded'); }
+    }
+  });
+}
+
+function filterAuditRows() {
+  const q = document.getElementById('auditSearch').value.toLowerCase();
+  document.querySelectorAll('.audit-row').forEach(row => {
+    const text = row.textContent.toLowerCase();
+    const show = !q || text.includes(q);
+    row.style.display = show ? '' : 'none';
+    const detailRow = row.nextElementSibling;
+    if (detailRow && detailRow.classList.contains('audit-detail-row')) {
+      if (!show) { detailRow.style.display = 'none'; detailRow.classList.remove('visible'); row.classList.remove('expanded'); }
+    }
+  });
 }
 
 // ===== STATE =====
@@ -1329,7 +1886,7 @@ function toggleWfDrawer() {
   const drawer = document.getElementById('wfDrawer');
   const btn = document.getElementById('openWfBtn');
   drawer.classList.toggle('collapsed');
-  btn.style.display = drawer.classList.contains('collapsed') ? 'flex' : 'none';
+  if (btn) btn.style.display = drawer.classList.contains('collapsed') ? 'flex' : 'none';
 }
 
 function switchWfTab(tab, btn) {
