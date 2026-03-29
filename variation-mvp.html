@@ -148,20 +148,27 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
 .stop-ai-btn.hidden { opacity: 0; pointer-events: none; transform: translateX(-50%) translateY(10px); }
 
 /* Chat input area */
-.chat-input { padding: 14px 20px; border-top: 1px solid #e8ecf1; display: flex; align-items: center; gap: 10px; background: white; transition: transform 0.3s; }
-.chat-input textarea { flex: 1; border: 1px solid #e8ecf1; border-radius: 10px; padding: 10px 14px; font-size: 14px; font-family: 'Lato', sans-serif; resize: none; min-height: 20px; max-height: 80px; line-height: 1.4; }
-.chat-input textarea:focus { outline: none; border-color: #1665d8; }
-.chat-input .send-btn { width: 38px; height: 38px; background: #1665d8; border: none; border-radius: 10px; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.chat-input .send-btn:hover { background: #1255b8; }
+.chat-input { display: flex; flex-direction: column; background: white; transition: all 0.3s; }
+.chat-input-main { padding: 12px 16px 0; position: relative; }
+.chat-input-main textarea { width: 100%; border: none; padding: 10px 0; font-size: 14px; font-family: 'Lato', sans-serif; resize: none; min-height: 56px; max-height: 100px; line-height: 1.4; outline: none; color: #182c4c; }
+.chat-input-main textarea::placeholder { color: rgba(24,44,76,0.35); }
+.chat-input-icon { position: absolute; left: 16px; top: 52px; width: 28px; height: 28px; background: #1665d8; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.chat-input-bar { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid rgba(24,44,76,0.06); }
+.chat-input-left { display: flex; align-items: center; gap: 12px; }
+.help-write-btn { display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 12px; border: none; border-radius: 4px; background: linear-gradient(110deg, rgba(237,185,236,0.2), rgba(116,138,252,0.2)); color: #182c4c; font-size: 12px; font-weight: 700; font-family: 'Lato', sans-serif; cursor: pointer; }
+.help-write-btn:hover { background: linear-gradient(110deg, rgba(237,185,236,0.3), rgba(116,138,252,0.3)); }
+.attach-icon { cursor: pointer; }
+.send-btn-text { height: 32px; padding: 0 14px; border: none; border-radius: 4px; background: rgba(24,44,76,0.1); color: rgba(24,44,76,0.35); font-size: 13px; font-weight: 700; font-family: 'Lato', sans-serif; cursor: default; display: inline-flex; align-items: center; gap: 4px; }
 .chat-input.hidden { display: none; }
 
-/* Resume bar */
-.resume-bar { padding: 10px 20px; border-top: 1px solid #e8ecf1; background: #182c4c; display: flex; align-items: center; justify-content: space-between; gap: 16px; transition: all 0.3s; }
+/* Resume bar — sits above text input, matches reference design */
+.resume-bar { padding: 8px; margin: 10px 10px 0; background: #182c4c; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; transition: all 0.3s; }
 .resume-bar.hidden { display: none; }
-.resume-bar .resume-btn { padding: 8px 20px; background: linear-gradient(135deg, #EDB9EC, #748AFC); color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: 'Lato', sans-serif; }
+.resume-bar .resume-btn { padding: 8px 16px; background: linear-gradient(108deg, #EDB9EC 24%, #748AFC 66%); color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Lato', sans-serif; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
 .resume-bar .resume-btn:hover { opacity: 0.9; }
-.resume-bar .countdown { font-size: 13px; color: #8896b3; font-weight: 600; font-variant-numeric: tabular-nums; }
-.resume-bar .countdown span { color: white; }
+.resume-right { display: flex; align-items: center; gap: 8px; color: white; font-size: 14px; font-family: 'Lato', sans-serif; }
+.countdown-val { font-weight: 700; font-variant-numeric: tabular-nums; }
+.resume-divider { width: 1px; height: 24px; background: rgba(255,255,255,0.5); }
 
 /* ===== MORE ACTIONS DRAWER ===== */
 .more-drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 1000; display: none; }
@@ -245,6 +252,9 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
 </style>
 </head>
 <body>
+
+<!-- SVG gradient defs -->
+<svg style="position:absolute;width:0;height:0;overflow:hidden"><defs><linearGradient id="aiGrad" x1="0" y1="0" x2="18" y2="22" gradientUnits="userSpaceOnUse"><stop stop-color="#EDB9EC"/><stop offset="1" stop-color="#748AFC"/></linearGradient></defs></svg>
 
 <!-- Variation switcher bar -->
 <div id="unified-var-bar" style="position:fixed;top:0;left:0;right:0;height:40px;background:#0f1729;display:flex;align-items:center;justify-content:center;gap:6px;z-index:99999;font-family:Inter,-apple-system,sans-serif;">
@@ -455,18 +465,35 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
         Stop AI Assistant
       </button>
 
-      <!-- Chat input (hidden when AI is active) -->
-      <div class="chat-input hidden" id="chatInput">
-        <textarea rows="1" placeholder="Type a message..."></textarea>
-        <button class="send-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        </button>
+      <!-- Resume bar (hidden initially) — above the input like the reference design -->
+      <div class="resume-bar hidden" id="resumeBar">
+        <button class="resume-btn" onclick="resumeAI()">&#9654; Resume AI Assistant</button>
+        <div class="resume-right">
+          <span>Resume in</span>
+          <span class="countdown-val" id="countdownTimer">29:59</span>
+          <span class="resume-divider"></span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
       </div>
 
-      <!-- Resume bar (hidden initially) -->
-      <div class="resume-bar hidden" id="resumeBar">
-        <button class="resume-btn" onclick="resumeAI()">&#10024; Resume AI Assistant</button>
-        <div class="countdown">Resume in <span id="countdownTimer">29:59</span></div>
+      <!-- Chat input (hidden when AI is active) — below resume bar -->
+      <div class="chat-input hidden" id="chatInput">
+        <div class="chat-input-main">
+          <textarea rows="1" placeholder="Type a Message"></textarea>
+          <div class="chat-input-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1665d8" stroke-width="2" stroke-linecap="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+          </div>
+        </div>
+        <div class="chat-input-bar">
+          <div class="chat-input-left">
+            <button class="help-write-btn">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="url(#aiGrad)"><path d="M12 2C12 2 13 9.5 13 11C14.5 11 22 12 22 12C22 12 14.5 13 13 13C13 14.5 12 22 12 22C12 22 11 14.5 11 13C9.5 13 2 12 2 12C2 12 9.5 11 11 11C11 9.5 12 2 12 2Z"/></svg>
+              Help me write
+            </button>
+            <svg class="attach-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(24,44,76,0.3)" stroke-width="2" stroke-linecap="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+          </div>
+          <button class="send-btn-text">Send <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+        </div>
       </div>
     </div>
 
