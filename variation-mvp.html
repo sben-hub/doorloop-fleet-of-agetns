@@ -1017,7 +1017,7 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
 
       <div class="agents-grid">
         <!-- Maintenance -->
-        <div class="agent-tile">
+        <div class="agent-tile" style="cursor:pointer;" onclick="openSetupModal('Maintenance')">
           <span class="tile-status ready">Ready to set up</span>
           <div class="tile-icon maintenance">&#128295;</div>
           <h3>Maintenance</h3>
@@ -1028,11 +1028,11 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
             <span class="tile-feature">Owner approval</span>
             <span class="tile-feature">SMS/Email</span>
           </div>
-          <div class="tile-cta" onclick="event.stopPropagation();openSetupModal('Maintenance')">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+          <div class="tile-cta" onclick="openSetupModal('Maintenance')">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
         </div>
 
         <!-- Renewal -->
-        <div class="agent-tile">
+        <div class="agent-tile" style="cursor:pointer;" onclick="openSetupModal('Renewal')">
           <span class="tile-status soon">Coming soon</span>
           <div class="tile-icon renewal">&#128203;</div>
           <h3>Renewal</h3>
@@ -1042,11 +1042,11 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
             <span class="tile-feature">Rent adjustment</span>
             <span class="tile-feature">E-sign</span>
           </div>
-          <div class="tile-cta" onclick="event.stopPropagation();openSetupModal('Renewal')">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+          <div class="tile-cta" onclick="openSetupModal('Renewal')">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
         </div>
 
         <!-- Move-out -->
-        <div class="agent-tile">
+        <div class="agent-tile" style="cursor:pointer;" onclick="openSetupModal('Move-out')">
           <span class="tile-status soon">Coming soon</span>
           <div class="tile-icon moveout">&#128230;</div>
           <h3>Move-out</h3>
@@ -1056,11 +1056,11 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
             <span class="tile-feature">Deposit calc</span>
             <span class="tile-feature">Turnover</span>
           </div>
-          <div class="tile-cta" onclick="event.stopPropagation();openSetupModal('Move-out')">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+          <div class="tile-cta" onclick="openSetupModal('Move-out')">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
         </div>
 
         <!-- Move-in -->
-        <div class="agent-tile">
+        <div class="agent-tile" style="cursor:pointer;" onclick="openSetupModal('Move-in')">
           <span class="tile-status soon">Coming soon</span>
           <div class="tile-icon movein">&#127968;</div>
           <h3>Move-in</h3>
@@ -1070,11 +1070,11 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
             <span class="tile-feature">Checklist</span>
             <span class="tile-feature">Condition report</span>
           </div>
-          <div class="tile-cta" onclick="event.stopPropagation();openSetupModal('Move-in')">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+          <div class="tile-cta" onclick="openSetupModal('Move-in')">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
         </div>
 
         <!-- Leasing -->
-        <div class="agent-tile">
+        <div class="agent-tile" style="cursor:pointer;" onclick="openSetupModal('Leasing')">
           <span class="tile-status soon">Coming soon</span>
           <div class="tile-icon leasing">&#128273;</div>
           <h3>Leasing</h3>
@@ -1085,11 +1085,11 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
             <span class="tile-feature">Screening</span>
             <span class="tile-feature">E-sign</span>
           </div>
-          <div class="tile-cta" onclick="event.stopPropagation();openSetupModal('Leasing')">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+          <div class="tile-cta" onclick="openSetupModal('Leasing')">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
         </div>
 
         <!-- Delinquency -->
-        <div class="agent-tile">
+        <div class="agent-tile" style="cursor:pointer;" onclick="openSetupModal('Delinquency')">
           <span class="tile-status soon">Coming soon</span>
           <div class="tile-icon delinquency">&#128176;</div>
           <h3>Delinquency</h3>
@@ -1099,7 +1099,7 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
             <span class="tile-feature">Late notices</span>
             <span class="tile-feature">Payment plans</span>
           </div>
-          <div class="tile-cta" onclick="event.stopPropagation();openSetupModal('Delinquency')">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+          <div class="tile-cta" onclick="openSetupModal('Delinquency')">Set up agent <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
         </div>
       </div>
     </div>
