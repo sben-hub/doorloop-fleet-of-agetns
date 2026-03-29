@@ -2545,16 +2545,22 @@ let currentSetupAgent = 'Maintenance';
 function openSetupModal(agentName) {
   currentSetupAgent = agentName;
   document.getElementById('setupModalTitle').textContent = 'How would you like to set up your ' + agentName + ' agent?';
-  document.getElementById('setupModalOverlay').classList.add('visible');
+  var modal = document.getElementById('setupModalOverlay');
+  modal.style.display = 'flex';
+  modal.classList.add('visible');
 }
 
 function closeSetupModal(e) {
   if (e && e.target && e.target !== document.getElementById('setupModalOverlay') && !e.target.classList.contains('setup-modal-close')) return;
-  document.getElementById('setupModalOverlay').classList.remove('visible');
+  var modal = document.getElementById('setupModalOverlay');
+  modal.classList.remove('visible');
+  modal.style.display = 'none';
 }
 
 function chooseSetupMode(mode) {
-  document.getElementById('setupModalOverlay').classList.remove('visible');
+  var modal = document.getElementById('setupModalOverlay');
+  modal.classList.remove('visible');
+  modal.style.display = 'none';
   if (mode === 'chat') {
     document.getElementById('chatSetupTitle').textContent = 'Set up ' + currentSetupAgent + ' Agent';
     initChatSetup();
@@ -2740,7 +2746,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <!-- ===== SETUP MODE MODAL (outside .app for proper z-index) ===== -->
-<div class="setup-modal-overlay" id="setupModalOverlay" onclick="closeSetupModal(event)">
+<div class="setup-modal-overlay" id="setupModalOverlay" onclick="closeSetupModal(event)" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:99999;align-items:center;justify-content:center;">
   <div class="setup-modal" onclick="event.stopPropagation()">
     <button class="setup-modal-close" onclick="closeSetupModal(event)">&times;</button>
     <h2 id="setupModalTitle">How would you like to set up your Maintenance agent?</h2>
