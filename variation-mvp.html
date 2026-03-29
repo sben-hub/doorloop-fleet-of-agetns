@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DoorLoop – AI Communication Center (V5: MVP)</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; background: #f5f7fb; color: #1a2b4a; height: 100vh; overflow: hidden; padding-top: 40px !important; }
+
+.app { display: flex; height: calc(100vh - 40px); }
+
+/* ===== SIDEBAR ===== */
+.sidebar { width: 56px; background: linear-gradient(180deg, #25326b 0%, #2f3e83 100%); display: flex; flex-direction: column; align-items: center; padding: 12px 0; gap: 8px; flex-shrink: 0; }
+.sidebar .logo { width: 34px; height: 34px; background: #4C6FFF; border-radius: 8px; margin-bottom: 16px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px; cursor: pointer; }
+.sidebar .nav-item { width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #8896b3; cursor: pointer; transition: all 0.2s; position: relative; }
+.sidebar .nav-item:hover { background: rgba(255,255,255,0.1); color: white; }
+.sidebar .nav-item.active { background: rgba(76,111,255,0.25); color: #4C6FFF; }
+.sidebar .nav-item .badge { position: absolute; top: 2px; right: 2px; width: 16px; height: 16px; background: #ff4998; border-radius: 50%; font-size: 9px; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.sidebar .spacer { flex: 1; }
+.icon-svg { width: 18px; height: 18px; }
+
+.main-content { flex: 1; display: flex; overflow: hidden; }
+
+/* ===== CONVERSATION LIST (LEFT PANEL) ===== */
+.conv-list { width: 382px; background: white; border-right: 1px solid #e8ecf1; display: flex; flex-direction: column; flex-shrink: 0; }
+.conv-list-header { padding: 16px 18px 12px; border-bottom: 1px solid #e8ecf1; }
+.conv-list-header h3 { font-size: 15px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+.conv-list-header .create-btn { font-size: 12px; color: white; cursor: pointer; font-weight: 600; background: #ff4998; border: none; border-radius: 6px; padding: 6px 14px; }
+.conv-list-header .create-btn:hover { background: #e0407f; }
+.conv-search { width: 100%; padding: 9px 12px 9px 34px; border: 1px solid #e8ecf1; border-radius: 8px; font-size: 13px; margin-bottom: 12px; background: #f5f7fb url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239aa5b8' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") 10px center no-repeat; font-family: 'Lato', sans-serif; }
+.conv-search:focus { outline: none; border-color: #1665d8; background-color: white; }
+
+/* Filter tabs */
+.conv-filters { display: flex; gap: 0; border-bottom: 2px solid #e8ecf1; margin: 0 -18px; padding: 0 18px; }
+.conv-filter { padding: 8px 14px; font-size: 12px; font-weight: 600; border: none; background: none; cursor: pointer; color: #6b7a99; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; position: relative; }
+.conv-filter:hover { color: #1a2b4a; }
+.conv-filter.active { color: #1665d8; border-bottom-color: #1665d8; }
+.conv-filter .filter-badge { display: inline-block; padding: 1px 6px; border-radius: 10px; font-size: 10px; font-weight: 700; background: #ff4998; color: white; margin-left: 4px; }
+
+.conv-sort { padding: 8px 18px; font-size: 11px; color: #9aa5b8; border-bottom: 1px solid #f0f2f5; display: flex; align-items: center; justify-content: space-between; }
+.conv-sort select { border: none; background: none; font-size: 11px; color: #6b7a99; font-family: 'Lato', sans-serif; cursor: pointer; font-weight: 600; }
+
+.conv-items { flex: 1; overflow-y: auto; }
+.conv-item { padding: 14px 18px; border-bottom: 1px solid #f0f2f5; cursor: pointer; transition: background 0.15s; display: flex; gap: 12px; align-items: flex-start; }
+.conv-item:hover { background: #f8f9fc; }
+.conv-item.active { background: #eef2ff; border-left: 3px solid #1665d8; }
+.conv-item.hidden { display: none; }
+.conv-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.conv-avatar.tenant { background: #e3f2fd; color: #1565c0; }
+.conv-avatar.prospect { background: #fff3e0; color: #e65100; }
+.conv-info { flex: 1; min-width: 0; }
+.conv-info .conv-name { font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+.conv-info .conv-name .ai-badge { font-size: 9px; padding: 2px 7px; border-radius: 3px; background: linear-gradient(135deg, #EDB9EC, #748AFC); color: white; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; }
+.conv-info .conv-property { font-size: 11px; color: #9aa5b8; margin-top: 2px; }
+.conv-info .conv-preview { font-size: 12px; color: #6b7a99; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.conv-status-pill { font-size: 9px; padding: 2px 8px; border-radius: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; margin-top: 4px; display: inline-block; }
+.conv-status-pill.live { background: #e8f5e9; color: #2e7d32; }
+.conv-status-pill.escalated { background: #fff3e0; color: #e65100; }
+.conv-status-pill.resolved { background: #e8ecf1; color: #6b7a99; }
+.conv-meta { text-align: right; flex-shrink: 0; }
+.conv-meta .conv-time { font-size: 11px; color: #9aa5b8; }
+.conv-meta .conv-unread { width: 18px; height: 18px; background: #1665d8; border-radius: 50%; color: white; font-size: 10px; display: flex; align-items: center; justify-content: center; margin-top: 4px; margin-left: auto; font-weight: 700; }
+
+/* ===== CHAT PANEL (CENTER) ===== */
+.chat-panel { flex: 1; display: flex; flex-direction: column; background: white; position: relative; overflow: hidden; }
+.chat-header { padding: 14px 20px; border-bottom: 1px solid #e8ecf1; display: flex; align-items: center; gap: 12px; background: white; z-index: 10; }
+.chat-header .chat-avatar { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; background: #e3f2fd; color: #1565c0; }
+.chat-header-info h4 { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.chat-header-info p { font-size: 12px; color: #6b7a99; margin-top: 1px; }
+.chat-header .status-pill { font-size: 10px; padding: 3px 10px; border-radius: 10px; font-weight: 700; }
+.chat-header .status-pill.live { background: #e8f5e9; color: #2e7d32; }
+.chat-header .status-pill.escalated { background: #fff3e0; color: #e65100; }
+.chat-header .status-pill.resolved { background: #e8ecf1; color: #6b7a99; }
+.chat-header-actions { margin-left: auto; display: flex; gap: 8px; }
+.chat-header-actions button { padding: 7px 14px; border: 1px solid #e8ecf1; border-radius: 6px; background: white; font-size: 12px; cursor: pointer; color: #6b7a99; font-family: 'Lato', sans-serif; font-weight: 600; transition: all 0.15s; }
+.chat-header-actions button:hover { border-color: #1665d8; color: #1665d8; }
+.chat-header-actions .btn-primary { background: #1665d8; color: white; border-color: #1665d8; }
+.chat-header-actions .btn-primary:hover { background: #1255b8; }
+.chat-header-actions .btn-danger { color: #e65100; border-color: #ffccbc; }
+.chat-header-actions .btn-danger:hover { background: #fff3e0; }
+.chat-header-actions .btn-more { padding: 7px 10px; }
+
+/* Messages area */
+.chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; position: relative; }
+.chat-messages.ai-active { animation: inwardGlow 3s ease-in-out infinite; }
+
+@keyframes inwardGlow {
+  0%, 100% { box-shadow: inset 0 0 30px rgba(116, 138, 252, 0.05); }
+  50% { box-shadow: inset 0 0 60px rgba(116, 138, 252, 0.12), inset 0 0 20px rgba(237, 185, 236, 0.08); }
+}
+
+.chat-date { text-align: center; font-size: 11px; color: #9aa5b8; padding: 8px 0; font-weight: 600; }
+.chat-msg { max-width: 72%; animation: msgFadeIn 0.3s ease; }
+.chat-msg.inbound { align-self: flex-start; }
+.chat-msg.outbound { align-self: flex-end; }
+.chat-msg .msg-sender { font-size: 11px; color: #6b7a99; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; font-weight: 600; }
+.chat-msg.outbound .msg-sender { justify-content: flex-end; }
+.chat-msg .msg-sender .ai-tag { font-size: 9px; padding: 2px 7px; border-radius: 3px; background: linear-gradient(135deg, #EDB9EC, #748AFC); color: white; font-weight: 700; }
+.chat-msg .msg-bubble { padding: 12px 16px; border-radius: 14px; font-size: 14px; line-height: 1.55; }
+.chat-msg.inbound .msg-bubble { background: #ECEEF5; border-top-left-radius: 4px; }
+.chat-msg.outbound .msg-bubble { background: #d7ddfe; color: #1a2b4a; border-top-right-radius: 4px; }
+.chat-msg.outbound.ai .msg-bubble { background: linear-gradient(135deg, #e8dbfa, #d7ddfe); }
+.chat-msg .msg-footer { font-size: 10px; color: #9aa5b8; margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+.chat-msg.outbound .msg-footer { justify-content: flex-end; }
+.chat-msg .msg-footer .delivered { color: #4caf50; font-weight: 700; }
+.chat-msg .msg-photo { width: 200px; border-radius: 8px; background: #e8ecf1; height: 120px; display: flex; align-items: center; justify-content: center; color: #9aa5b8; font-size: 12px; margin-top: 8px; }
+
+/* Typing indicator dots */
+.typing-dots { display: flex; gap: 4px; padding: 12px 16px; }
+.typing-dots span { width: 8px; height: 8px; background: #9aa5b8; border-radius: 50%; animation: typingBounce 1.4s infinite; }
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-6px); opacity: 1; }
+}
+
+/* AI Analyzing skeleton */
+.ai-analyzing { align-self: flex-end; max-width: 72%; animation: msgFadeIn 0.3s ease; }
+.ai-analyzing .analyze-label { font-size: 11px; font-weight: 700; text-align: right; margin-bottom: 6px; background: linear-gradient(135deg, #EDB9EC, #748AFC); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.ai-analyzing .skeleton-box { background: #f0f0f8; border-radius: 14px; padding: 16px; border-top-right-radius: 4px; overflow: hidden; position: relative; }
+.skeleton-bar { height: 12px; background: linear-gradient(90deg, #e8e8f0 25%, #d7d7e8 50%, #e8e8f0 75%); background-size: 200% 100%; border-radius: 6px; margin-bottom: 8px; animation: shimmer 1.5s infinite; }
+.skeleton-bar:nth-child(1) { width: 90%; }
+.skeleton-bar:nth-child(2) { width: 75%; }
+.skeleton-bar:nth-child(3) { width: 60%; margin-bottom: 0; }
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Divider messages */
+.chat-divider { display: flex; align-items: center; gap: 12px; padding: 8px 0; }
+.chat-divider .divider-line { flex: 1; height: 1px; background: #e8ecf1; }
+.chat-divider .divider-text { font-size: 11px; color: #9aa5b8; font-weight: 600; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+.chat-divider .divider-text .escalated-icon { color: #e65100; }
+.chat-divider .divider-text .resolved-icon { color: #2e7d32; }
+
+/* Internal note */
+.internal-note { background: #fff8e1; border: 1px solid #ffe082; border-radius: 10px; padding: 14px 16px; margin: 4px 0; max-width: 85%; align-self: center; }
+.internal-note .note-header { font-size: 10px; font-weight: 700; color: #f57f17; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.internal-note .note-body { font-size: 13px; color: #5d4037; line-height: 1.5; }
+
+/* Stop AI button */
+.stop-ai-btn { position: absolute; bottom: 90px; left: 50%; transform: translateX(-50%); padding: 10px 24px; background: linear-gradient(135deg, #EDB9EC, #748AFC); color: white; border: none; border-radius: 24px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Lato', sans-serif; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 16px rgba(116,138,252,0.3); z-index: 20; transition: all 0.3s; }
+.stop-ai-btn:hover { box-shadow: 0 6px 24px rgba(116,138,252,0.45); transform: translateX(-50%) translateY(-1px); }
+.stop-ai-btn.hidden { opacity: 0; pointer-events: none; transform: translateX(-50%) translateY(10px); }
+
+/* Chat input area */
+.chat-input { padding: 14px 20px; border-top: 1px solid #e8ecf1; display: flex; align-items: center; gap: 10px; background: white; transition: transform 0.3s; }
+.chat-input textarea { flex: 1; border: 1px solid #e8ecf1; border-radius: 10px; padding: 10px 14px; font-size: 14px; font-family: 'Lato', sans-serif; resize: none; min-height: 20px; max-height: 80px; line-height: 1.4; }
+.chat-input textarea:focus { outline: none; border-color: #1665d8; }
+.chat-input .send-btn { width: 38px; height: 38px; background: #1665d8; border: none; border-radius: 10px; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.chat-input .send-btn:hover { background: #1255b8; }
+.chat-input.hidden { display: none; }
+
+/* Resume bar */
+.resume-bar { padding: 10px 20px; border-top: 1px solid #e8ecf1; background: #182c4c; display: flex; align-items: center; justify-content: space-between; gap: 16px; transition: all 0.3s; }
+.resume-bar.hidden { display: none; }
+.resume-bar .resume-btn { padding: 8px 20px; background: linear-gradient(135deg, #EDB9EC, #748AFC); color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: 'Lato', sans-serif; }
+.resume-bar .resume-btn:hover { opacity: 0.9; }
+.resume-bar .countdown { font-size: 13px; color: #8896b3; font-weight: 600; font-variant-numeric: tabular-nums; }
+.resume-bar .countdown span { color: white; }
+
+/* ===== MORE ACTIONS DRAWER ===== */
+.more-drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 1000; display: none; }
+.more-drawer-overlay.visible { display: block; }
+.more-drawer { position: fixed; top: 40px; right: 0; bottom: 0; width: 380px; background: white; box-shadow: -4px 0 24px rgba(0,0,0,0.1); z-index: 1001; transform: translateX(100%); transition: transform 0.3s; display: flex; flex-direction: column; }
+.more-drawer.visible { transform: translateX(0); }
+.more-drawer-header { padding: 16px 20px; border-bottom: 1px solid #e8ecf1; display: flex; align-items: center; justify-content: space-between; }
+.more-drawer-header h3 { font-size: 15px; font-weight: 700; }
+.more-drawer-header .close-btn { width: 30px; height: 30px; border: none; background: #f5f7fb; border-radius: 6px; cursor: pointer; font-size: 16px; color: #6b7a99; display: flex; align-items: center; justify-content: center; }
+.more-drawer-content { flex: 1; overflow-y: auto; padding: 20px; }
+.more-drawer-content .summary-card { background: linear-gradient(135deg, #f8f0ff, #eef2ff); border: 1px solid #e0d4f5; border-radius: 10px; padding: 16px; margin-bottom: 20px; }
+.summary-card .summary-title { font-size: 11px; font-weight: 700; color: #748AFC; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.summary-card .summary-text { font-size: 13px; color: #4a5568; line-height: 1.6; }
+.more-drawer-content h4 { font-size: 12px; font-weight: 700; color: #6b7a99; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+.quick-action { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid #e8ecf1; border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: all 0.15s; font-size: 13px; font-weight: 600; color: #1a2b4a; }
+.quick-action:hover { border-color: #1665d8; background: #f8f9ff; }
+.quick-action .qa-icon { width: 32px; height: 32px; border-radius: 8px; background: #f5f7fb; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+.assignee-section { margin-top: 20px; }
+.assignee-select { width: 100%; padding: 10px 12px; border: 1px solid #e8ecf1; border-radius: 8px; font-size: 13px; font-family: 'Lato', sans-serif; background: white; cursor: pointer; }
+
+/* ===== WORKFLOW DRAWER (RIGHT) ===== */
+.wf-drawer { width: 360px; background: #fafbfd; border-left: 1px solid #e8ecf1; display: flex; flex-direction: column; flex-shrink: 0; overflow: hidden; transition: width 0.3s ease; }
+.wf-drawer.collapsed { width: 0; border: none; overflow: hidden; }
+.wf-drawer-header { padding: 14px 18px; border-bottom: 1px solid #e8ecf1; background: white; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.wf-drawer-header h3 { font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.wf-drawer-header .wf-status { font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+.wf-drawer-header .wf-status.active { background: #e8f5e9; color: #2e7d32; }
+.wf-toggle { width: 28px; height: 28px; border: 1px solid #e8ecf1; border-radius: 6px; background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #6b7a99; font-size: 14px; }
+.wf-toggle:hover { background: #f5f7fb; }
+
+.wf-tabs { display: flex; border-bottom: 1px solid #e8ecf1; background: white; flex-shrink: 0; }
+.wf-tab { flex: 1; padding: 10px 14px; font-size: 12px; font-weight: 600; color: #6b7a99; cursor: pointer; border: none; background: none; border-bottom: 2px solid transparent; transition: all 0.2s; text-align: center; font-family: 'Lato', sans-serif; }
+.wf-tab:hover { color: #1a2b4a; background: #f8f9fc; }
+.wf-tab.active { color: #1665d8; border-bottom-color: #1665d8; }
+
+.wf-content { flex: 1; overflow-y: auto; padding: 16px; }
+.wf-steps { display: flex; flex-direction: column; gap: 0; }
+.wf-step { display: flex; gap: 12px; position: relative; }
+.wf-step-line { width: 24px; display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+.wf-step-dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #d0d7e2; background: white; z-index: 1; flex-shrink: 0; transition: all 0.3s; }
+.wf-step-connector { width: 2px; flex: 1; background: #e8ecf1; min-height: 16px; }
+.wf-step.completed .wf-step-dot { background: #4caf50; border-color: #4caf50; }
+.wf-step.current .wf-step-dot { background: #1665d8; border-color: #1665d8; box-shadow: 0 0 0 4px rgba(22,101,216,0.2); }
+.wf-step.current .wf-step-connector { background: linear-gradient(to bottom, #1665d8 0%, #e8ecf1 100%); }
+.wf-step.completed .wf-step-connector { background: #4caf50; }
+.wf-step-body { padding-bottom: 14px; flex: 1; }
+.wf-step-card { padding: 10px 14px; border-radius: 8px; background: white; border: 1px solid #e8ecf1; transition: all 0.3s; }
+.wf-step.completed .wf-step-card { opacity: 0.65; }
+.wf-step.current .wf-step-card { border-color: #1665d8; box-shadow: 0 2px 8px rgba(22,101,216,0.1); background: #f8f9ff; }
+.wf-step-card .step-tag { display: inline-block; padding: 2px 7px; border-radius: 3px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px; }
+.step-tag.trigger { background: #fff8e1; color: #f57f17; }
+.step-tag.ai-decision { background: #f3e5f5; color: #7b1fa2; }
+.step-tag.agent-action { background: #e3f2fd; color: #1565c0; }
+.step-tag.communication { background: #e8f5e9; color: #2e7d32; }
+.step-tag.wait { background: #fce4ec; color: #c62828; }
+.step-tag.condition { background: #fff3e0; color: #e65100; }
+.wf-step-card h5 { font-size: 12px; font-weight: 700; margin-bottom: 2px; }
+.wf-step-card p { font-size: 11px; color: #6b7a99; }
+.wf-step.completed .step-result { font-size: 10px; color: #4caf50; margin-top: 4px; font-weight: 600; }
+.wf-step.current .step-waiting { font-size: 10px; color: #1665d8; margin-top: 4px; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+.wf-step.current .step-waiting .pulse { width: 6px; height: 6px; background: #1665d8; border-radius: 50%; animation: pulse 1.5s infinite; }
+.current-label { font-size: 10px; color: #1665d8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+
+.wf-links { padding: 10px 18px; border-top: 1px solid #e8ecf1; background: #fafbfd; display: flex; gap: 8px; flex-shrink: 0; }
+.wf-links a { font-size: 11px; font-weight: 600; color: #1665d8; text-decoration: none; padding: 6px 12px; border: 1px solid #e0e7f1; border-radius: 6px; background: white; transition: all 0.15s; }
+.wf-links a:hover { background: #f0f3ff; border-color: #1665d8; }
+.wf-footer { padding: 10px 18px; border-top: 1px solid #e8ecf1; background: white; font-size: 11px; color: #6b7a99; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.wf-footer .wf-progress { flex: 1; height: 4px; background: #e8ecf1; border-radius: 2px; overflow: hidden; }
+.wf-footer .wf-progress-bar { height: 100%; background: #1665d8; border-radius: 2px; width: 55%; }
+
+/* Open workflow button (when collapsed) */
+.open-wf-btn { position: fixed; right: 16px; top: 84px; padding: 8px 14px; background: white; border: 1px solid #e8ecf1; border-radius: 8px; font-size: 12px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: none; z-index: 10; color: #1a2b4a; align-items: center; gap: 6px; font-weight: 600; font-family: 'Lato', sans-serif; }
+.open-wf-btn:hover { border-color: #1665d8; color: #1665d8; }
+
+@keyframes msgFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d0d7e2; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- Variation switcher bar -->
+<div id="unified-var-bar" style="position:fixed;top:0;left:0;right:0;height:40px;background:#0f1729;display:flex;align-items:center;justify-content:center;gap:6px;z-index:99999;font-family:Inter,-apple-system,sans-serif;">
+<a href="maintenance-agent-prototype.html" style="font-size:12px;font-weight:500;padding:5px 16px;border-radius:6px;text-decoration:none;color:#8896b3;">V1: Standard</a>
+<a href="variation-enterprise.html" style="font-size:12px;font-weight:500;padding:5px 16px;border-radius:6px;text-decoration:none;color:#8896b3;">V2: Enterprise</a>
+<a href="variation-simple.html" style="font-size:12px;font-weight:500;padding:5px 16px;border-radius:6px;text-decoration:none;color:#8896b3;">V3: Simple</a>
+<a href="variation-full.html" style="font-size:12px;font-weight:500;padding:5px 16px;border-radius:6px;text-decoration:none;color:#8896b3;">V4: Full Vision</a>
+<a href="variation-mvp.html" style="font-size:12px;font-weight:600;padding:5px 16px;border-radius:6px;text-decoration:none;color:white;background:#4C6FFF;">V5: MVP</a>
+</div>
+
+<div class="app">
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="logo" onclick="window.location.href='maintenance-agent-prototype.html'">D</div>
+    <div class="nav-item" title="AI Agents" onclick="window.location.href='maintenance-agent-prototype.html'">
+      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    </div>
+    <div class="nav-item active" title="Communication Center">
+      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span class="badge">3</span>
+    </div>
+    <div class="nav-item" title="Command Center" onclick="window.location.href='command-center.html'">
+      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    </div>
+    <div class="nav-item" title="Audit Log" onclick="window.location.href='audit-log.html'">
+      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    </div>
+    <div class="spacer"></div>
+    <div class="nav-item" title="Settings" style="margin-bottom:8px;">
+      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </div>
+  </nav>
+
+  <div class="main-content">
+    <!-- ===== LEFT: Conversation List ===== -->
+    <div class="conv-list">
+      <div class="conv-list-header">
+        <h3>Messages <button class="create-btn">+ New</button></h3>
+        <input class="conv-search" type="text" placeholder="Search conversations..." id="convSearch" oninput="filterSearch()" />
+        <div class="conv-filters">
+          <button class="conv-filter active" data-filter="all" onclick="setFilter('all',this)">All</button>
+          <button class="conv-filter" data-filter="live" onclick="setFilter('live',this)">Active</button>
+          <button class="conv-filter" data-filter="escalated" onclick="setFilter('escalated',this)">Escalated <span class="filter-badge">2</span></button>
+          <button class="conv-filter" data-filter="resolved" onclick="setFilter('resolved',this)">Resolved</button>
+        </div>
+      </div>
+      <div class="conv-sort">
+        <span>6 conversations</span>
+        <select>
+          <option>Newest first</option>
+          <option>Oldest first</option>
+          <option>Unread first</option>
+        </select>
+      </div>
+      <div class="conv-items" id="convItems">
+        <!-- Emily Smith — Active / Live -->
+        <div class="conv-item active" data-conv="emily" data-status="live" onclick="showConversation('emily')">
+          <div class="conv-avatar tenant">ES</div>
+          <div class="conv-info">
+            <div class="conv-name">Emily Smith <span class="ai-badge">AI Live</span></div>
+            <div class="conv-property">Oakridge Complex, Unit 1A &middot; Tenant</div>
+            <div class="conv-preview">Kitchen sink is leaking badly...</div>
+            <span class="conv-status-pill live">Live</span>
+          </div>
+          <div class="conv-meta">
+            <div class="conv-time">10:24 AM</div>
+            <div class="conv-unread">3</div>
+          </div>
+        </div>
+
+        <!-- Sarah Johnson — Active / Live -->
+        <div class="conv-item" data-conv="sarah" data-status="live" onclick="showConversation('sarah')">
+          <div class="conv-avatar tenant">SJ</div>
+          <div class="conv-info">
+            <div class="conv-name">Sarah Johnson <span class="ai-badge">AI Live</span></div>
+            <div class="conv-property">Birchwood Estates, Unit 3B &middot; Tenant</div>
+            <div class="conv-preview">When does my lease expire?</div>
+            <span class="conv-status-pill live">Live</span>
+          </div>
+          <div class="conv-meta">
+            <div class="conv-time">9:45 AM</div>
+          </div>
+        </div>
+
+        <!-- David Taylor — Escalated -->
+        <div class="conv-item" data-conv="david" data-status="escalated" onclick="showConversation('david')">
+          <div class="conv-avatar prospect">DT</div>
+          <div class="conv-info">
+            <div class="conv-name">David Taylor</div>
+            <div class="conv-property">Prospect &middot; Lease inquiry</div>
+            <div class="conv-preview">I need to speak with a real person...</div>
+            <span class="conv-status-pill escalated">Escalated</span>
+          </div>
+          <div class="conv-meta">
+            <div class="conv-time">9:12 AM</div>
+            <div class="conv-unread">1</div>
+          </div>
+        </div>
+
+        <!-- James Williams — Escalated -->
+        <div class="conv-item" data-conv="james" data-status="escalated" onclick="showConversation('james')">
+          <div class="conv-avatar prospect">JW</div>
+          <div class="conv-info">
+            <div class="conv-name">James Williams</div>
+            <div class="conv-property">Prospect &middot; Tour request</div>
+            <div class="conv-preview">Can I schedule a tour for Saturday?</div>
+            <span class="conv-status-pill escalated">Escalated</span>
+          </div>
+          <div class="conv-meta">
+            <div class="conv-time">Yesterday</div>
+          </div>
+        </div>
+
+        <!-- Pine Heights — Resolved -->
+        <div class="conv-item" data-conv="pine" data-status="resolved" onclick="showConversation('pine')">
+          <div class="conv-avatar tenant">PH</div>
+          <div class="conv-info">
+            <div class="conv-name">Lisa Chen</div>
+            <div class="conv-property">Pine Heights, Unit 4D &middot; Tenant</div>
+            <div class="conv-preview">Thanks, the issue is fixed!</div>
+            <span class="conv-status-pill resolved">Resolved</span>
+          </div>
+          <div class="conv-meta">
+            <div class="conv-time">Mar 27</div>
+          </div>
+        </div>
+
+        <!-- Michael Carter — Resolved -->
+        <div class="conv-item" data-conv="michael" data-status="resolved" onclick="showConversation('michael')">
+          <div class="conv-avatar tenant">MC</div>
+          <div class="conv-info">
+            <div class="conv-name">Michael Carter</div>
+            <div class="conv-property">Aspen Grove, Unit 7G &middot; Tenant</div>
+            <div class="conv-preview">Package was delivered, all good</div>
+            <span class="conv-status-pill resolved">Resolved</span>
+          </div>
+          <div class="conv-meta">
+            <div class="conv-time">Mar 26</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CENTER: Chat Panel ===== -->
+    <div class="chat-panel" id="chatPanel">
+      <!-- Emily's chat header -->
+      <div class="chat-header" id="chatHeader">
+        <div class="chat-avatar" id="chatAvatar">ES</div>
+        <div class="chat-header-info">
+          <h4 id="chatName">Emily Smith <span class="status-pill live" id="chatStatusPill">Live - AI Active</span></h4>
+          <p id="chatSubtitle">Oakridge Complex, Unit 1A &middot; Tenant &middot; +1 (555) 0142</p>
+        </div>
+        <div class="chat-header-actions">
+          <button class="btn-danger" id="btnEscalate" onclick="escalateConversation()">Escalate to team</button>
+          <button id="btnResolve" onclick="resolveConversation()">Mark as resolved</button>
+          <button onclick="toggleWfDrawer()">Workflow</button>
+          <button class="btn-more" onclick="toggleMoreDrawer()">&#8943;</button>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div class="chat-messages ai-active" id="chatMessages">
+        <div class="chat-date">Today, Mar 29</div>
+
+        <!-- Emily's initial message -->
+        <div class="chat-msg inbound">
+          <div class="msg-sender">Emily Smith &middot; Tenant</div>
+          <div class="msg-bubble">Hi, my kitchen sink has been leaking since this morning. There's water pooling under the cabinet and it's getting worse. Can someone come fix this ASAP?</div>
+          <div class="msg-photo">&#128247; Photo attached: water under sink</div>
+          <div class="msg-footer">10:02 AM</div>
+        </div>
+
+        <!-- AI auto-response -->
+        <div class="chat-msg outbound ai">
+          <div class="msg-sender"><span class="ai-tag">AI Assistant</span> DoorLoop AI</div>
+          <div class="msg-bubble">Hi Emily! I'm sorry to hear about the kitchen sink leak. I've created maintenance request #4821 and I'm reaching out to a plumber right now. I'll have scheduling options for you shortly. In the meantime, if you can, please place a bucket or towels under the leak to minimize water damage.</div>
+          <div class="msg-footer"><span class="delivered">&#10003;&#10003;</span> Delivered 10:03 AM</div>
+        </div>
+
+        <!-- AI follow-up with scheduling -->
+        <div class="chat-msg outbound ai">
+          <div class="msg-sender"><span class="ai-tag">AI Assistant</span> DoorLoop AI</div>
+          <div class="msg-bubble">Great news! Mike's Plumbing is available tomorrow. Which time slot works best for you?<br><br>1. 9:00 AM - 11:00 AM<br>2. 1:00 PM - 3:00 PM<br>3. 4:00 PM - 6:00 PM</div>
+          <div class="msg-footer"><span class="delivered">&#10003;&#10003;</span> Delivered 10:08 AM</div>
+        </div>
+
+        <!-- Emily's confirmation -->
+        <div class="chat-msg inbound">
+          <div class="msg-sender">Emily Smith &middot; Tenant</div>
+          <div class="msg-bubble">Option 2 works, 1 PM tomorrow. Thanks for the quick response!</div>
+          <div class="msg-footer">10:15 AM</div>
+        </div>
+
+        <!-- AI analyzing skeleton -->
+        <div class="ai-analyzing" id="aiAnalyzing">
+          <div class="analyze-label">&#10024; Analyzing...</div>
+          <div class="skeleton-box">
+            <div class="skeleton-bar"></div>
+            <div class="skeleton-bar"></div>
+            <div class="skeleton-bar"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stop AI button -->
+      <button class="stop-ai-btn" id="stopAiBtn" onclick="stopAI()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+        Stop AI Assistant
+      </button>
+
+      <!-- Chat input (hidden when AI is active) -->
+      <div class="chat-input hidden" id="chatInput">
+        <textarea rows="1" placeholder="Type a message..."></textarea>
+        <button class="send-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+
+      <!-- Resume bar (hidden initially) -->
+      <div class="resume-bar hidden" id="resumeBar">
+        <button class="resume-btn" onclick="resumeAI()">&#10024; Resume AI Assistant</button>
+        <div class="countdown">Resume in <span id="countdownTimer">29:59</span></div>
+      </div>
+    </div>
+
+    <!-- ===== RIGHT: Workflow Progress Drawer ===== -->
+    <div class="wf-drawer" id="wfDrawer">
+      <div class="wf-drawer-header">
+        <h3>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1665d8" stroke-width="2"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Workflow Progress
+          <span class="wf-status active">Active</span>
+        </h3>
+        <button class="wf-toggle" onclick="toggleWfDrawer()">&times;</button>
+      </div>
+
+      <div class="wf-tabs">
+        <button class="wf-tab active" onclick="switchWfTab('maintenance',this)">Maintenance</button>
+        <button class="wf-tab" onclick="switchWfTab('renewal',this)">Renewal</button>
+      </div>
+
+      <div class="wf-content" id="wfContent">
+        <!-- Maintenance workflow -->
+        <div class="wf-panel active" id="wfMaintenance">
+          <div class="wf-steps">
+            <!-- Step 1: Trigger -->
+            <div class="wf-step completed">
+              <div class="wf-step-line">
+                <div class="wf-step-dot"></div>
+                <div class="wf-step-connector"></div>
+              </div>
+              <div class="wf-step-body">
+                <div class="wf-step-card">
+                  <span class="step-tag trigger">Trigger</span>
+                  <h5>Incoming Message Received</h5>
+                  <p>Tenant reported kitchen sink leak</p>
+                  <div class="step-result">&#10003; Triggered at 10:02 AM</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 2: Triage -->
+            <div class="wf-step completed">
+              <div class="wf-step-line">
+                <div class="wf-step-dot"></div>
+                <div class="wf-step-connector"></div>
+              </div>
+              <div class="wf-step-body">
+                <div class="wf-step-card">
+                  <span class="step-tag ai-decision">AI Decision</span>
+                  <h5>Triage &amp; Classify</h5>
+                  <p>Categorize issue, assess urgency</p>
+                  <div class="step-result">&#10003; Plumbing / Medium urgency</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 3: Create WO -->
+            <div class="wf-step completed">
+              <div class="wf-step-line">
+                <div class="wf-step-dot"></div>
+                <div class="wf-step-connector"></div>
+              </div>
+              <div class="wf-step-body">
+                <div class="wf-step-card">
+                  <span class="step-tag agent-action">Agent Action</span>
+                  <h5>Create Work Order</h5>
+                  <p>Generate WO in DoorLoop</p>
+                  <div class="step-result">&#10003; WO #4821 created</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 4: Select Vendor -->
+            <div class="wf-step completed">
+              <div class="wf-step-line">
+                <div class="wf-step-dot"></div>
+                <div class="wf-step-connector"></div>
+              </div>
+              <div class="wf-step-body">
+                <div class="wf-step-card">
+                  <span class="step-tag ai-decision">AI Decision</span>
+                  <h5>Select Vendor</h5>
+                  <p>Match best vendor by specialty, rating, availability</p>
+                  <div class="step-result">&#10003; Mike's Plumbing selected (4.8 stars)</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 5: Get Estimate -->
+            <div class="wf-step completed">
+              <div class="wf-step-line">
+                <div class="wf-step-dot"></div>
+                <div class="wf-step-connector"></div>
+              </div>
+              <div class="wf-step-body">
+                <div class="wf-step-card">
+                  <span class="step-tag communication">Communication</span>
+                  <h5>Get Estimate</h5>
+                  <p>Contact vendor for quote &amp; availability</p>
+                  <div class="step-result">&#10003; $280 estimate, available tomorrow</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 6: Owner Approval -->
+            <div class="wf-step current">
+              <div class="wf-step-line">
+                <div class="wf-step-dot"></div>
+                <div class="wf-step-connector"></div>
+              </div>
+              <div class="wf-step-body">
+                <div class="current-label">&#9654; Current Step</div>
+                <div class="wf-step-card">
+                  <span class="step-tag condition">Condition</span>
+                  <h5>Owner Approval</h5>
+                  <p>Auto-approved if under $500 threshold</p>
+                  <div class="step-waiting"><div class="pulse"></div> Under threshold &mdash; auto-approving...</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 7: Schedule -->
+            <div class="wf-step">
+              <div class="wf-step-line">
+                <div class="wf-step-dot"></div>
+                <div class="wf-step-connector"></div>
+              </div>
+              <div class="wf-step-body">
+                <div class="wf-step-card">
+                  <span class="step-tag communication">Communication</span>
+                  <h5>Schedule with Tenant</h5>
+                  <p>Coordinate visit time with tenant</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 8: Verify -->
+            <div class="wf-step">
+              <div class="wf-step-line">
+                <div class="wf-step-dot"></div>
+                <div class="wf-step-connector"></div>
+              </div>
+              <div class="wf-step-body">
+                <div class="wf-step-card">
+                  <span class="step-tag wait">Wait for Response</span>
+                  <h5>Verify Completion</h5>
+                  <p>Follow up with tenant after repair</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 9: Close & Bill -->
+            <div class="wf-step">
+              <div class="wf-step-line">
+                <div class="wf-step-dot"></div>
+              </div>
+              <div class="wf-step-body">
+                <div class="wf-step-card">
+                  <span class="step-tag agent-action">Agent Action</span>
+                  <h5>Close &amp; Bill</h5>
+                  <p>Close WO, process invoice, update records</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Renewal workflow (placeholder) -->
+        <div class="wf-panel" id="wfRenewal">
+          <div style="padding:40px 20px;text-align:center;color:#9aa5b8;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d0d7e2" stroke-width="1.5" style="margin-bottom:12px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <p style="font-size:13px;font-weight:600;">No active renewal workflow</p>
+            <p style="font-size:12px;margin-top:4px;">Renewal workflows will appear here when a lease is approaching expiration.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="wf-links">
+        <a href="audit-log.html">View in Audit Log</a>
+        <a href="command-center.html">View in Command Center</a>
+      </div>
+      <div class="wf-footer">
+        <span>Step 6 of 9</span>
+        <div class="wf-progress"><div class="wf-progress-bar" style="width:62%"></div></div>
+        <span>62%</span>
+      </div>
+    </div>
+
+    <!-- Open workflow button when drawer collapsed -->
+    <button class="open-wf-btn" id="openWfBtn" onclick="toggleWfDrawer()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      Workflow
+    </button>
+  </div>
+</div>
+
+<!-- ===== More Actions Drawer ===== -->
+<div class="more-drawer-overlay" id="moreOverlay" onclick="toggleMoreDrawer()"></div>
+<div class="more-drawer" id="moreDrawer">
+  <div class="more-drawer-header">
+    <h3>More Actions</h3>
+    <button class="close-btn" onclick="toggleMoreDrawer()">&times;</button>
+  </div>
+  <div class="more-drawer-content">
+    <div class="summary-card">
+      <div class="summary-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#748AFC" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        AI Summary
+      </div>
+      <div class="summary-text">Emily Smith reported a kitchen sink leak in Unit 1A at Oakridge Complex. A maintenance request (#4821) was created and Mike's Plumbing has been contacted. The tenant selected the 1:00 PM - 3:00 PM slot for tomorrow. Pending owner approval (auto-approve likely, under $500 threshold).</div>
+    </div>
+
+    <h4>Quick Actions</h4>
+    <div class="quick-action" onclick="alert('Create task dialog would open')">
+      <div class="qa-icon">&#9745;</div>
+      <span>Create Task</span>
+    </div>
+    <div class="quick-action" onclick="alert('Create maintenance request dialog would open')">
+      <div class="qa-icon">&#128295;</div>
+      <span>Create Maintenance Request</span>
+    </div>
+    <div class="quick-action" onclick="alert('Marked as unread')">
+      <div class="qa-icon">&#9993;</div>
+      <span>Mark as Unread</span>
+    </div>
+    <div class="quick-action" onclick="alert('Export dialog would open')">
+      <div class="qa-icon">&#128229;</div>
+      <span>Export Conversation</span>
+    </div>
+
+    <div class="assignee-section">
+      <h4>Assign To</h4>
+      <select class="assignee-select">
+        <option value="">AI Assistant (Default)</option>
+        <option value="pm1">John Martinez (Property Manager)</option>
+        <option value="pm2">Sarah Brooks (Maintenance Lead)</option>
+        <option value="pm3">Alex Rivera (Leasing Agent)</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== STATE =====
+const conversations = {
+  emily: {
+    name: 'Emily Smith', initials: 'ES', type: 'tenant', status: 'live',
+    subtitle: 'Oakridge Complex, Unit 1A &middot; Tenant &middot; +1 (555) 0142',
+    aiActive: true
+  },
+  sarah: {
+    name: 'Sarah Johnson', initials: 'SJ', type: 'tenant', status: 'live',
+    subtitle: 'Birchwood Estates, Unit 3B &middot; Tenant &middot; +1 (555) 0298',
+    aiActive: true
+  },
+  david: {
+    name: 'David Taylor', initials: 'DT', type: 'prospect', status: 'escalated',
+    subtitle: 'Prospect &middot; Lease inquiry &middot; +1 (555) 0431',
+    aiActive: false
+  },
+  james: {
+    name: 'James Williams', initials: 'JW', type: 'prospect', status: 'escalated',
+    subtitle: 'Prospect &middot; Tour request &middot; +1 (555) 0587',
+    aiActive: false
+  },
+  pine: {
+    name: 'Lisa Chen', initials: 'PH', type: 'tenant', status: 'resolved',
+    subtitle: 'Pine Heights, Unit 4D &middot; Tenant &middot; +1 (555) 0612',
+    aiActive: false
+  },
+  michael: {
+    name: 'Michael Carter', initials: 'MC', type: 'tenant', status: 'resolved',
+    subtitle: 'Aspen Grove, Unit 7G &middot; Tenant &middot; +1 (555) 0733',
+    aiActive: false
+  }
+};
+
+let currentConv = 'emily';
+let aiRunning = true;
+let aiStopped = false;
+let countdownSeconds = 29 * 60 + 59;
+let countdownInterval = null;
+let aiLoopTimeout = null;
+let aiLoopStep = 0;
+
+// ===== FILTER TABS =====
+function setFilter(filter, btn) {
+  document.querySelectorAll('.conv-filter').forEach(f => f.classList.remove('active'));
+  btn.classList.add('active');
+
+  document.querySelectorAll('.conv-item').forEach(item => {
+    const status = item.dataset.status;
+    if (filter === 'all') {
+      item.classList.remove('hidden');
+    } else if (status === filter) {
+      item.classList.remove('hidden');
+    } else {
+      item.classList.add('hidden');
+    }
+  });
+}
+
+function filterSearch() {
+  const q = document.getElementById('convSearch').value.toLowerCase();
+  document.querySelectorAll('.conv-item').forEach(item => {
+    const text = item.textContent.toLowerCase();
+    item.classList.toggle('hidden', q && !text.includes(q));
+  });
+}
+
+// ===== SHOW CONVERSATION =====
+function showConversation(convId) {
+  currentConv = convId;
+  const conv = conversations[convId];
+  if (!conv) return;
+
+  // Update sidebar active state
+  document.querySelectorAll('.conv-item').forEach(el => el.classList.remove('active'));
+  const activeItem = document.querySelector(`.conv-item[data-conv="${convId}"]`);
+  if (activeItem) activeItem.classList.add('active');
+
+  // Update header
+  document.getElementById('chatAvatar').textContent = conv.initials;
+  document.getElementById('chatAvatar').className = 'chat-avatar';
+  if (conv.type === 'prospect') {
+    document.getElementById('chatAvatar').style.background = '#fff3e0';
+    document.getElementById('chatAvatar').style.color = '#e65100';
+  } else {
+    document.getElementById('chatAvatar').style.background = '#e3f2fd';
+    document.getElementById('chatAvatar').style.color = '#1565c0';
+  }
+
+  const statusPill = document.getElementById('chatStatusPill');
+  statusPill.className = 'status-pill ' + conv.status;
+  if (conv.status === 'live') statusPill.textContent = 'Live - AI Active';
+  else if (conv.status === 'escalated') statusPill.textContent = 'Escalated';
+  else statusPill.textContent = 'Resolved';
+
+  document.getElementById('chatName').innerHTML = conv.name + ' ' + statusPill.outerHTML;
+  document.getElementById('chatSubtitle').textContent = conv.subtitle.replace(/&middot;/g, '\u00B7');
+
+  // Load conversation messages
+  loadMessages(convId);
+
+  // Update AI state
+  const msgs = document.getElementById('chatMessages');
+  if (conv.aiActive && conv.status === 'live') {
+    msgs.classList.add('ai-active');
+    document.getElementById('stopAiBtn').classList.remove('hidden');
+    document.getElementById('chatInput').classList.add('hidden');
+    document.getElementById('resumeBar').classList.add('hidden');
+  } else if (conv.status === 'escalated') {
+    msgs.classList.remove('ai-active');
+    document.getElementById('stopAiBtn').classList.add('hidden');
+    document.getElementById('chatInput').classList.remove('hidden');
+    document.getElementById('resumeBar').classList.add('hidden');
+  } else {
+    msgs.classList.remove('ai-active');
+    document.getElementById('stopAiBtn').classList.add('hidden');
+    document.getElementById('chatInput').classList.remove('hidden');
+    document.getElementById('resumeBar').classList.add('hidden');
+  }
+
+  // Show/hide action buttons
+  document.getElementById('btnEscalate').style.display = conv.status === 'live' ? '' : 'none';
+  document.getElementById('btnResolve').style.display = conv.status !== 'resolved' ? '' : 'none';
+}
+
+function loadMessages(convId) {
+  const msgs = document.getElementById('chatMessages');
+
+  if (convId === 'emily') {
+    msgs.innerHTML = `
+      <div class="chat-date">Today, Mar 29</div>
+      <div class="chat-msg inbound">
+        <div class="msg-sender">Emily Smith &middot; Tenant</div>
+        <div class="msg-bubble">Hi, my kitchen sink has been leaking since this morning. There's water pooling under the cabinet and it's getting worse. Can someone come fix this ASAP?</div>
+        <div class="msg-photo">&#128247; Photo attached: water under sink</div>
+        <div class="msg-footer">10:02 AM</div>
+      </div>
+      <div class="chat-msg outbound ai">
+        <div class="msg-sender"><span class="ai-tag">AI Assistant</span> DoorLoop AI</div>
+        <div class="msg-bubble">Hi Emily! I'm sorry to hear about the kitchen sink leak. I've created maintenance request #4821 and I'm reaching out to a plumber right now. I'll have scheduling options for you shortly. In the meantime, if you can, please place a bucket or towels under the leak to minimize water damage.</div>
+        <div class="msg-footer"><span class="delivered">&#10003;&#10003;</span> Delivered 10:03 AM</div>
+      </div>
+      <div class="chat-msg outbound ai">
+        <div class="msg-sender"><span class="ai-tag">AI Assistant</span> DoorLoop AI</div>
+        <div class="msg-bubble">Great news! Mike's Plumbing is available tomorrow. Which time slot works best for you?<br><br>1. 9:00 AM - 11:00 AM<br>2. 1:00 PM - 3:00 PM<br>3. 4:00 PM - 6:00 PM</div>
+        <div class="msg-footer"><span class="delivered">&#10003;&#10003;</span> Delivered 10:08 AM</div>
+      </div>
+      <div class="chat-msg inbound">
+        <div class="msg-sender">Emily Smith &middot; Tenant</div>
+        <div class="msg-bubble">Option 2 works, 1 PM tomorrow. Thanks for the quick response!</div>
+        <div class="msg-footer">10:15 AM</div>
+      </div>
+      <div class="ai-analyzing" id="aiAnalyzing">
+        <div class="analyze-label">&#10024; Analyzing...</div>
+        <div class="skeleton-box">
+          <div class="skeleton-bar"></div>
+          <div class="skeleton-bar"></div>
+          <div class="skeleton-bar"></div>
+        </div>
+      </div>`;
+    // Restart the AI loop for Emily
+    aiLoopStep = 0;
+    startAiLoop();
+    return;
+  }
+
+  if (convId === 'sarah') {
+    msgs.innerHTML = `
+      <div class="chat-date">Today, Mar 29</div>
+      <div class="chat-msg inbound">
+        <div class="msg-sender">Sarah Johnson &middot; Tenant</div>
+        <div class="msg-bubble">Hi, I wanted to check on my lease. When does it expire and what are the renewal terms?</div>
+        <div class="msg-footer">9:40 AM</div>
+      </div>
+      <div class="chat-msg outbound ai">
+        <div class="msg-sender"><span class="ai-tag">AI Assistant</span> DoorLoop AI</div>
+        <div class="msg-bubble">Hi Sarah! Your lease for Unit 3B at Birchwood Estates expires on July 31, 2026. You're eligible for renewal. Based on current market rates, we can offer renewal at $1,850/mo (a 2.5% increase). Would you like to discuss renewal options?</div>
+        <div class="msg-footer"><span class="delivered">&#10003;&#10003;</span> Delivered 9:41 AM</div>
+      </div>
+      <div class="chat-msg inbound">
+        <div class="msg-sender">Sarah Johnson &middot; Tenant</div>
+        <div class="msg-bubble">That seems a bit high. I've been here for two years and never missed a payment. Is there any flexibility?</div>
+        <div class="msg-footer">9:45 AM</div>
+      </div>`;
+    return;
+  }
+
+  if (convId === 'david') {
+    msgs.innerHTML = `
+      <div class="chat-date">Today, Mar 29</div>
+      <div class="chat-msg inbound">
+        <div class="msg-sender">David Taylor &middot; Prospect</div>
+        <div class="msg-bubble">Hi, I'm interested in leasing a 2-bedroom apartment. Do you have any availability?</div>
+        <div class="msg-footer">8:55 AM</div>
+      </div>
+      <div class="chat-msg outbound ai">
+        <div class="msg-sender"><span class="ai-tag">AI Assistant</span> DoorLoop AI</div>
+        <div class="msg-bubble">Hi David! Yes, we have several 2-bedroom units available. Our current openings include units at Oakridge Complex starting at $1,600/mo and Birchwood Estates starting at $1,750/mo. Would you like to schedule a tour?</div>
+        <div class="msg-footer"><span class="delivered">&#10003;&#10003;</span> Delivered 8:56 AM</div>
+      </div>
+      <div class="chat-msg inbound">
+        <div class="msg-sender">David Taylor &middot; Prospect</div>
+        <div class="msg-bubble">Actually, I have some specific questions about pet policies and parking. Can I speak with a real person?</div>
+        <div class="msg-footer">9:05 AM</div>
+      </div>
+      <div class="chat-divider">
+        <div class="divider-line"></div>
+        <div class="divider-text"><span class="escalated-icon">&#9888;</span> Escalated to team &middot; 9:06 AM</div>
+        <div class="divider-line"></div>
+      </div>
+      <div class="internal-note">
+        <div class="note-header">&#128274; Internal Note &middot; AI Assistant</div>
+        <div class="note-body">This conversation needs your attention. The prospect is asking about specific pet policies and parking details that require human expertise. They explicitly requested to speak with a person. Suggested: leasing agent follow-up.</div>
+      </div>`;
+    return;
+  }
+
+  if (convId === 'james') {
+    msgs.innerHTML = `
+      <div class="chat-date">Yesterday, Mar 28</div>
+      <div class="chat-msg inbound">
+        <div class="msg-sender">James Williams &middot; Prospect</div>
+        <div class="msg-bubble">Hi! I'd like to schedule a tour of your 1-bedroom apartments. Is Saturday available?</div>
+        <div class="msg-footer">3:20 PM</div>
+      </div>
+      <div class="chat-msg outbound ai">
+        <div class="msg-sender"><span class="ai-tag">AI Assistant</span> DoorLoop AI</div>
+        <div class="msg-bubble">Hi James! I'd love to help you schedule a tour. Unfortunately, I'm unable to confirm Saturday availability at this time. Let me connect you with our leasing team who can assist.</div>
+        <div class="msg-footer"><span class="delivered">&#10003;&#10003;</span> Delivered 3:21 PM</div>
+      </div>
+      <div class="chat-divider">
+        <div class="divider-line"></div>
+        <div class="divider-text"><span class="escalated-icon">&#9888;</span> Escalated to team &middot; 3:21 PM</div>
+        <div class="divider-line"></div>
+      </div>
+      <div class="internal-note">
+        <div class="note-header">&#128274; Internal Note &middot; AI Assistant</div>
+        <div class="note-body">This conversation needs your attention. The prospect wants to schedule an in-person tour for Saturday. Tour scheduling requires leasing agent availability confirmation. Suggested: check Saturday schedule and respond.</div>
+      </div>`;
+    return;
+  }
+
+  if (convId === 'pine') {
+    msgs.innerHTML = `
+      <div class="chat-date">Mar 27</div>
+      <div class="chat-msg inbound">
+        <div class="msg-sender">Lisa Chen &middot; Tenant</div>
+        <div class="msg-bubble">The AC unit in my bedroom hasn't been cooling properly for the last few days.</div>
+        <div class="msg-footer">2:10 PM</div>
+      </div>
+      <div class="chat-msg outbound ai">
+        <div class="msg-sender"><span class="ai-tag">AI Assistant</span> DoorLoop AI</div>
+        <div class="msg-bubble">Hi Lisa! Sorry about the AC issues. I've created work order #4815 and scheduled HVAC Pro Services to visit your unit tomorrow between 10 AM - 12 PM. They'll inspect and repair the cooling system.</div>
+        <div class="msg-footer"><span class="delivered">&#10003;&#10003;</span> Delivered 2:12 PM</div>
+      </div>
+      <div class="chat-date">Mar 28</div>
+      <div class="chat-msg inbound">
+        <div class="msg-sender">Lisa Chen &middot; Tenant</div>
+        <div class="msg-bubble">Thanks, the issue is fixed! The technician replaced a filter and it's cooling great now.</div>
+        <div class="msg-footer">1:30 PM</div>
+      </div>
+      <div class="chat-msg outbound ai">
+        <div class="msg-sender"><span class="ai-tag">AI Assistant</span> DoorLoop AI</div>
+        <div class="msg-bubble">Wonderful! Glad to hear everything is working. Work order #4815 has been marked as completed. Don't hesitate to reach out if you need anything else!</div>
+        <div class="msg-footer"><span class="delivered">&#10003;&#10003;</span> Delivered 1:31 PM</div>
+      </div>
+      <div class="chat-divider">
+        <div class="divider-line"></div>
+        <div class="divider-text"><span class="resolved-icon">&#10003;</span> Resolved &middot; Mar 28 at 1:31 PM</div>
+        <div class="divider-line"></div>
+      </div>`;
+    return;
+  }
+
+  if (convId === 'michael') {
+    msgs.innerHTML = `
+      <div class="chat-date">Mar 26</div>
+      <div class="chat-msg inbound">
+        <div class="msg-sender">Michael Carter &middot; Tenant</div>
+        <div class="msg-bubble">Hey, I'm expecting a package delivery today but I'll be at work. Can it be left with the front desk?</div>
+        <div class="msg-footer">8:15 AM</div>
+      </div>
+      <div class="chat-msg outbound ai">
+        <div class="msg-sender"><span class="ai-tag">AI Assistant</span> DoorLoop AI</div>
+        <div class="msg-bubble">Hi Michael! Yes, our front desk at Aspen Grove accepts packages on behalf of residents. Just let your delivery service know to leave it at the main office. We'll send you a notification once it arrives.</div>
+        <div class="msg-footer"><span class="delivered">&#10003;&#10003;</span> Delivered 8:16 AM</div>
+      </div>
+      <div class="chat-msg inbound">
+        <div class="msg-sender">Michael Carter &middot; Tenant</div>
+        <div class="msg-bubble">Package was delivered, all good. Thanks!</div>
+        <div class="msg-footer">5:45 PM</div>
+      </div>
+      <div class="chat-divider">
+        <div class="divider-line"></div>
+        <div class="divider-text"><span class="resolved-icon">&#10003;</span> Resolved &middot; Mar 26 at 5:46 PM</div>
+        <div class="divider-line"></div>
+      </div>`;
+    return;
+  }
+}
+
+// ===== AI LOOP =====
+const aiLoopMessages = [
+  {
+    type: 'ai',
+    html: `<div class="chat-msg outbound ai">
+      <div class="msg-sender"><span class="ai-tag">AI Assistant</span> DoorLoop AI</div>
+      <div class="msg-bubble">You're all set, Emily! Mike's Plumbing will arrive at Unit 1A tomorrow (Mar 30) between 1:00 PM - 3:00 PM. Please make sure someone is home to let them in. We'll follow up after the repair to confirm everything is resolved.</div>
+      <div class="msg-footer"><span class="delivered">&#10003;&#10003;</span> Delivered 10:24 AM</div>
+    </div>`
+  },
+  {
+    type: 'tenant-typing',
+    html: `<div class="chat-msg inbound" id="tenantTyping">
+      <div class="msg-sender">Emily Smith &middot; Tenant</div>
+      <div class="msg-bubble" style="padding:8px 16px;">
+        <div class="typing-dots"><span></span><span></span><span></span></div>
+      </div>
+    </div>`
+  },
+  {
+    type: 'tenant',
+    html: `<div class="chat-msg inbound">
+      <div class="msg-sender">Emily Smith &middot; Tenant</div>
+      <div class="msg-bubble">Perfect, I'll be home. Is there anything I should do to prepare before the plumber arrives? Should I turn off the water supply under the sink?</div>
+      <div class="msg-footer">10:26 AM</div>
+    </div>`
+  },
+  {
+    type: 'analyzing',
+    html: `<div class="ai-analyzing" id="aiAnalyzing">
+      <div class="analyze-label">&#10024; Analyzing...</div>
+      <div class="skeleton-box">
+        <div class="skeleton-bar"></div>
+        <div class="skeleton-bar"></div>
+        <div class="skeleton-bar"></div>
+      </div>
+    </div>`
+  },
+  {
+    type: 'ai',
+    html: `<div class="chat-msg outbound ai">
+      <div class="msg-sender"><span class="ai-tag">AI Assistant</span> DoorLoop AI</div>
+      <div class="msg-bubble">Great question! Yes, if you can locate the shut-off valves under the sink, please turn them clockwise to stop the water flow. This will prevent further water damage before the plumber arrives. Also, please clear the area under the sink so they have easy access. You don't need to do anything else!</div>
+      <div class="msg-footer"><span class="delivered">&#10003;&#10003;</span> Delivered 10:27 AM</div>
+    </div>`
+  },
+  {
+    type: 'tenant-typing',
+    html: `<div class="chat-msg inbound" id="tenantTyping">
+      <div class="msg-sender">Emily Smith &middot; Tenant</div>
+      <div class="msg-bubble" style="padding:8px 16px;">
+        <div class="typing-dots"><span></span><span></span><span></span></div>
+      </div>
+    </div>`
+  },
+  {
+    type: 'tenant',
+    html: `<div class="chat-msg inbound">
+      <div class="msg-sender">Emily Smith &middot; Tenant</div>
+      <div class="msg-bubble">Done! Turned off the valves and placed some towels. Thanks for all the help, really impressed with how fast this was handled.</div>
+      <div class="msg-footer">10:30 AM</div>
+    </div>`
+  },
+  {
+    type: 'analyzing',
+    html: `<div class="ai-analyzing" id="aiAnalyzing">
+      <div class="analyze-label">&#10024; Analyzing...</div>
+      <div class="skeleton-box">
+        <div class="skeleton-bar"></div>
+        <div class="skeleton-bar"></div>
+        <div class="skeleton-bar"></div>
+      </div>
+    </div>`
+  },
+  {
+    type: 'ai',
+    html: `<div class="chat-msg outbound ai">
+      <div class="msg-sender"><span class="ai-tag">AI Assistant</span> DoorLoop AI</div>
+      <div class="msg-bubble">You're welcome, Emily! Thanks for taking those precautionary steps. We'll send you a reminder tomorrow morning before the appointment. If anything changes or the leak gets worse, don't hesitate to reach out. Have a great rest of your day!</div>
+      <div class="msg-footer"><span class="delivered">&#10003;&#10003;</span> Delivered 10:31 AM</div>
+    </div>`
+  }
+];
+
+function startAiLoop() {
+  if (aiLoopTimeout) clearTimeout(aiLoopTimeout);
+  if (!aiRunning || currentConv !== 'emily') return;
+  if (aiLoopStep >= aiLoopMessages.length) {
+    aiLoopStep = 0; // loop back
+    return;
+  }
+
+  const step = aiLoopMessages[aiLoopStep];
+  const delay = step.type === 'tenant-typing' ? 2000 :
+                step.type === 'analyzing' ? 2500 :
+                step.type === 'tenant' ? 1500 :
+                step.type === 'ai' ? 3000 : 2000;
+
+  aiLoopTimeout = setTimeout(() => {
+    if (!aiRunning || currentConv !== 'emily') return;
+    const msgs = document.getElementById('chatMessages');
+
+    // Remove previous typing indicator or analyzing
+    const prevTyping = document.getElementById('tenantTyping');
+    if (prevTyping) prevTyping.remove();
+    const prevAnalyzing = document.getElementById('aiAnalyzing');
+    if (prevAnalyzing) prevAnalyzing.remove();
+
+    // Add new message
+    msgs.insertAdjacentHTML('beforeend', step.html);
+    msgs.scrollTop = msgs.scrollHeight;
+
+    aiLoopStep++;
+    startAiLoop();
+  }, delay);
+}
+
+// ===== STOP / RESUME AI =====
+function stopAI() {
+  aiRunning = false;
+  if (aiLoopTimeout) clearTimeout(aiLoopTimeout);
+
+  // Remove analyzing block
+  const analyzing = document.getElementById('aiAnalyzing');
+  if (analyzing) analyzing.remove();
+  const typing = document.getElementById('tenantTyping');
+  if (typing) typing.remove();
+
+  // Hide stop button, show input + resume bar
+  document.getElementById('stopAiBtn').classList.add('hidden');
+  document.getElementById('chatInput').classList.remove('hidden');
+  document.getElementById('resumeBar').classList.remove('hidden');
+  document.getElementById('chatMessages').classList.remove('ai-active');
+
+  // Start countdown
+  countdownSeconds = 29 * 60 + 59;
+  updateCountdown();
+  if (countdownInterval) clearInterval(countdownInterval);
+  countdownInterval = setInterval(() => {
+    countdownSeconds--;
+    if (countdownSeconds <= 0) {
+      resumeAI();
+      return;
+    }
+    updateCountdown();
+  }, 1000);
+
+  aiStopped = true;
+}
+
+function resumeAI() {
+  aiRunning = true;
+  aiStopped = false;
+  if (countdownInterval) clearInterval(countdownInterval);
+
+  document.getElementById('chatInput').classList.add('hidden');
+  document.getElementById('resumeBar').classList.add('hidden');
+  document.getElementById('stopAiBtn').classList.remove('hidden');
+  document.getElementById('chatMessages').classList.add('ai-active');
+
+  // Add analyzing animation and continue loop
+  const msgs = document.getElementById('chatMessages');
+  msgs.insertAdjacentHTML('beforeend', `
+    <div class="ai-analyzing" id="aiAnalyzing">
+      <div class="analyze-label">&#10024; Analyzing...</div>
+      <div class="skeleton-box">
+        <div class="skeleton-bar"></div>
+        <div class="skeleton-bar"></div>
+        <div class="skeleton-bar"></div>
+      </div>
+    </div>`);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  startAiLoop();
+}
+
+function updateCountdown() {
+  const m = Math.floor(countdownSeconds / 60);
+  const s = countdownSeconds % 60;
+  document.getElementById('countdownTimer').textContent =
+    m.toString().padStart(2, '0') + ':' + s.toString().padStart(2, '0');
+}
+
+// ===== ESCALATE / RESOLVE =====
+function escalateConversation() {
+  if (!currentConv) return;
+  const conv = conversations[currentConv];
+  conv.status = 'escalated';
+  conv.aiActive = false;
+  aiRunning = false;
+  if (aiLoopTimeout) clearTimeout(aiLoopTimeout);
+
+  // Update list item
+  const listItem = document.querySelector(`.conv-item[data-conv="${currentConv}"]`);
+  if (listItem) {
+    listItem.dataset.status = 'escalated';
+    const pill = listItem.querySelector('.conv-status-pill');
+    if (pill) { pill.className = 'conv-status-pill escalated'; pill.textContent = 'Escalated'; }
+    const badge = listItem.querySelector('.ai-badge');
+    if (badge) badge.remove();
+  }
+
+  // Remove analyzing / typing
+  const analyzing = document.getElementById('aiAnalyzing');
+  if (analyzing) analyzing.remove();
+  const typing = document.getElementById('tenantTyping');
+  if (typing) typing.remove();
+
+  // Add divider + internal note to chat
+  const msgs = document.getElementById('chatMessages');
+  msgs.insertAdjacentHTML('beforeend', `
+    <div class="chat-divider">
+      <div class="divider-line"></div>
+      <div class="divider-text"><span class="escalated-icon">&#9888;</span> Escalated to team &middot; Just now</div>
+      <div class="divider-line"></div>
+    </div>
+    <div class="internal-note">
+      <div class="note-header">&#128274; Internal Note &middot; AI Assistant</div>
+      <div class="note-body">This conversation needs your attention. The AI assistant has been paused and the conversation has been escalated to the property management team for manual handling.</div>
+    </div>`);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  // Update header
+  showConversation(currentConv);
+
+  // Update escalated count
+  updateEscalatedCount();
+}
+
+function resolveConversation() {
+  if (!currentConv) return;
+  const conv = conversations[currentConv];
+  conv.status = 'resolved';
+  conv.aiActive = false;
+  aiRunning = false;
+  if (aiLoopTimeout) clearTimeout(aiLoopTimeout);
+
+  // Update list item
+  const listItem = document.querySelector(`.conv-item[data-conv="${currentConv}"]`);
+  if (listItem) {
+    listItem.dataset.status = 'resolved';
+    const pill = listItem.querySelector('.conv-status-pill');
+    if (pill) { pill.className = 'conv-status-pill resolved'; pill.textContent = 'Resolved'; }
+    const badge = listItem.querySelector('.ai-badge');
+    if (badge) badge.remove();
+  }
+
+  // Remove analyzing / typing
+  const analyzing = document.getElementById('aiAnalyzing');
+  if (analyzing) analyzing.remove();
+  const typing = document.getElementById('tenantTyping');
+  if (typing) typing.remove();
+
+  // Add divider
+  const msgs = document.getElementById('chatMessages');
+  msgs.insertAdjacentHTML('beforeend', `
+    <div class="chat-divider">
+      <div class="divider-line"></div>
+      <div class="divider-text"><span class="resolved-icon">&#10003;</span> Marked as resolved &middot; Just now</div>
+      <div class="divider-line"></div>
+    </div>`);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  showConversation(currentConv);
+  updateEscalatedCount();
+}
+
+function updateEscalatedCount() {
+  const count = document.querySelectorAll('.conv-item[data-status="escalated"]').length;
+  const badge = document.querySelector('.conv-filter[data-filter="escalated"] .filter-badge');
+  if (badge) badge.textContent = count;
+}
+
+// ===== WORKFLOW DRAWER =====
+function toggleWfDrawer() {
+  const drawer = document.getElementById('wfDrawer');
+  const btn = document.getElementById('openWfBtn');
+  drawer.classList.toggle('collapsed');
+  btn.style.display = drawer.classList.contains('collapsed') ? 'flex' : 'none';
+}
+
+function switchWfTab(tab, btn) {
+  document.querySelectorAll('.wf-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.wf-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(tab === 'maintenance' ? 'wfMaintenance' : 'wfRenewal').classList.add('active');
+}
+
+// ===== MORE ACTIONS DRAWER =====
+function toggleMoreDrawer() {
+  const overlay = document.getElementById('moreOverlay');
+  const drawer = document.getElementById('moreDrawer');
+  overlay.classList.toggle('visible');
+  drawer.classList.toggle('visible');
+}
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', function() {
+  // Start AI loop for Emily
+  setTimeout(() => startAiLoop(), 3000);
+});
+</script>
+</body>
+</html>
