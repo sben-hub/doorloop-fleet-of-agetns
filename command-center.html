@@ -55,6 +55,26 @@
   .filter-pill { padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid #e8ecf1; background: white; color: #6b7a99; transition: all 0.15s; user-select: none; }
   .filter-pill:hover { border-color: #4C6FFF; color: #4C6FFF; }
   .filter-pill.active { background: #4C6FFF; color: white; border-color: #4C6FFF; }
+  .filter-pill.custom-filter { border-style: dashed; color: #6b7a99; }
+  .filter-pill.custom-filter:hover { border-color: #4C6FFF; color: #4C6FFF; }
+  .filter-pills { position: relative; }
+
+  /* Custom filter dropdown */
+  .custom-filter-dropdown { display: none; position: absolute; top: 100%; right: 28px; margin-top: 8px; width: 340px; background: white; border: 1px solid #e8ecf1; border-radius: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.12); z-index: 100; padding: 0; overflow: hidden; }
+  .custom-filter-dropdown.open { display: block; }
+  .cfd-header { padding: 14px 18px; font-size: 14px; font-weight: 700; color: #1a2b4a; border-bottom: 1px solid #e8ecf1; }
+  .cfd-section { padding: 12px 18px; border-bottom: 1px solid #f5f7fb; }
+  .cfd-label { font-size: 11px; font-weight: 700; color: #6b7a99; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .cfd-options { display: flex; flex-direction: column; gap: 6px; }
+  .cfd-check { font-size: 13px; color: #1a2b4a; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+  .cfd-check input { accent-color: #4C6FFF; }
+  .cfd-footer { padding: 14px 18px; background: #f8f9fc; }
+  .cfd-name-input { width: 100%; padding: 8px 12px; border: 1px solid #e8ecf1; border-radius: 8px; font-size: 13px; font-family: inherit; margin-bottom: 10px; outline: none; }
+  .cfd-name-input:focus { border-color: #4C6FFF; }
+  .cfd-buttons { display: flex; gap: 8px; justify-content: flex-end; }
+  .cfd-btn-cancel { padding: 7px 16px; border: 1px solid #e8ecf1; border-radius: 8px; background: white; font-size: 12px; font-weight: 600; cursor: pointer; color: #6b7a99; }
+  .cfd-btn-save { padding: 7px 16px; border: none; border-radius: 8px; background: #4C6FFF; color: white; font-size: 12px; font-weight: 600; cursor: pointer; }
+  .cfd-btn-save:hover { background: #3b5ce6; }
 
   /* Inbox rows */
   .inbox-list { padding: 12px 28px 0; }
@@ -186,6 +206,56 @@
         <span class="filter-pill" data-filter="urgent" onclick="setFilter(this,'urgent')">Urgent (<span id="countUrgent">2</span>)</span>
         <span class="filter-pill" data-filter="review" onclick="setFilter(this,'review')">Review (<span id="countReview">3</span>)</span>
         <span class="filter-pill" data-filter="fyi" onclick="setFilter(this,'fyi')">FYI (<span id="countFyi">2</span>)</span>
+        <span class="filter-pill custom-filter" onclick="openCustomFilter()">+ Custom Filter</span>
+      </div>
+
+      <!-- Custom filter dropdown (demo only) -->
+      <div class="custom-filter-dropdown" id="customFilterDropdown">
+        <div class="cfd-header">Create Custom Filter</div>
+        <div class="cfd-section">
+          <div class="cfd-label">Filter by Agent</div>
+          <div class="cfd-options">
+            <label class="cfd-check"><input type="checkbox" checked> 🔧 Maintenance</label>
+            <label class="cfd-check"><input type="checkbox" checked> 💰 Rent Collection</label>
+            <label class="cfd-check"><input type="checkbox" checked> 🔑 Leasing</label>
+            <label class="cfd-check"><input type="checkbox"> 📋 Renewal</label>
+            <label class="cfd-check"><input type="checkbox"> 📊 Reporting</label>
+            <label class="cfd-check"><input type="checkbox"> 🏗️ Vendor Mgmt</label>
+          </div>
+        </div>
+        <div class="cfd-section">
+          <div class="cfd-label">Filter by Property</div>
+          <div class="cfd-options">
+            <label class="cfd-check"><input type="checkbox" checked> 742 Evergreen Terrace</label>
+            <label class="cfd-check"><input type="checkbox" checked> 155 Pine Street</label>
+            <label class="cfd-check"><input type="checkbox" checked> 890 Oak Avenue</label>
+            <label class="cfd-check"><input type="checkbox"> Maple Gardens</label>
+            <label class="cfd-check"><input type="checkbox"> Sunset Villas</label>
+          </div>
+        </div>
+        <div class="cfd-section">
+          <div class="cfd-label">Filter by Amount</div>
+          <div class="cfd-options">
+            <label class="cfd-check"><input type="radio" name="amount" checked> Any amount</label>
+            <label class="cfd-check"><input type="radio" name="amount"> Over $500</label>
+            <label class="cfd-check"><input type="radio" name="amount"> Over $1,000</label>
+          </div>
+        </div>
+        <div class="cfd-section">
+          <div class="cfd-label">Filter by Date</div>
+          <div class="cfd-options">
+            <label class="cfd-check"><input type="radio" name="date" checked> Today</label>
+            <label class="cfd-check"><input type="radio" name="date"> Last 7 days</label>
+            <label class="cfd-check"><input type="radio" name="date"> Last 30 days</label>
+          </div>
+        </div>
+        <div class="cfd-footer">
+          <input type="text" class="cfd-name-input" placeholder="Filter name (e.g. High-value maintenance)">
+          <div class="cfd-buttons">
+            <button class="cfd-btn-cancel" onclick="closeCustomFilter()">Cancel</button>
+            <button class="cfd-btn-save" onclick="saveCustomFilter()">Save Filter</button>
+          </div>
+        </div>
       </div>
 
       <!-- Inbox rows -->
@@ -450,6 +520,33 @@ function fixRowBorders() {
     visible[visible.length - 1].style.borderRadius = '0 0 10px 10px';
   }
 }
+
+function openCustomFilter() {
+  document.getElementById('customFilterDropdown').classList.toggle('open');
+}
+function closeCustomFilter() {
+  document.getElementById('customFilterDropdown').classList.remove('open');
+}
+function saveCustomFilter() {
+  var name = document.querySelector('.cfd-name-input').value.trim() || 'Custom';
+  var pills = document.querySelector('.filter-pills');
+  var plus = pills.querySelector('.custom-filter');
+  var newPill = document.createElement('span');
+  newPill.className = 'filter-pill';
+  newPill.textContent = name;
+  newPill.onclick = function() { setFilter(newPill, 'all'); };
+  pills.insertBefore(newPill, plus);
+  closeCustomFilter();
+  document.querySelector('.cfd-name-input').value = '';
+  showToast('Filter "' + name + '" saved');
+}
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+  var dd = document.getElementById('customFilterDropdown');
+  if (dd && dd.classList.contains('open') && !dd.contains(e.target) && !e.target.classList.contains('custom-filter')) {
+    dd.classList.remove('open');
+  }
+});
 
 function setFilter(el, filter) {
   currentFilter = filter;
