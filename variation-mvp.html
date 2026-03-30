@@ -588,10 +588,10 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
   <!-- Sidebar -->
   <nav class="sidebar">
     <div class="logo" onclick="switchScreen('comm')">D</div>
-    <div class="nav-item" id="nav-agents" title="AI Agents" onclick="switchScreen('agents')">
+    <div class="nav-item active" id="nav-agents" title="AI Agents" onclick="switchScreen('agents')">
       <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
     </div>
-    <div class="nav-item active" id="nav-comm" title="Communication Center" onclick="switchScreen('comm')">
+    <div class="nav-item" id="nav-comm" title="Communication Center" onclick="switchScreen('comm')">
       <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       <span class="badge">3</span>
     </div>
@@ -608,7 +608,7 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
   </nav>
 
   <!-- ===== SCREEN: Communication Center ===== -->
-  <div class="screen" id="screen-comm">
+  <div class="screen hidden" id="screen-comm">
   <div class="main-content">
     <!-- ===== LEFT: Conversation List ===== -->
     <div class="conv-list">
@@ -1023,7 +1023,7 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
   </div><!-- /screen-comm -->
 
   <!-- ===== SCREEN: AI Agents (V1 match) ===== -->
-  <div class="screen hidden" id="screen-agents">
+  <div class="screen" id="screen-agents">
     <div class="agents-landing">
       <div class="agents-landing-header">
         <h1>AI Agents</h1>
