@@ -36,93 +36,106 @@
   .topbar .search input:focus { outline: none; border-color: #4C6FFF; background: white; }
 
   /* Dashboard content */
-  .dashboard { flex: 1; overflow: hidden; padding: 20px 24px; display: flex; flex-direction: column; }
+  .dashboard { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; }
 
-  /* Section titles */
-  .section-title { font-size: 12px; font-weight: 600; color: #6b7a99; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; flex-shrink: 0; }
+  /* ============ KPI Strip ============ */
+  .kpi-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; flex-shrink: 0; }
+  .kpi-big-card { background: white; border: 1px solid #e8ecf1; border-radius: 12px; padding: 20px 24px; display: flex; align-items: center; gap: 16px; transition: box-shadow 0.2s; }
+  .kpi-big-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+  .kpi-big-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+  .kpi-big-icon.occupancy { background: #e8f5e9; }
+  .kpi-big-icon.tenants { background: #e3f2fd; }
+  .kpi-big-icon.revenue { background: #fff8e1; }
+  .kpi-big-info { display: flex; flex-direction: column; }
+  .kpi-big-number { font-size: 26px; font-weight: 700; color: #1a2b4a; line-height: 1.2; }
+  .kpi-big-label { font-size: 13px; color: #6b7a99; margin-top: 1px; }
+  .kpi-big-sub { font-size: 11px; color: #9aa5b8; margin-top: 2px; }
 
-  /* ============ KPI Cards ============ */
-  .kpi-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 16px; flex-shrink: 0; }
-  .kpi-card { background: white; border: 1px solid #e8ecf1; border-radius: 10px; padding: 14px 16px; transition: box-shadow 0.2s; }
-  .kpi-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
-  .kpi-value { font-size: 22px; font-weight: 700; color: #1a2b4a; margin-bottom: 2px; }
-  .kpi-label { font-size: 11px; color: #6b7a99; margin-bottom: 6px; }
-  .kpi-trend { font-size: 10px; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+  /* ============ Two-column layout ============ */
+  .two-col { display: flex; gap: 16px; flex: 1; min-height: 0; }
+  .col-left { flex: 0 0 60%; display: flex; flex-direction: column; gap: 0; min-height: 0; }
+  .col-right { flex: 1; display: flex; flex-direction: column; gap: 16px; min-height: 0; }
 
-  /* Bottom split: agents left (2/3), actions right (1/3) */
-  .bottom-split { display: flex; gap: 16px; flex: 1; min-height: 0; overflow: hidden; }
-  .bottom-left { flex: 2; display: flex; flex-direction: column; min-height: 0; }
-  .bottom-right { flex: 1; display: flex; flex-direction: column; min-height: 0; }
-  .kpi-trend.green { color: #2e7d32; }
-  .kpi-trend.red { color: #c62828; }
+  /* Daily Overview header */
+  .daily-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-shrink: 0; }
+  .daily-header h2 { font-size: 16px; font-weight: 600; color: #1a2b4a; }
+  .date-nav { display: flex; align-items: center; gap: 6px; }
+  .date-nav .today-btn { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; color: #4C6FFF; background: rgba(76,111,255,0.08); border: 1px solid rgba(76,111,255,0.2); border-radius: 6px; padding: 4px 12px; cursor: pointer; }
+  .date-nav .arrow-btn { width: 28px; height: 28px; border: 1px solid #e8ecf1; border-radius: 6px; background: white; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; color: #6b7a99; transition: all 0.15s; }
+  .date-nav .arrow-btn:hover { border-color: #4C6FFF; color: #4C6FFF; }
 
-  /* ============ Agent Grid ============ */
-  .agent-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; flex: 1; align-content: start; overflow-y: auto; }
-  .agent-card { background: white; border: 1px solid #e8ecf1; border-radius: 14px; padding: 22px; cursor: pointer; transition: all 0.2s; position: relative; }
-  .agent-card:hover { border-color: #4C6FFF; box-shadow: 0 6px 20px rgba(76,111,255,0.08); transform: translateY(-1px); }
-  .agent-card.clicked { border-color: #4C6FFF; box-shadow: 0 0 0 2px rgba(76,111,255,0.2); }
-  .agent-card.not-configured { opacity: 0.7; }
-  .agent-card.not-configured:hover { opacity: 0.85; border-color: #d0d7e2; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+  /* Daily overview cards */
+  .daily-cards { display: flex; flex-direction: column; gap: 12px; overflow-y: auto; flex: 1; min-height: 0; padding-right: 4px; }
+  .daily-card { background: white; border: 1px solid #e8ecf1; border-radius: 12px; padding: 18px 20px; transition: box-shadow 0.2s; }
+  .daily-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.05); }
+  .daily-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .daily-card-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .daily-card-icon.maint { background: #fff3e0; }
+  .daily-card-icon.rent { background: #e8f5e9; }
+  .daily-card-icon.leasing { background: #ede7f6; }
+  .daily-card-title { font-size: 14px; font-weight: 600; color: #1a2b4a; }
 
-  .agent-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
-  .agent-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
-  .agent-icon.maintenance { background: #fff3e0; }
-  .agent-icon.renewal { background: #e8f5e9; }
-  .agent-icon.moveout { background: #fce4ec; }
-  .agent-icon.movein { background: #e3f2fd; }
-  .agent-icon.leasing { background: #ede7f6; }
-  .agent-icon.delinquency { background: #fff8e1; }
+  .daily-stats { display: flex; gap: 20px; margin-bottom: 12px; flex-wrap: wrap; }
+  .daily-stat { font-size: 12px; color: #6b7a99; }
+  .daily-stat strong { color: #1a2b4a; font-weight: 700; font-size: 14px; }
 
-  .agent-name { font-size: 15px; font-weight: 600; }
-  .agent-status { font-size: 11px; padding: 2px 10px; border-radius: 10px; font-weight: 500; position: absolute; top: 18px; right: 18px; }
-  .agent-status.active { background: #e8f5e9; color: #2e7d32; }
-  .agent-status.inactive { background: #f0f2f5; color: #9aa5b8; }
+  .daily-alerts { display: flex; flex-direction: column; gap: 6px; }
+  .alert-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #1a2b4a; padding: 5px 0; text-decoration: none; transition: color 0.15s; cursor: pointer; }
+  .alert-item:hover { color: #4C6FFF; }
+  .alert-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .alert-dot.red { background: #f44336; }
+  .alert-dot.orange { background: #ff9800; }
+  .alert-dot.yellow { background: #ffc107; }
+  .alert-dot.blue { background: #4C6FFF; }
+  .more-link { font-size: 11px; color: #4C6FFF; font-weight: 600; cursor: pointer; padding: 4px 0; display: inline-flex; align-items: center; gap: 4px; border: none; background: none; }
+  .more-link:hover { text-decoration: underline; }
 
-  .agent-workflows { margin-bottom: 12px; }
-  .agent-workflows .wf-count { font-size: 26px; font-weight: 700; }
-  .agent-workflows .wf-label { font-size: 12px; color: #6b7a99; margin-left: 4px; }
+  .collapsed-items { display: none; flex-direction: column; gap: 6px; }
+  .collapsed-items.expanded { display: flex; }
 
-  /* Mini breakdown bar */
-  .breakdown-bar { display: flex; height: 6px; border-radius: 3px; overflow: hidden; margin-bottom: 8px; background: #f0f2f5; }
-  .breakdown-bar .seg { transition: width 0.3s; }
-  .breakdown-bar .seg.in-progress { background: #4C6FFF; }
-  .breakdown-bar .seg.waiting { background: #ff9800; }
-  .breakdown-bar .seg.completed { background: #4caf50; }
-  .breakdown-bar .seg.escalated { background: #f44336; }
+  /* ============ Needs Attention card ============ */
+  .attention-card { background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%); border: 1px solid #d4e4f7; border-left: 4px solid #4C6FFF; border-radius: 12px; padding: 22px 20px; display: flex; flex-direction: column; gap: 14px; }
+  .attention-header { display: flex; align-items: center; gap: 10px; }
+  .attention-header .att-icon { font-size: 20px; }
+  .attention-header .att-title { font-size: 15px; font-weight: 700; color: #1a2b4a; }
+  .attention-subtitle { font-size: 12px; color: #6b7a99; }
+  .attention-subtitle strong { color: #c62828; font-weight: 700; }
+  .attention-list { display: flex; flex-direction: column; gap: 8px; }
+  .attention-list-item { font-size: 12px; color: #1a2b4a; display: flex; align-items: baseline; gap: 8px; }
+  .attention-list-item .att-num { font-size: 11px; color: #9aa5b8; font-weight: 600; min-width: 16px; }
+  .attention-more { font-size: 11px; color: #4C6FFF; font-weight: 600; padding-left: 24px; }
+  .attention-btn { display: flex; align-items: center; justify-content: center; gap: 6px; background: #4C6FFF; color: white; font-size: 13px; font-weight: 600; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; text-decoration: none; transition: background 0.2s; margin-top: 4px; }
+  .attention-btn:hover { background: #3a5ae0; }
 
-  .breakdown-legend { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
-  .breakdown-legend .leg-item { display: flex; align-items: center; gap: 4px; font-size: 10px; color: #6b7a99; }
-  .breakdown-legend .leg-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-  .breakdown-legend .leg-dot.in-progress { background: #4C6FFF; }
-  .breakdown-legend .leg-dot.waiting { background: #ff9800; }
-  .breakdown-legend .leg-dot.completed { background: #4caf50; }
-  .breakdown-legend .leg-dot.escalated { background: #f44336; }
+  /* ============ Trends card ============ */
+  .trends-card { background: white; border: 1px solid #e8ecf1; border-radius: 12px; padding: 18px 20px; flex: 1; display: flex; flex-direction: column; min-height: 0; }
+  .trends-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-shrink: 0; }
+  .trends-header h3 { font-size: 14px; font-weight: 600; color: #1a2b4a; }
+  .trends-controls { display: flex; align-items: center; gap: 8px; }
+  .toggle-group { display: flex; border: 1px solid #e8ecf1; border-radius: 6px; overflow: hidden; }
+  .toggle-btn { font-size: 11px; font-weight: 600; padding: 4px 12px; border: none; cursor: pointer; background: white; color: #6b7a99; transition: all 0.15s; }
+  .toggle-btn.active { background: #4C6FFF; color: white; }
+  .toggle-btn:hover:not(.active) { background: #f5f7fb; }
+  .trends-date { font-size: 11px; color: #9aa5b8; display: flex; align-items: center; gap: 6px; }
+  .trends-date .arrow-sm { cursor: pointer; color: #6b7a99; font-size: 12px; }
+  .trends-date .arrow-sm:hover { color: #4C6FFF; }
 
-  .agent-key-stat { font-size: 12px; color: #6b7a99; padding-top: 10px; border-top: 1px solid #f0f2f5; }
-  .agent-key-stat strong { color: #1a2b4a; font-weight: 600; }
+  .mini-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; flex-shrink: 0; }
+  .mini-stat { background: #f8f9fc; border-radius: 8px; padding: 10px 12px; }
+  .mini-stat-label { font-size: 10px; color: #6b7a99; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px; }
+  .mini-stat-value { font-size: 18px; font-weight: 700; color: #1a2b4a; display: flex; align-items: baseline; gap: 6px; }
+  .mini-stat-trend { font-size: 10px; font-weight: 600; }
+  .mini-stat-trend.green { color: #2e7d32; }
+  .mini-stat-trend.red { color: #c62828; }
 
-  .setup-link { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; color: #4C6FFF; text-decoration: none; margin-top: 8px; }
-  .setup-link:hover { text-decoration: underline; }
-
-  /* ============ Action Items ============ */
-  .actions-section { background: white; border: 1px solid #e8ecf1; border-radius: 14px; overflow-y: auto; flex: 1; }
-  .action-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid #f0f2f5; transition: background 0.15s; cursor: pointer; text-decoration: none; color: inherit; }
-  .action-row:last-of-type { border-bottom: none; }
-  .action-row:hover { background: #f8f9fc; }
-  .action-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-  .action-dot.red { background: #f44336; }
-  .action-dot.yellow { background: #ff9800; }
-  .action-dot.blue { background: #4C6FFF; }
-  .action-agent-icon { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
-  .action-title { font-size: 13px; font-weight: 500; color: #1a2b4a; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .action-property { font-size: 12px; color: #6b7a99; flex-shrink: 0; min-width: 120px; text-align: right; }
-  .action-time { font-size: 11px; color: #9aa5b8; flex-shrink: 0; min-width: 80px; text-align: right; }
-  .action-arrow { font-size: 14px; color: #d0d7e2; flex-shrink: 0; }
-  .action-row:hover .action-arrow { color: #4C6FFF; }
-  .actions-footer { padding: 14px 20px; border-top: 1px solid #e8ecf1; text-align: center; }
-  .actions-footer a { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #4C6FFF; text-decoration: none; padding: 8px 20px; border-radius: 8px; transition: background 0.15s; }
-  .actions-footer a:hover { background: rgba(76,111,255,0.08); }
-  .section-title .count-badge { display: inline-flex; align-items: center; justify-content: center; background: #f44336; color: white; font-size: 11px; font-weight: 600; min-width: 20px; height: 20px; border-radius: 10px; padding: 0 6px; margin-left: 8px; vertical-align: middle; text-transform: none; letter-spacing: 0; }
+  /* Bar chart */
+  .bar-chart { flex: 1; display: flex; align-items: flex-end; gap: 8px; min-height: 80px; padding-top: 8px; }
+  .bar-day { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .bar-stack { width: 100%; display: flex; flex-direction: column; gap: 2px; align-items: center; }
+  .bar-seg { width: 70%; border-radius: 3px 3px 0 0; min-height: 2px; transition: height 0.3s; }
+  .bar-seg.collected { background: #4caf50; border-radius: 3px 3px 0 0; }
+  .bar-seg.outstanding { background: #f44336; border-radius: 3px 3px 0 0; }
+  .bar-label { font-size: 9px; color: #9aa5b8; font-weight: 500; }
 
   /* Scrollbar */
   ::-webkit-scrollbar { width: 6px; }
@@ -132,10 +145,10 @@
   @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
   .dashboard > * { animation: fadeIn 0.3s ease; }
 
-  /* Responsive for smaller screens */
   @media (max-width: 1200px) {
-    .kpi-row { grid-template-columns: repeat(2, 1fr); }
-    .agent-grid { grid-template-columns: repeat(2, 1fr); }
+    .kpi-strip { grid-template-columns: 1fr; }
+    .two-col { flex-direction: column; }
+    .col-left { flex: none; }
   }
 </style>
 </head>
@@ -176,304 +189,291 @@
 
     <div class="dashboard">
 
-      <!-- ============ Area 1: Business KPIs ============ -->
-      <div class="section-title">Business Overview</div>
-      <div class="kpi-row">
-        <div class="kpi-card">
-          <div class="kpi-value">4</div>
-          <div class="kpi-label">Vacant Units · of 102 total units</div>
-          <div class="kpi-trend red">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M3 5l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            &#8593; 1 from last month
+      <!-- ============ Section 1: KPI Strip ============ -->
+      <div class="kpi-strip">
+        <div class="kpi-big-card">
+          <div class="kpi-big-icon occupancy">&#127968;</div>
+          <div class="kpi-big-info">
+            <div class="kpi-big-number">98 <span style="font-size:14px;font-weight:400;color:#6b7a99;">of 102 units occupied</span></div>
+            <div class="kpi-big-sub">96.1% occupancy</div>
           </div>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-value">96.1%</div>
-          <div class="kpi-label">Occupancy Rate · 98 of 102 occupied</div>
-          <div class="kpi-trend red">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 10V2M3 7l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            &#8595; 0.9% vs last month
+        <div class="kpi-big-card">
+          <div class="kpi-big-icon tenants">&#128100;</div>
+          <div class="kpi-big-info">
+            <div class="kpi-big-number">98 <span style="font-size:14px;font-weight:400;color:#6b7a99;">current tenants</span></div>
+            <div class="kpi-big-sub">4 vacancies</div>
           </div>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-value">$148,200</div>
-          <div class="kpi-label">Collected Revenue · February 2026</div>
-          <div class="kpi-trend green">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M3 5l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            &#8593; 3.2% vs Jan
-          </div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-value">$4,350</div>
-          <div class="kpi-label">Outstanding Rent · 3 tenants past due</div>
-          <div class="kpi-trend green">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 10V2M3 7l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            &#8595; $1,200 vs Jan
-          </div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-value">$8,420</div>
-          <div class="kpi-label">Maintenance Spend · MTD across all properties</div>
-          <div class="kpi-trend red">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M3 5l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            &#8593; 12% vs Jan
-          </div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-value">$135,800</div>
-          <div class="kpi-label">Net Operating Income · After expenses &amp; fees</div>
-          <div class="kpi-trend green">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M3 5l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            &#8593; 2.1% vs Jan
+        <div class="kpi-big-card">
+          <div class="kpi-big-icon revenue">&#128176;</div>
+          <div class="kpi-big-info">
+            <div class="kpi-big-number">$148,200 <span style="font-size:14px;font-weight:400;color:#6b7a99;">collected (Feb)</span></div>
+            <div class="kpi-big-sub">97 of 102 paid</div>
           </div>
         </div>
       </div>
 
-      <!-- ============ Bottom split: Agents (2/3) + Actions (1/3) ============ -->
-      <div class="bottom-split">
-      <div class="bottom-left">
-      <div class="section-title">AI Agent Performance</div>
-      <div class="agent-grid">
+      <!-- ============ Section 2: Two Columns ============ -->
+      <div class="two-col">
 
-        <!-- Maintenance -->
-        <div class="agent-card" onclick="clickAgent(this, 'maintenance')">
-          <span class="agent-status active">Active</span>
-          <div class="agent-card-header">
-            <div class="agent-icon maintenance">&#128295;</div>
-            <div class="agent-name">Maintenance</div>
+        <!-- Left Column: Daily Overview -->
+        <div class="col-left">
+          <div class="daily-header">
+            <h2>Daily Overview</h2>
+            <div class="date-nav">
+              <span class="today-btn">&#128197; Today</span>
+              <button class="arrow-btn">&larr;</button>
+              <button class="arrow-btn">&rarr;</button>
+            </div>
           </div>
-          <div class="agent-workflows">
-            <span class="wf-count">12</span>
-            <span class="wf-label">active workflows</span>
-          </div>
-          <div class="breakdown-bar">
-            <div class="seg in-progress" style="width:42%"></div>
-            <div class="seg waiting" style="width:25%"></div>
-            <div class="seg completed" style="width:25%"></div>
-            <div class="seg escalated" style="width:8%"></div>
-          </div>
-          <div class="breakdown-legend">
-            <div class="leg-item"><div class="leg-dot in-progress"></div>5 In Progress</div>
-            <div class="leg-item"><div class="leg-dot waiting"></div>3 Waiting</div>
-            <div class="leg-item"><div class="leg-dot completed"></div>3 Completed</div>
-            <div class="leg-item"><div class="leg-dot escalated"></div>1 Escalated</div>
-          </div>
-          <div class="agent-key-stat">Avg fix time: <strong>2.1 days</strong></div>
-        </div>
 
-        <!-- Renewal -->
-        <div class="agent-card" onclick="clickAgent(this, 'renewal')">
-          <span class="agent-status active">Active</span>
-          <div class="agent-card-header">
-            <div class="agent-icon renewal">&#128203;</div>
-            <div class="agent-name">Renewal</div>
-          </div>
-          <div class="agent-workflows">
-            <span class="wf-count">8</span>
-            <span class="wf-label">active workflows</span>
-          </div>
-          <div class="breakdown-bar">
-            <div class="seg in-progress" style="width:37%"></div>
-            <div class="seg waiting" style="width:38%"></div>
-            <div class="seg completed" style="width:25%"></div>
-            <div class="seg escalated" style="width:0%"></div>
-          </div>
-          <div class="breakdown-legend">
-            <div class="leg-item"><div class="leg-dot in-progress"></div>3 In Progress</div>
-            <div class="leg-item"><div class="leg-dot waiting"></div>3 Waiting</div>
-            <div class="leg-item"><div class="leg-dot completed"></div>2 Completed</div>
-            <div class="leg-item"><div class="leg-dot escalated"></div>0 Escalated</div>
-          </div>
-          <div class="agent-key-stat">Renewal rate: <strong>72%</strong></div>
-        </div>
+          <div class="daily-cards">
 
-        <!-- Move-out -->
-        <div class="agent-card not-configured" onclick="clickAgent(this, 'moveout')">
-          <span class="agent-status inactive">Not configured</span>
-          <div class="agent-card-header">
-            <div class="agent-icon moveout">&#128230;</div>
-            <div class="agent-name">Move-out</div>
+            <!-- Card 1: Maintenance -->
+            <div class="daily-card">
+              <div class="daily-card-header">
+                <div class="daily-card-icon maint">&#128295;</div>
+                <div class="daily-card-title">Maintenance</div>
+              </div>
+              <div class="daily-stats">
+                <div class="daily-stat">New Requests: <strong>3</strong></div>
+                <div class="daily-stat">In Progress: <strong>7</strong></div>
+                <div class="daily-stat">Completed Today: <strong>4</strong></div>
+              </div>
+              <div class="daily-alerts">
+                <a class="alert-item" href="command-center.html">
+                  <span class="alert-dot orange"></span>
+                  2 awaiting owner approval
+                </a>
+                <a class="alert-item" href="command-center.html">
+                  <span class="alert-dot red"></span>
+                  1 vendor no-show &mdash; backup needed
+                </a>
+                <div class="collapsed-items" id="maint-more">
+                  <a class="alert-item" href="command-center.html">
+                    <span class="alert-dot blue"></span>
+                    HVAC filter replacement scheduled
+                  </a>
+                  <a class="alert-item" href="command-center.html">
+                    <span class="alert-dot blue"></span>
+                    Plumbing inspection &mdash; Unit 4B
+                  </a>
+                  <a class="alert-item" href="command-center.html">
+                    <span class="alert-dot yellow"></span>
+                    Elevator service due this week
+                  </a>
+                </div>
+                <button class="more-link" onclick="toggleMore('maint-more', this)">3 more &rarr;</button>
+              </div>
+            </div>
+
+            <!-- Card 2: Rent Collection -->
+            <div class="daily-card">
+              <div class="daily-card-header">
+                <div class="daily-card-icon rent">&#128176;</div>
+                <div class="daily-card-title">Rent Collection</div>
+              </div>
+              <div class="daily-stats">
+                <div class="daily-stat">Collected: <strong>$148,200</strong></div>
+                <div class="daily-stat">Pending: <strong>$2,900</strong></div>
+                <div class="daily-stat">Late: <strong>$4,350</strong></div>
+              </div>
+              <div class="daily-alerts">
+                <a class="alert-item" href="command-center.html">
+                  <span class="alert-dot red"></span>
+                  3 tenants past due (5+ days)
+                </a>
+                <a class="alert-item" href="command-center.html">
+                  <span class="alert-dot yellow"></span>
+                  1 payment plan in progress
+                </a>
+                <a class="alert-item" href="command-center.html">
+                  <span class="alert-dot blue"></span>
+                  2 ACH retries pending
+                </a>
+              </div>
+            </div>
+
+            <!-- Card 3: Leasing & Renewals -->
+            <div class="daily-card">
+              <div class="daily-card-header">
+                <div class="daily-card-icon leasing">&#128273;</div>
+                <div class="daily-card-title">Leasing &amp; Renewals</div>
+              </div>
+              <div class="daily-stats">
+                <div class="daily-stat">Showings This Week: <strong>6</strong></div>
+                <div class="daily-stat">Applications: <strong>3</strong></div>
+                <div class="daily-stat">Renewals Sent: <strong>5</strong></div>
+              </div>
+              <div class="daily-alerts">
+                <a class="alert-item" href="command-center.html">
+                  <span class="alert-dot red"></span>
+                  1 applicant flagged &mdash; eviction history
+                </a>
+                <a class="alert-item" href="command-center.html">
+                  <span class="alert-dot yellow"></span>
+                  3 renewals awaiting response
+                </a>
+                <a class="alert-item" href="command-center.html">
+                  <span class="alert-dot blue"></span>
+                  2 leases expiring in 30 days
+                </a>
+              </div>
+            </div>
+
+          </div><!-- /daily-cards -->
+        </div><!-- /col-left -->
+
+        <!-- Right Column -->
+        <div class="col-right">
+
+          <!-- Needs Attention -->
+          <div class="attention-card">
+            <div class="attention-header">
+              <span class="att-icon">&#9889;</span>
+              <span class="att-title">7 items need your attention</span>
+            </div>
+            <div class="attention-subtitle">Potential impact: <strong>$12,450</strong></div>
+            <div class="attention-list">
+              <div class="attention-list-item">
+                <span class="att-num">1.</span>
+                Water heater approval &mdash; $2,800
+              </div>
+              <div class="attention-list-item">
+                <span class="att-num">2.</span>
+                James Wilson &mdash; 3rd late payment
+              </div>
+              <div class="attention-list-item">
+                <span class="att-num">3.</span>
+                Mold report &mdash; licensed contractor
+              </div>
+            </div>
+            <div class="attention-more">+ 4 more items</div>
+            <a class="attention-btn" href="command-center.html">Open Command Center &rarr;</a>
           </div>
-          <div class="agent-workflows">
-            <span class="wf-count" style="color:#9aa5b8;">0</span>
-            <span class="wf-label">active workflows</span>
-          </div>
-          <div class="breakdown-bar"></div>
-          <div class="agent-key-stat" style="border:none;padding-top:0;">
-            <a href="maintenance-agent-prototype.html" class="setup-link">
-              Set up
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5.25 3.5L8.75 7l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </a>
-          </div>
-        </div>
 
-        <!-- Move-in -->
-        <div class="agent-card not-configured" onclick="clickAgent(this, 'movein')">
-          <span class="agent-status inactive">Not configured</span>
-          <div class="agent-card-header">
-            <div class="agent-icon movein">&#127968;</div>
-            <div class="agent-name">Move-in</div>
-          </div>
-          <div class="agent-workflows">
-            <span class="wf-count" style="color:#9aa5b8;">0</span>
-            <span class="wf-label">active workflows</span>
-          </div>
-          <div class="breakdown-bar"></div>
-          <div class="agent-key-stat" style="border:none;padding-top:0;">
-            <a href="maintenance-agent-prototype.html" class="setup-link">
-              Set up
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5.25 3.5L8.75 7l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </a>
-          </div>
-        </div>
+          <!-- Trends Overview -->
+          <div class="trends-card">
+            <div class="trends-header">
+              <h3>Trends</h3>
+              <div class="trends-controls">
+                <div class="toggle-group">
+                  <button class="toggle-btn active" onclick="setToggle(this)">W</button>
+                  <button class="toggle-btn" onclick="setToggle(this)">M</button>
+                </div>
+              </div>
+            </div>
+            <div class="trends-date">
+              <span class="arrow-sm">&larr;</span>
+              Mar 24 &ndash; 30, 2026
+              <span class="arrow-sm">&rarr;</span>
+            </div>
 
-        <!-- Leasing -->
-        <div class="agent-card not-configured" onclick="clickAgent(this, 'leasing')">
-          <span class="agent-status inactive">Not configured</span>
-          <div class="agent-card-header">
-            <div class="agent-icon leasing">&#128273;</div>
-            <div class="agent-name">Leasing</div>
-          </div>
-          <div class="agent-workflows">
-            <span class="wf-count" style="color:#9aa5b8;">0</span>
-            <span class="wf-label">active workflows</span>
-          </div>
-          <div class="breakdown-bar"></div>
-          <div class="agent-key-stat" style="border:none;padding-top:0;">
-            <a href="maintenance-agent-prototype.html" class="setup-link">
-              Set up
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5.25 3.5L8.75 7l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </a>
-          </div>
-        </div>
+            <div class="mini-stats">
+              <div class="mini-stat">
+                <div class="mini-stat-label">Maintenance Requests</div>
+                <div class="mini-stat-value">14 <span class="mini-stat-trend red">&uarr; +8%</span></div>
+              </div>
+              <div class="mini-stat">
+                <div class="mini-stat-label">Rent Collected</div>
+                <div class="mini-stat-value">$148,200 <span class="mini-stat-trend green">&uarr; +3.2%</span></div>
+              </div>
+              <div class="mini-stat">
+                <div class="mini-stat-label">Occupancy</div>
+                <div class="mini-stat-value">96.1% <span class="mini-stat-trend red">&darr; -0.9%</span></div>
+              </div>
+              <div class="mini-stat">
+                <div class="mini-stat-label">Avg Resolution</div>
+                <div class="mini-stat-value">1.8 days <span class="mini-stat-trend green">&darr; -0.4</span></div>
+              </div>
+            </div>
 
-        <!-- Delinquency -->
-        <div class="agent-card" onclick="clickAgent(this, 'delinquency')">
-          <span class="agent-status active">Active</span>
-          <div class="agent-card-header">
-            <div class="agent-icon delinquency">&#128176;</div>
-            <div class="agent-name">Delinquency</div>
-          </div>
-          <div class="agent-workflows">
-            <span class="wf-count">3</span>
-            <span class="wf-label">active workflows</span>
-          </div>
-          <div class="breakdown-bar">
-            <div class="seg in-progress" style="width:33%"></div>
-            <div class="seg waiting" style="width:34%"></div>
-            <div class="seg completed" style="width:33%"></div>
-            <div class="seg escalated" style="width:0%"></div>
-          </div>
-          <div class="breakdown-legend">
-            <div class="leg-item"><div class="leg-dot in-progress"></div>1 In Progress</div>
-            <div class="leg-item"><div class="leg-dot waiting"></div>1 Waiting</div>
-            <div class="leg-item"><div class="leg-dot completed"></div>1 Completed</div>
-            <div class="leg-item"><div class="leg-dot escalated"></div>0 Escalated</div>
-          </div>
-          <div class="agent-key-stat">Collection rate: <strong>89%</strong></div>
-        </div>
+            <div class="bar-chart">
+              <div class="bar-day">
+                <div class="bar-stack">
+                  <div class="bar-seg outstanding" style="height:8px;width:70%;"></div>
+                  <div class="bar-seg collected" style="height:52px;width:70%;border-radius:0;"></div>
+                </div>
+                <span class="bar-label">Mon</span>
+              </div>
+              <div class="bar-day">
+                <div class="bar-stack">
+                  <div class="bar-seg outstanding" style="height:12px;width:70%;"></div>
+                  <div class="bar-seg collected" style="height:44px;width:70%;border-radius:0;"></div>
+                </div>
+                <span class="bar-label">Tue</span>
+              </div>
+              <div class="bar-day">
+                <div class="bar-stack">
+                  <div class="bar-seg outstanding" style="height:6px;width:70%;"></div>
+                  <div class="bar-seg collected" style="height:60px;width:70%;border-radius:0;"></div>
+                </div>
+                <span class="bar-label">Wed</span>
+              </div>
+              <div class="bar-day">
+                <div class="bar-stack">
+                  <div class="bar-seg outstanding" style="height:10px;width:70%;"></div>
+                  <div class="bar-seg collected" style="height:38px;width:70%;border-radius:0;"></div>
+                </div>
+                <span class="bar-label">Thu</span>
+              </div>
+              <div class="bar-day">
+                <div class="bar-stack">
+                  <div class="bar-seg outstanding" style="height:4px;width:70%;"></div>
+                  <div class="bar-seg collected" style="height:56px;width:70%;border-radius:0;"></div>
+                </div>
+                <span class="bar-label">Fri</span>
+              </div>
+              <div class="bar-day">
+                <div class="bar-stack">
+                  <div class="bar-seg outstanding" style="height:14px;width:70%;"></div>
+                  <div class="bar-seg collected" style="height:28px;width:70%;border-radius:0;"></div>
+                </div>
+                <span class="bar-label">Sat</span>
+              </div>
+              <div class="bar-day">
+                <div class="bar-stack">
+                  <div class="bar-seg outstanding" style="height:16px;width:70%;"></div>
+                  <div class="bar-seg collected" style="height:22px;width:70%;border-radius:0;"></div>
+                </div>
+                <span class="bar-label">Sun</span>
+              </div>
+            </div>
+            <div style="display:flex;gap:14px;margin-top:8px;justify-content:center;">
+              <span style="display:flex;align-items:center;gap:4px;font-size:10px;color:#6b7a99;"><span style="width:8px;height:8px;border-radius:2px;background:#4caf50;display:inline-block;"></span> Collected</span>
+              <span style="display:flex;align-items:center;gap:4px;font-size:10px;color:#6b7a99;"><span style="width:8px;height:8px;border-radius:2px;background:#f44336;display:inline-block;"></span> Outstanding</span>
+            </div>
 
-      </div>
+          </div><!-- /trends-card -->
 
-      </div><!-- /bottom-left -->
+        </div><!-- /col-right -->
 
-      <div class="bottom-right">
-      <div class="section-title">Pending Actions <span class="count-badge">7</span></div>
-      <div class="actions-section">
-
-        <a class="action-row" href="command-center.html">
-          <div class="action-dot red"></div>
-          <div class="action-agent-icon" style="background:#fff3e0;">&#128295;</div>
-          <div class="action-title">Water heater &mdash; $2,800 approval needed</div>
-          <div class="action-property">742 Evergreen 3A</div>
-          <div class="action-time">38 min ago</div>
-          <div class="action-arrow">&rsaquo;</div>
-        </a>
-
-        <a class="action-row" href="command-center.html">
-          <div class="action-dot red"></div>
-          <div class="action-agent-icon" style="background:#fff8e1;">&#128176;</div>
-          <div class="action-title">James Wilson &mdash; 3rd late payment</div>
-          <div class="action-property">155 Pine 7B</div>
-          <div class="action-time">1 hr ago</div>
-          <div class="action-arrow">&rsaquo;</div>
-        </a>
-
-        <a class="action-row" href="command-center.html">
-          <div class="action-dot yellow"></div>
-          <div class="action-agent-icon" style="background:#ede7f6;">&#128273;</div>
-          <div class="action-title">3 showings Saturday &mdash; applicant flagged</div>
-          <div class="action-property">890 Oak #12</div>
-          <div class="action-time">2 hrs ago</div>
-          <div class="action-arrow">&rsaquo;</div>
-        </a>
-
-        <a class="action-row" href="command-center.html">
-          <div class="action-dot yellow"></div>
-          <div class="action-agent-icon" style="background:#e8f5e9;">&#128203;</div>
-          <div class="action-title">Robert Garcia counter-offered 1.5%</div>
-          <div class="action-property">742 Evergreen 1B</div>
-          <div class="action-time">3 hrs ago</div>
-          <div class="action-arrow">&rsaquo;</div>
-        </a>
-
-        <a class="action-row" href="command-center.html">
-          <div class="action-dot yellow"></div>
-          <div class="action-agent-icon" style="background:#fff3e0;">&#128295;</div>
-          <div class="action-title">Mold reported &mdash; licensed contractor needed</div>
-          <div class="action-property">456 Oak 2C</div>
-          <div class="action-time">4 hrs ago</div>
-          <div class="action-arrow">&rsaquo;</div>
-        </a>
-
-        <a class="action-row" href="command-center.html">
-          <div class="action-dot blue"></div>
-          <div class="action-agent-icon" style="background:#fff8e1;">&#128176;</div>
-          <div class="action-title">January statements sent to 12 owners</div>
-          <div class="action-property">All properties</div>
-          <div class="action-time">Yesterday</div>
-          <div class="action-arrow">&rsaquo;</div>
-        </a>
-
-        <a class="action-row" href="command-center.html">
-          <div class="action-dot blue"></div>
-          <div class="action-agent-icon" style="background:#e8f5e9;">&#128203;</div>
-          <div class="action-title">Angela Davis signed renewal</div>
-          <div class="action-property">Maple Gardens #18</div>
-          <div class="action-time">Yesterday</div>
-          <div class="action-arrow">&rsaquo;</div>
-        </a>
-
-        <div class="actions-footer">
-          <a href="command-center.html">Open Command Center &rarr;</a>
-        </div>
-      </div>
-
-      </div><!-- /bottom-right -->
-      </div><!-- /bottom-split -->
+      </div><!-- /two-col -->
 
     </div>
   </div>
 </div>
 
 <script>
-  // Agent card click highlight
-  function clickAgent(card, type) {
-    // Don't highlight not-configured cards
-    if (card.classList.contains('not-configured')) return;
-
-    // Remove previous highlights
-    document.querySelectorAll('.agent-card.clicked').forEach(c => c.classList.remove('clicked'));
-    card.classList.add('clicked');
-
-    // Brief visual feedback
-    setTimeout(() => card.classList.remove('clicked'), 1500);
+  // Toggle expand/collapse for "3 more" links
+  function toggleMore(id, btn) {
+    var el = document.getElementById(id);
+    if (el.classList.contains('expanded')) {
+      el.classList.remove('expanded');
+      btn.innerHTML = '3 more &rarr;';
+    } else {
+      el.classList.add('expanded');
+      btn.innerHTML = 'Show less &larr;';
+    }
   }
 
-  // Prevent setup links from triggering card click
-  document.querySelectorAll('.setup-link').forEach(link => {
-    link.addEventListener('click', e => e.stopPropagation());
-  });
+  // W/M toggle buttons
+  function setToggle(btn) {
+    var group = btn.parentElement;
+    group.querySelectorAll('.toggle-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+  }
 </script>
 <script src="cori.js"></script>
 </body>
