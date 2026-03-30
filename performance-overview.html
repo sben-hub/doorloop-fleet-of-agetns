@@ -107,35 +107,44 @@
   .attention-btn { display: flex; align-items: center; justify-content: center; gap: 6px; background: #4C6FFF; color: white; font-size: 13px; font-weight: 600; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; text-decoration: none; transition: background 0.2s; margin-top: 4px; }
   .attention-btn:hover { background: #3a5ae0; }
 
-  /* ============ Trends card ============ */
-  .trends-card { background: white; border: 1px solid #e8ecf1; border-radius: 12px; padding: 18px 20px; flex: 1; display: flex; flex-direction: column; min-height: 0; }
+  /* ============ Trends card — premium dark style ============ */
+  .trends-card { background: linear-gradient(145deg, #1a2b4a 0%, #2d3f6b 50%, #1a2b4a 100%); border: none; border-radius: 14px; padding: 20px; flex: 1; display: flex; flex-direction: column; min-height: 0; position: relative; overflow: hidden; }
+  .trends-card::before { content: ''; position: absolute; top: -50%; right: -30%; width: 200px; height: 200px; background: radial-gradient(circle, rgba(76,111,255,0.15) 0%, transparent 70%); pointer-events: none; }
   .trends-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-shrink: 0; }
-  .trends-header h3 { font-size: 14px; font-weight: 600; color: #1a2b4a; }
+  .trends-header h3 { font-size: 14px; font-weight: 600; color: white; display: flex; align-items: center; gap: 6px; }
   .trends-controls { display: flex; align-items: center; gap: 8px; }
-  .toggle-group { display: flex; border: 1px solid #e8ecf1; border-radius: 6px; overflow: hidden; }
-  .toggle-btn { font-size: 11px; font-weight: 600; padding: 4px 12px; border: none; cursor: pointer; background: white; color: #6b7a99; transition: all 0.15s; }
+  .toggle-group { display: flex; border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; overflow: hidden; }
+  .toggle-btn { font-size: 11px; font-weight: 600; padding: 4px 12px; border: none; cursor: pointer; background: transparent; color: rgba(255,255,255,0.5); transition: all 0.15s; }
   .toggle-btn.active { background: #4C6FFF; color: white; }
-  .toggle-btn:hover:not(.active) { background: #f5f7fb; }
-  .trends-date { font-size: 11px; color: #9aa5b8; display: flex; align-items: center; gap: 6px; }
-  .trends-date .arrow-sm { cursor: pointer; color: #6b7a99; font-size: 12px; }
+  .toggle-btn:hover:not(.active) { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.8); }
+  .trends-date { font-size: 11px; color: rgba(255,255,255,0.4); display: flex; align-items: center; gap: 6px; margin-bottom: 12px; }
+  .trends-date .arrow-sm { cursor: pointer; color: rgba(255,255,255,0.4); font-size: 12px; }
   .trends-date .arrow-sm:hover { color: #4C6FFF; }
 
-  .mini-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; flex-shrink: 0; }
-  .mini-stat { background: #f8f9fc; border-radius: 8px; padding: 10px 12px; }
-  .mini-stat-label { font-size: 10px; color: #6b7a99; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px; }
-  .mini-stat-value { font-size: 18px; font-weight: 700; color: #1a2b4a; display: flex; align-items: baseline; gap: 6px; }
+  .mini-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; flex-shrink: 0; }
+  .mini-stat { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px 12px; backdrop-filter: blur(4px); }
+  .mini-stat-label { font-size: 9px; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .mini-stat-value { font-size: 18px; font-weight: 700; color: white; display: flex; align-items: baseline; gap: 6px; }
   .mini-stat-trend { font-size: 10px; font-weight: 600; }
-  .mini-stat-trend.green { color: #2e7d32; }
-  .mini-stat-trend.red { color: #c62828; }
+  .mini-stat-trend.green { color: #66bb6a; }
+  .mini-stat-trend.red { color: #ef5350; }
 
-  /* Bar chart */
-  .bar-chart { flex: 1; display: flex; align-items: flex-end; gap: 8px; min-height: 80px; padding-top: 8px; }
+  /* Bar chart — glowing bars */
+  .bar-chart { flex: 1; display: flex; align-items: flex-end; gap: 6px; min-height: 80px; padding-top: 8px; }
   .bar-day { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
   .bar-stack { width: 100%; display: flex; flex-direction: column; gap: 2px; align-items: center; }
-  .bar-seg { width: 70%; border-radius: 3px 3px 0 0; min-height: 2px; transition: height 0.3s; }
-  .bar-seg.collected { background: #4caf50; border-radius: 3px 3px 0 0; }
-  .bar-seg.outstanding { background: #f44336; border-radius: 3px 3px 0 0; }
-  .bar-label { font-size: 9px; color: #9aa5b8; font-weight: 500; }
+  .bar-seg { width: 65%; border-radius: 4px 4px 0 0; min-height: 2px; transition: all 0.3s; }
+  .bar-seg.collected { background: linear-gradient(180deg, #66bb6a, #388e3c); box-shadow: 0 0 8px rgba(102,187,106,0.3); }
+  .bar-seg.outstanding { background: linear-gradient(180deg, #ef5350, #c62828); box-shadow: 0 0 6px rgba(239,83,80,0.25); border-radius: 4px 4px 0 0; }
+  .bar-day:hover .bar-seg.collected { box-shadow: 0 0 14px rgba(102,187,106,0.5); }
+  .bar-day:hover .bar-seg.outstanding { box-shadow: 0 0 10px rgba(239,83,80,0.4); }
+  .bar-label { font-size: 9px; color: rgba(255,255,255,0.35); font-weight: 500; }
+
+  /* Agent card extras */
+  .daily-card-processes { font-size: 10px; color: #9aa5b8; margin-top: 2px; }
+  .agent-status-dot { width: 8px; height: 8px; border-radius: 50%; margin-left: auto; flex-shrink: 0; }
+  .agent-status-dot.active { background: #4caf50; box-shadow: 0 0 6px rgba(76,175,80,0.5); }
+  .daily-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
 
   /* Scrollbar */
   ::-webkit-scrollbar { width: 6px; }
@@ -220,7 +229,7 @@
         <!-- Left Column: Daily Overview -->
         <div class="col-left">
           <div class="daily-header">
-            <h2>Daily Overview</h2>
+            <h2>&#129302; Daily AI Agent Overview</h2>
             <div class="date-nav">
               <span class="today-btn">&#128197; Today</span>
               <button class="arrow-btn">&larr;</button>
@@ -230,11 +239,15 @@
 
           <div class="daily-cards">
 
-            <!-- Card 1: Maintenance -->
+            <!-- Card 1: Maintenance Agent -->
             <div class="daily-card">
               <div class="daily-card-header">
                 <div class="daily-card-icon maint">&#128295;</div>
-                <div class="daily-card-title">Maintenance</div>
+                <div>
+                  <div class="daily-card-title">Maintenance Agent</div>
+                  <div class="daily-card-processes">Triage &middot; Vendor Dispatch &middot; Owner Approval &middot; Scheduling</div>
+                </div>
+                <span class="agent-status-dot active" title="Active"></span>
               </div>
               <div class="daily-stats">
                 <div class="daily-stat">New Requests: <strong>3</strong></div>
@@ -268,11 +281,15 @@
               </div>
             </div>
 
-            <!-- Card 2: Rent Collection -->
+            <!-- Card 2: Rent Collection Agent -->
             <div class="daily-card">
               <div class="daily-card-header">
                 <div class="daily-card-icon rent">&#128176;</div>
-                <div class="daily-card-title">Rent Collection</div>
+                <div>
+                  <div class="daily-card-title">Rent Collection Agent</div>
+                  <div class="daily-card-processes">Reminders &middot; Late Fees &middot; Payment Plans &middot; Escalation</div>
+                </div>
+                <span class="agent-status-dot active" title="Active"></span>
               </div>
               <div class="daily-stats">
                 <div class="daily-stat">Collected: <strong>$148,200</strong></div>
@@ -295,11 +312,15 @@
               </div>
             </div>
 
-            <!-- Card 3: Leasing & Renewals -->
+            <!-- Card 3: Leasing & Renewal Agents -->
             <div class="daily-card">
               <div class="daily-card-header">
                 <div class="daily-card-icon leasing">&#128273;</div>
-                <div class="daily-card-title">Leasing &amp; Renewals</div>
+                <div>
+                  <div class="daily-card-title">Leasing &amp; Renewal Agents</div>
+                  <div class="daily-card-processes">Showings &middot; Screening &middot; Applications &middot; Lease Offers &middot; Negotiation</div>
+                </div>
+                <span class="agent-status-dot active" title="Active"></span>
               </div>
               <div class="daily-stats">
                 <div class="daily-stat">Showings This Week: <strong>6</strong></div>
@@ -356,7 +377,7 @@
           <!-- Trends Overview -->
           <div class="trends-card">
             <div class="trends-header">
-              <h3>Trends</h3>
+              <h3>&#10024; Trends</h3>
               <div class="trends-controls">
                 <div class="toggle-group">
                   <button class="toggle-btn active" onclick="setToggle(this)">W</button>
@@ -441,8 +462,8 @@
               </div>
             </div>
             <div style="display:flex;gap:14px;margin-top:8px;justify-content:center;">
-              <span style="display:flex;align-items:center;gap:4px;font-size:10px;color:#6b7a99;"><span style="width:8px;height:8px;border-radius:2px;background:#4caf50;display:inline-block;"></span> Collected</span>
-              <span style="display:flex;align-items:center;gap:4px;font-size:10px;color:#6b7a99;"><span style="width:8px;height:8px;border-radius:2px;background:#f44336;display:inline-block;"></span> Outstanding</span>
+              <span style="display:flex;align-items:center;gap:4px;font-size:10px;color:rgba(255,255,255,0.4);"><span style="width:8px;height:8px;border-radius:2px;background:#66bb6a;display:inline-block;"></span> Collected</span>
+              <span style="display:flex;align-items:center;gap:4px;font-size:10px;color:rgba(255,255,255,0.4);"><span style="width:8px;height:8px;border-radius:2px;background:#ef5350;display:inline-block;"></span> Outstanding</span>
             </div>
 
           </div><!-- /trends-card -->
