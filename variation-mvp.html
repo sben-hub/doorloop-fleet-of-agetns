@@ -618,7 +618,7 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
         <div class="conv-filters">
           <button class="conv-filter active" data-filter="all" onclick="setFilter('all',this)">All</button>
           <button class="conv-filter" data-filter="live" onclick="setFilter('live',this)">Active</button>
-          <button class="conv-filter" data-filter="escalated" onclick="setFilter('escalated',this)">Escalated <span class="filter-badge">2</span></button>
+          <button class="conv-filter" data-filter="escalated" onclick="setFilter('escalated',this)">Escalated <span class="filter-badge">3</span></button>
           <button class="conv-filter" data-filter="resolved" onclick="setFilter('resolved',this)">Resolved</button>
         </div>
       </div>
@@ -686,6 +686,21 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
           </div>
           <div class="conv-meta">
             <div class="conv-time">Yesterday</div>
+          </div>
+        </div>
+
+        <!-- Maria Lopez — Escalated (owner approval needed) -->
+        <div class="conv-item" data-conv="maria" data-status="escalated" onclick="showConversation('maria')">
+          <div class="conv-avatar tenant">ML</div>
+          <div class="conv-info">
+            <div class="conv-name">Maria Lopez</div>
+            <div class="conv-property">742 Evergreen, Unit 3A &middot; Tenant</div>
+            <div class="conv-preview">Water heater replacement — $2,800 approval needed</div>
+            <span class="conv-status-pill escalated">Escalated</span>
+          </div>
+          <div class="conv-meta">
+            <div class="conv-time">Today</div>
+            <div class="conv-unread"></div>
           </div>
         </div>
 
@@ -1934,6 +1949,11 @@ const conversations = {
     subtitle: 'Prospect &middot; Tour request &middot; +1 (555) 0587',
     aiActive: false
   },
+  maria: {
+    name: 'Maria Lopez', initials: 'ML', type: 'tenant', status: 'escalated',
+    subtitle: '742 Evergreen, Unit 3A &middot; Tenant &middot; +1 (555) 0142',
+    aiActive: false
+  },
   pine: {
     name: 'Lisa Chen', initials: 'PH', type: 'tenant', status: 'resolved',
     subtitle: 'Pine Heights, Unit 4D &middot; Tenant &middot; +1 (555) 0612',
@@ -2150,6 +2170,72 @@ function loadMessages(convId) {
       <div class="internal-note">
         <div class="note-header">&#128274; Internal Note &middot; AI Assistant</div>
         <div class="note-body">This conversation needs your attention. The prospect wants to schedule an in-person tour for Saturday. Tour scheduling requires leasing agent availability confirmation. Suggested: check Saturday schedule and respond.</div>
+      </div>`;
+    return;
+  }
+
+  if (convId === 'maria') {
+    msgs.innerHTML = `
+      <div class="chat-date">Today, Mar 30</div>
+      <div class="chat-msg inbound">
+        <div class="msg-sender">Maria Lopez &middot; Tenant</div>
+        <div class="msg-bubble">Hi, I don't have any hot water. The water heater was making weird noises last night and now nothing comes out hot at all.</div>
+        <div class="msg-footer">6:14 AM</div>
+      </div>
+      <div class="chat-msg outbound ai">
+        <div class="msg-sender"><span class="ai-tag">AI Assistant</span> DoorLoop AI</div>
+        <div class="msg-bubble">Hi Maria, I'm sorry about the hot water issue. Can you check if the water heater has any visible error lights? It's usually in the hallway closet.</div>
+        <div class="msg-footer"><span class="delivered">&#10003;&#10003;</span> Delivered 6:15 AM</div>
+      </div>
+      <div class="chat-msg inbound">
+        <div class="msg-sender">Maria Lopez</div>
+        <div class="msg-bubble">There's a red blinking light and it's not making any sounds at all.</div>
+        <div class="msg-footer">6:18 AM</div>
+      </div>
+      <div class="chat-msg outbound ai">
+        <div class="msg-sender"><span class="ai-tag">AI Assistant</span> DoorLoop AI</div>
+        <div class="msg-bubble">A blinking red light with no sounds indicates a complete shutdown. This unit was installed in 2014 and is past its expected lifespan. I've contacted ABC Plumbing — they can come today 2–4 PM. Quote: <strong>$2,800</strong> for full replacement including labor and disposal.</div>
+        <div class="msg-footer"><span class="delivered">&#10003;&#10003;</span> Delivered 7:45 AM</div>
+      </div>
+      <div class="chat-msg outbound ai">
+        <div class="msg-sender"><span class="ai-tag">AI Assistant</span> DoorLoop AI</div>
+        <div class="msg-bubble">Maria, we're working on getting this approved. The plumber is available today 2–4 PM if we get the green light. I'll update you shortly!</div>
+        <div class="msg-footer"><span class="delivered">&#10003;&#10003;</span> Delivered 7:48 AM</div>
+      </div>
+      <div class="chat-msg inbound">
+        <div class="msg-sender">Maria Lopez</div>
+        <div class="msg-bubble">Yes 2–4 works. I work from home so I'll be here. Thanks for being so quick!</div>
+        <div class="msg-footer">7:52 AM</div>
+      </div>
+      <div class="chat-divider">
+        <div class="divider-line"></div>
+        <div class="divider-text"><span class="escalated-icon">&#9888;</span> Escalated — Owner Approval Required &middot; 7:46 AM</div>
+        <div class="divider-line"></div>
+      </div>
+      <div class="internal-note" style="max-width:100%;align-self:stretch;">
+        <div class="note-header">&#128274; Internal Note &middot; AI Assistant &middot; Action Required</div>
+        <div class="note-body" style="margin-bottom:12px;">
+          <strong>Owner approval needed for water heater replacement.</strong><br><br>
+          The quote of <strong>$2,800</strong> exceeds the auto-approval threshold of <strong>$500</strong> for this property.<br><br>
+          <div style="background:white;border:1px solid #e8ecf1;border-radius:8px;padding:12px;margin:10px 0;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;">
+              <div><span style="color:#6b7a99;">Property:</span> 742 Evergreen Terrace, Unit 3A</div>
+              <div><span style="color:#6b7a99;">Owner:</span> David Chen</div>
+              <div><span style="color:#6b7a99;">Vendor:</span> ABC Plumbing (★ 4.8)</div>
+              <div><span style="color:#6b7a99;">Quote:</span> <strong>$2,800</strong></div>
+              <div><span style="color:#6b7a99;">Water heater age:</span> 12 years (installed 2014)</div>
+              <div><span style="color:#6b7a99;">Previous repair:</span> Sept 2024</div>
+              <div><span style="color:#6b7a99;">Tenant tenure:</span> 5 years, never late</div>
+              <div><span style="color:#6b7a99;">Availability:</span> Today 2–4 PM</div>
+            </div>
+          </div>
+          AI recommendation: <strong>Approve.</strong> Unit is past lifespan with prior repair history. Tenant is long-term and in good standing. ABC Plumbing is the preferred vendor with same-day availability.
+        </div>
+        <div style="display:flex;gap:10px;" id="approvalBtns">
+          <button onclick="handleApproval(true)" style="flex:1;padding:10px 20px;background:#16a34a;color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:Lato,sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;">&#10003; Approve &amp; Notify Owner</button>
+          <button onclick="handleApproval(false)" style="flex:1;padding:10px 20px;background:white;color:#dc2626;border:2px solid #fca5a5;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:Lato,sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;">&#10007; Decline — Request Alternative</button>
+        </div>
+        <div id="approvalResult" style="display:none;padding:10px;border-radius:8px;font-size:13px;font-weight:700;text-align:center;margin-top:4px;"></div>
       </div>`;
     return;
   }
@@ -2397,6 +2483,39 @@ function updateCountdown() {
 }
 
 // ===== ESCALATE / RESOLVE =====
+function handleApproval(approved) {
+  var btns = document.getElementById('approvalBtns');
+  var result = document.getElementById('approvalResult');
+  btns.style.display = 'none';
+  result.style.display = 'block';
+  if (approved) {
+    result.style.background = '#f0fdf4';
+    result.style.color = '#16a34a';
+    result.innerHTML = '&#10003; Approved! Notification sent to owner David Chen. ABC Plumbing dispatched for 2–4 PM today.';
+    // Add a follow-up AI message
+    var msgs = document.getElementById('chatMessages');
+    setTimeout(function() {
+      var div = document.createElement('div');
+      div.className = 'chat-msg outbound ai';
+      div.innerHTML = '<div class="msg-sender"><span class="ai-tag">AI Assistant</span> DoorLoop AI</div><div class="msg-bubble">Great news Maria! The water heater replacement has been approved. ABC Plumbing is confirmed for today 2–4 PM. They\'ll ring your doorbell when they arrive. Is there anything else you need?</div><div class="msg-footer"><span class="delivered">&#10003;&#10003;</span> Delivered just now</div>';
+      msgs.appendChild(div);
+      msgs.scrollTop = msgs.scrollHeight;
+    }, 800);
+  } else {
+    result.style.background = '#fef2f2';
+    result.style.color = '#dc2626';
+    result.innerHTML = '&#10007; Declined. AI will request an alternative quote from a second vendor.';
+    var msgs = document.getElementById('chatMessages');
+    setTimeout(function() {
+      var div = document.createElement('div');
+      div.className = 'chat-msg outbound ai';
+      div.innerHTML = '<div class="msg-sender"><span class="ai-tag">AI Assistant</span> DoorLoop AI</div><div class="msg-bubble">Maria, we\'re getting a second quote for the water heater replacement to ensure the best price. I\'ll update you as soon as we have it — shouldn\'t take long!</div><div class="msg-footer"><span class="delivered">&#10003;&#10003;</span> Delivered just now</div>';
+      msgs.appendChild(div);
+      msgs.scrollTop = msgs.scrollHeight;
+    }, 800);
+  }
+}
+
 function escalateConversation() {
   if (!currentConv) return;
   const conv = conversations[currentConv];
