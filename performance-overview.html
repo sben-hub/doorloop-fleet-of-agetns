@@ -6,7 +6,7 @@
 <title>DoorLoop – Performance Overview</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fb; color: #1a2b4a; height: 100vh; overflow: hidden; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fb; color: #1a2b4a; min-height: 100vh; overflow: hidden; }
 
   .var-switcher { height: 36px; background: #0f1729; display: flex; align-items: center; justify-content: center; gap: 4px; flex-shrink: 0; padding: 0 16px; }
   .var-switcher a { font-size: 11px; font-weight: 500; padding: 4px 14px; border-radius: 6px; text-decoration: none; color: #8896b3; transition: all 0.15s; }
@@ -42,14 +42,14 @@
   .section-title { font-size: 14px; font-weight: 600; color: #6b7a99; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; }
 
   /* ============ KPI Cards ============ */
-  .kpi-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-bottom: 32px; }
+  .kpi-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
   .kpi-card { background: white; border: 1px solid #e8ecf1; border-radius: 12px; padding: 20px; transition: box-shadow 0.2s; }
   .kpi-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
   .kpi-value { font-size: 28px; font-weight: 700; color: #1a2b4a; margin-bottom: 4px; }
   .kpi-label { font-size: 12px; color: #6b7a99; margin-bottom: 10px; }
   .kpi-trend { font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 4px; }
-  .kpi-trend.up { color: #2e7d32; }
-  .kpi-trend.down { color: #c62828; }
+  .kpi-trend.green { color: #2e7d32; }
+  .kpi-trend.red { color: #c62828; }
 
   /* ============ Agent Grid ============ */
   .agent-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
@@ -99,22 +99,25 @@
   .setup-link { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; color: #4C6FFF; text-decoration: none; margin-top: 8px; }
   .setup-link:hover { text-decoration: underline; }
 
-  /* ============ Activity Feed ============ */
-  .activity-feed { background: white; border: 1px solid #e8ecf1; border-radius: 14px; overflow: hidden; }
-  .activity-feed-header { padding: 16px 20px; border-bottom: 1px solid #e8ecf1; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; }
-  .activity-feed-header .view-all { font-size: 12px; color: #4C6FFF; font-weight: 500; cursor: pointer; background: none; border: none; }
-
-  .activity-item { display: flex; align-items: flex-start; gap: 12px; padding: 14px 20px; border-bottom: 1px solid #f0f2f5; transition: background 0.15s; cursor: default; }
-  .activity-item:last-child { border-bottom: none; }
-  .activity-item:hover { background: #f8f9fc; }
-
-  .activity-time { font-size: 11px; color: #9aa5b8; min-width: 72px; flex-shrink: 0; padding-top: 2px; }
-  .activity-badge { font-size: 9px; padding: 3px 8px; border-radius: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; flex-shrink: 0; min-width: 80px; text-align: center; }
-  .activity-badge.maintenance { background: #fff3e0; color: #e65100; }
-  .activity-badge.renewal { background: #e8f5e9; color: #2e7d32; }
-  .activity-badge.delinquency { background: #fff8e1; color: #f57f17; }
-  .activity-desc { font-size: 13px; line-height: 1.5; color: #1a2b4a; flex: 1; }
-  .activity-desc .highlight { color: #4C6FFF; font-weight: 500; }
+  /* ============ Action Items ============ */
+  .actions-section { background: white; border: 1px solid #e8ecf1; border-radius: 14px; overflow: hidden; }
+  .action-row { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid #f0f2f5; transition: background 0.15s; cursor: pointer; text-decoration: none; color: inherit; }
+  .action-row:last-of-type { border-bottom: none; }
+  .action-row:hover { background: #f8f9fc; }
+  .action-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .action-dot.red { background: #f44336; }
+  .action-dot.yellow { background: #ff9800; }
+  .action-dot.blue { background: #4C6FFF; }
+  .action-agent-icon { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+  .action-title { font-size: 13px; font-weight: 500; color: #1a2b4a; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .action-property { font-size: 12px; color: #6b7a99; flex-shrink: 0; min-width: 120px; text-align: right; }
+  .action-time { font-size: 11px; color: #9aa5b8; flex-shrink: 0; min-width: 80px; text-align: right; }
+  .action-arrow { font-size: 14px; color: #d0d7e2; flex-shrink: 0; }
+  .action-row:hover .action-arrow { color: #4C6FFF; }
+  .actions-footer { padding: 14px 20px; border-top: 1px solid #e8ecf1; text-align: center; }
+  .actions-footer a { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #4C6FFF; text-decoration: none; padding: 8px 20px; border-radius: 8px; transition: background 0.15s; }
+  .actions-footer a:hover { background: rgba(76,111,255,0.08); }
+  .section-title .count-badge { display: inline-flex; align-items: center; justify-content: center; background: #f44336; color: white; font-size: 11px; font-weight: 600; min-width: 20px; height: 20px; border-radius: 10px; padding: 0 6px; margin-left: 8px; vertical-align: middle; text-transform: none; letter-spacing: 0; }
 
   /* Scrollbar */
   ::-webkit-scrollbar { width: 6px; }
@@ -126,7 +129,7 @@
 
   /* Responsive for smaller screens */
   @media (max-width: 1200px) {
-    .kpi-row { grid-template-columns: repeat(3, 1fr); }
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
     .agent-grid { grid-template-columns: repeat(2, 1fr); }
   }
 </style>
@@ -168,61 +171,61 @@
 
     <div class="dashboard">
 
-      <!-- ============ Section 1: KPI Cards ============ -->
-      <div class="section-title">Performance Overview</div>
+      <!-- ============ Area 1: Business KPIs ============ -->
+      <div class="section-title">Business Overview</div>
       <div class="kpi-row">
         <div class="kpi-card">
-          <div class="kpi-value">23</div>
-          <div class="kpi-label">Total Active Workflows</div>
-          <div class="kpi-trend up">
+          <div class="kpi-value">4</div>
+          <div class="kpi-label">Vacant Units · of 102 total units</div>
+          <div class="kpi-trend red">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M3 5l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            +8% vs last week
+            &#8593; 1 from last month
           </div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-value">47</div>
-          <div class="kpi-label">Resolved This Week</div>
-          <div class="kpi-trend up">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M3 5l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            +12% vs last week
-          </div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-value">1.8<span style="font-size:16px;font-weight:500;color:#6b7a99;"> days</span></div>
-          <div class="kpi-label">Avg Resolution Time</div>
-          <div class="kpi-trend up">
+          <div class="kpi-value">96.1%</div>
+          <div class="kpi-label">Occupancy Rate · 98 of 102 occupied</div>
+          <div class="kpi-trend red">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 10V2M3 7l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            -0.3 days vs last week
+            &#8595; 0.9% vs last month
           </div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-value">78<span style="font-size:16px;font-weight:500;color:#6b7a99;">%</span></div>
-          <div class="kpi-label">Automation Rate</div>
-          <div class="kpi-trend up">
+          <div class="kpi-value">$148,200</div>
+          <div class="kpi-label">Collected Revenue · February 2026</div>
+          <div class="kpi-trend green">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M3 5l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            +5% vs last week
+            &#8593; 3.2% vs Jan
           </div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-value">12<span style="font-size:16px;font-weight:500;color:#6b7a99;">%</span></div>
-          <div class="kpi-label">Escalation Rate</div>
-          <div class="kpi-trend down">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M3 5l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            +2% vs last week
+          <div class="kpi-value">$4,350</div>
+          <div class="kpi-label">Outstanding Rent · 3 tenants past due</div>
+          <div class="kpi-trend green">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 10V2M3 7l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            &#8595; $1,200 vs Jan
           </div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-value">$4,200</div>
-          <div class="kpi-label">Cost Savings (this month)</div>
-          <div class="kpi-trend up">
+          <div class="kpi-value">$8,420</div>
+          <div class="kpi-label">Maintenance Spend · MTD across all properties</div>
+          <div class="kpi-trend red">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M3 5l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            +$600 vs last month
+            &#8593; 12% vs Jan
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">$135,800</div>
+          <div class="kpi-label">Net Operating Income · After expenses &amp; fees</div>
+          <div class="kpi-trend green">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M3 5l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            &#8593; 2.1% vs Jan
           </div>
         </div>
       </div>
 
-      <!-- ============ Section 2: Agent Overview Grid ============ -->
-      <div class="section-title">Agent Overview</div>
+      <!-- ============ Area 2: AI Agent Overview ============ -->
+      <div class="section-title">AI Agent Performance</div>
       <div class="agent-grid">
 
         <!-- Maintenance -->
@@ -365,74 +368,76 @@
 
       </div>
 
-      <!-- ============ Section 3: Recent Activity Feed ============ -->
-      <div class="section-title">Recent Activity</div>
-      <div class="activity-feed">
-        <div class="activity-feed-header">
-          All Agent Actions
-          <button class="view-all">View full log &rarr;</button>
-        </div>
+      <!-- ============ Area 3: Pending Actions ============ -->
+      <div class="section-title">Pending Actions <span class="count-badge">7</span></div>
+      <div class="actions-section">
 
-        <div class="activity-item">
-          <div class="activity-time">2 min ago</div>
-          <div class="activity-badge maintenance">Maintenance</div>
-          <div class="activity-desc">Sent follow-up to <span class="highlight">Sarah Thompson</span> &mdash; "Has the leak been fixed?"</div>
-        </div>
+        <a class="action-row" href="command-center.html">
+          <div class="action-dot red"></div>
+          <div class="action-agent-icon" style="background:#fff3e0;">&#128295;</div>
+          <div class="action-title">Water heater &mdash; $2,800 approval needed</div>
+          <div class="action-property">742 Evergreen 3A</div>
+          <div class="action-time">38 min ago</div>
+          <div class="action-arrow">&rsaquo;</div>
+        </a>
 
-        <div class="activity-item">
-          <div class="activity-time">15 min ago</div>
-          <div class="activity-badge maintenance">Maintenance</div>
-          <div class="activity-desc">Selected <span class="highlight">Mike's Plumbing</span> for WO #4523 &mdash; best price & availability match</div>
-        </div>
+        <a class="action-row" href="command-center.html">
+          <div class="action-dot red"></div>
+          <div class="action-agent-icon" style="background:#fff8e1;">&#128176;</div>
+          <div class="action-title">James Wilson &mdash; 3rd late payment</div>
+          <div class="action-property">155 Pine 7B</div>
+          <div class="action-time">1 hr ago</div>
+          <div class="action-arrow">&rsaquo;</div>
+        </a>
 
-        <div class="activity-item">
-          <div class="activity-time">42 min ago</div>
-          <div class="activity-badge renewal">Renewal</div>
-          <div class="activity-desc">Generated renewal offer for <span class="highlight">Jessica Park</span> &mdash; Unit 3C, 3% increase proposed</div>
-        </div>
+        <a class="action-row" href="command-center.html">
+          <div class="action-dot yellow"></div>
+          <div class="action-agent-icon" style="background:#ede7f6;">&#128273;</div>
+          <div class="action-title">3 showings Saturday &mdash; applicant flagged</div>
+          <div class="action-property">890 Oak #12</div>
+          <div class="action-time">2 hrs ago</div>
+          <div class="action-arrow">&rsaquo;</div>
+        </a>
 
-        <div class="activity-item">
-          <div class="activity-time">1 hr ago</div>
-          <div class="activity-badge renewal">Renewal</div>
-          <div class="activity-desc">Sent renewal offer to <span class="highlight">David Kim</span> &mdash; Unit 7A, lease expiring Apr 30</div>
-        </div>
+        <a class="action-row" href="command-center.html">
+          <div class="action-dot yellow"></div>
+          <div class="action-agent-icon" style="background:#e8f5e9;">&#128203;</div>
+          <div class="action-title">Robert Garcia counter-offered 1.5%</div>
+          <div class="action-property">742 Evergreen 1B</div>
+          <div class="action-time">3 hrs ago</div>
+          <div class="action-arrow">&rsaquo;</div>
+        </a>
 
-        <div class="activity-item">
-          <div class="activity-time">1.5 hr ago</div>
-          <div class="activity-badge delinquency">Delinquency</div>
-          <div class="activity-desc">Sent payment plan proposal to <span class="highlight">Maria Santos</span> &mdash; $1,200 balance, 3-month plan</div>
-        </div>
+        <a class="action-row" href="command-center.html">
+          <div class="action-dot yellow"></div>
+          <div class="action-agent-icon" style="background:#fff3e0;">&#128295;</div>
+          <div class="action-title">Mold reported &mdash; licensed contractor needed</div>
+          <div class="action-property">456 Oak 2C</div>
+          <div class="action-time">4 hrs ago</div>
+          <div class="action-arrow">&rsaquo;</div>
+        </a>
 
-        <div class="activity-item">
-          <div class="activity-time">2 hr ago</div>
-          <div class="activity-badge delinquency">Delinquency</div>
-          <div class="activity-desc">Sent late payment reminder to <span class="highlight">Carlos Ruiz</span> &mdash; $850 overdue, 12 days past due</div>
-        </div>
+        <a class="action-row" href="command-center.html">
+          <div class="action-dot blue"></div>
+          <div class="action-agent-icon" style="background:#fff8e1;">&#128176;</div>
+          <div class="action-title">January statements sent to 12 owners</div>
+          <div class="action-property">All properties</div>
+          <div class="action-time">Yesterday</div>
+          <div class="action-arrow">&rsaquo;</div>
+        </a>
 
-        <div class="activity-item">
-          <div class="activity-time">3 hr ago</div>
-          <div class="activity-badge maintenance">Maintenance</div>
-          <div class="activity-desc"><span style="color:#c62828;font-weight:500;">Escalated to PM:</span> vendor cancelled on WO #4518 &mdash; unknown scenario, needs manual review</div>
-        </div>
+        <a class="action-row" href="command-center.html">
+          <div class="action-dot blue"></div>
+          <div class="action-agent-icon" style="background:#e8f5e9;">&#128203;</div>
+          <div class="action-title">Angela Davis signed renewal</div>
+          <div class="action-property">Maple Gardens #18</div>
+          <div class="action-time">Yesterday</div>
+          <div class="action-arrow">&rsaquo;</div>
+        </a>
 
-        <div class="activity-item">
-          <div class="activity-time">4 hr ago</div>
-          <div class="activity-badge maintenance">Maintenance</div>
-          <div class="activity-desc">Auto-closed WO #4515 &mdash; tenant confirmed issue resolved, satisfaction rating 5/5</div>
+        <div class="actions-footer">
+          <a href="command-center.html">Open Command Center &rarr;</a>
         </div>
-
-        <div class="activity-item">
-          <div class="activity-time">5 hr ago</div>
-          <div class="activity-badge renewal">Renewal</div>
-          <div class="activity-desc">Received signed renewal from <span class="highlight">Amanda Chen</span> &mdash; Unit 12B, 12-month term</div>
-        </div>
-
-        <div class="activity-item">
-          <div class="activity-time">6 hr ago</div>
-          <div class="activity-badge maintenance">Maintenance</div>
-          <div class="activity-desc">Scheduled HVAC inspection for <span class="highlight">Unit 9A</span> &mdash; vendor confirmed Mar 21 at 10am</div>
-        </div>
-
       </div>
 
       <!-- Bottom spacer -->
@@ -459,11 +464,6 @@
   // Prevent setup links from triggering card click
   document.querySelectorAll('.setup-link').forEach(link => {
     link.addEventListener('click', e => e.stopPropagation());
-  });
-
-  // View full log button
-  document.querySelector('.view-all').addEventListener('click', () => {
-    window.location.href = 'audit-log.html';
   });
 </script>
 <script src="cori.js"></script>
