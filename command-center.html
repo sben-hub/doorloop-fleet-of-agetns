@@ -110,6 +110,8 @@
   .row-actions .btn-danger:hover { background: #b91c1c; }
   .row-actions .btn-outline { background: white; color: #1a2b4a; border: 1px solid #e8ecf1; }
   .row-actions .btn-outline:hover { border-color: #4C6FFF; color: #4C6FFF; }
+  .row-actions .btn-link { background: none; border: none; color: #4C6FFF; font-size: 12px; font-weight: 600; text-decoration: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; white-space: nowrap; transition: background 0.15s; }
+  .row-actions .btn-link:hover { background: rgba(76,111,255,0.08); text-decoration: none; }
 
   /* Inbox zero celebration */
   .inbox-zero { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 60px 28px; text-align: center; }
@@ -180,14 +182,6 @@
 
     <!-- Scrollable content area -->
     <div class="content-scroll">
-
-      <!-- KPI Strip -->
-      <div class="kpi-strip">
-        <span class="kpi-item"><strong>102</strong> Units</span>
-        <span class="kpi-item"><strong>96.1%</strong> Occupancy</span>
-        <span class="kpi-item"><strong>$148,200</strong> Collected</span>
-        <span class="kpi-item"><strong>7</strong> Open WOs</span>
-      </div>
 
       <!-- Triage Header -->
       <div class="triage-header">
@@ -276,7 +270,7 @@
           <div class="row-actions">
             <button class="btn btn-approve" onclick="dismissRow(this, 'Approved — vendor notified')">Approve &#10003;</button>
             <button class="btn btn-outline" onclick="dismissRow(this, 'Declined')">Decline &#10007;</button>
-            <button class="btn btn-outline" onclick="dismissRow(this, 'Viewing details')">View</button>
+            <a class="btn btn-link" href="communication-center.html">View Conversation &rarr;</a>
           </div>
         </div>
 
@@ -295,7 +289,7 @@
           <div class="row-actions">
             <button class="btn btn-primary" onclick="dismissRow(this, 'Formal notice sent')">Send Notice</button>
             <button class="btn btn-outline" onclick="dismissRow(this, 'Payment plan offered')">Payment Plan</button>
-            <button class="btn btn-outline" onclick="dismissRow(this, 'Viewing details')">View</button>
+            <a class="btn btn-link" href="communication-center.html">View Conversation &rarr;</a>
           </div>
         </div>
 
@@ -313,7 +307,7 @@
           <span class="row-time">2 hrs ago</span>
           <div class="row-actions">
             <button class="btn btn-primary" onclick="dismissRow(this, 'Opening applicant review')">Review Applicants</button>
-            <button class="btn btn-outline" onclick="dismissRow(this, 'Viewing details')">View</button>
+            <a class="btn btn-link" href="communication-center.html">View Conversation &rarr;</a>
           </div>
         </div>
 
@@ -332,7 +326,7 @@
           <div class="row-actions">
             <button class="btn btn-approve" onclick="dismissRow(this, 'Counter accepted at 1.5%')">Accept Counter</button>
             <button class="btn btn-outline" onclick="dismissRow(this, 'Holding at 2.5%')">Hold at 2.5%</button>
-            <button class="btn btn-outline" onclick="dismissRow(this, 'Viewing details')">View</button>
+            <a class="btn btn-link" href="communication-center.html">View Conversation &rarr;</a>
           </div>
         </div>
 
@@ -351,7 +345,7 @@
           <div class="row-actions">
             <button class="btn btn-primary" onclick="dismissRow(this, 'Searching for licensed contractors')">Find Contractors</button>
             <button class="btn btn-outline" onclick="dismissRow(this, 'Contacting insurance')">Contact Insurance</button>
-            <button class="btn btn-outline" onclick="dismissRow(this, 'Viewing details')">View</button>
+            <a class="btn btn-link" href="communication-center.html">View Conversation &rarr;</a>
           </div>
         </div>
 
