@@ -113,6 +113,17 @@
   .row-actions .btn-link { background: none; border: none; color: #4C6FFF; font-size: 12px; font-weight: 600; text-decoration: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; white-space: nowrap; transition: background 0.15s; }
   .row-actions .btn-link:hover { background: rgba(76,111,255,0.08); text-decoration: none; }
 
+  /* Expandable detail */
+  .row-expand-btn { width: 24px; height: 24px; border: none; background: none; cursor: pointer; color: #9aa5b8; font-size: 14px; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: all 0.2s; flex-shrink: 0; }
+  .row-expand-btn:hover { background: #f0f2f6; color: #1a2b4a; }
+  .row-expand-btn.open { transform: rotate(90deg); color: #4C6FFF; }
+  .row-detail { max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease; padding: 0 16px 0 52px; background: #f8f9fc; border-bottom: 1px solid #f0f2f6; }
+  .row-detail.open { max-height: 300px; padding: 14px 16px 14px 52px; }
+  .row-detail-inner { font-size: 13px; color: #3d4f6f; line-height: 1.6; }
+  .row-detail-inner .detail-label { font-size: 10px; font-weight: 700; color: #6b7a99; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; margin-top: 10px; }
+  .row-detail-inner .detail-label:first-child { margin-top: 0; }
+  .row-detail-inner .detail-value { font-size: 13px; color: #1a2b4a; }
+
   /* Inbox zero celebration */
   .inbox-zero { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 60px 28px; text-align: center; }
   .inbox-zero.visible { display: flex; }
@@ -185,7 +196,6 @@
 
       <!-- Triage Header -->
       <div class="triage-header">
-        <div class="triage-greeting">Good morning, Sarah</div>
         <div class="triage-counter-row">
           <span class="triage-counter" id="triageCounter">7 items need you</span>
         </div>
@@ -257,6 +267,7 @@
 
         <!-- 1. Water heater -->
         <div class="inbox-row" data-priority="urgent" data-toast="Approved — vendor notified">
+          <button class="row-expand-btn" onclick="event.stopPropagation();toggleDetail(this)">&#9654;</button>
           <div class="priority-dot urgent"></div>
           <span class="row-agent-icon">&#x1F527;</span>
           <div class="row-content">
@@ -273,9 +284,18 @@
             <a class="btn btn-link" href="communication-center.html">View Conversation &rarr;</a>
           </div>
         </div>
+        <div class="row-detail"><div class="row-detail-inner">
+          <div class="detail-label">Summary</div>
+          <div class="detail-value">Tenant Maria Lopez reported no hot water at 6:14 AM. Water heater installed 2014, past expected lifespan. ABC Plumbing quoted $2,800 for full replacement — available today 2–4 PM.</div>
+          <div class="detail-label">Property Details</div>
+          <div class="detail-value">742 Evergreen Terrace, Unit 3A &middot; Owner: David Chen &middot; Tenant since 2019, never late on rent</div>
+          <div class="detail-label">AI Recommendation</div>
+          <div class="detail-value">Approve. Unit is past lifespan with prior repair (Sept 2024). ABC Plumbing is preferred vendor (★ 4.8). Same-day availability.</div>
+        </div></div>
 
         <!-- 2. James Wilson late payment -->
         <div class="inbox-row" data-priority="urgent" data-toast="Notice sent">
+          <button class="row-expand-btn" onclick="event.stopPropagation();toggleDetail(this)">&#9654;</button>
           <div class="priority-dot urgent"></div>
           <span class="row-agent-icon">&#x1F4B0;</span>
           <div class="row-content">
@@ -292,9 +312,18 @@
             <a class="btn btn-link" href="communication-center.html">View Conversation &rarr;</a>
           </div>
         </div>
+        <div class="row-detail"><div class="row-detail-inner">
+          <div class="detail-label">Summary</div>
+          <div class="detail-value">Rent $1,450 is 5 days past due. 2 reminder texts sent (Feb 3 and Feb 5) — no response to either. This is his 3rd late payment in 6 months.</div>
+          <div class="detail-label">Payment History</div>
+          <div class="detail-value">Late Oct 2025, Late Dec 2025, Late Feb 2026. No prior payment plans. ACH on file but insufficient funds.</div>
+          <div class="detail-label">AI Recommendation</div>
+          <div class="detail-value">Send formal notice. Pattern suggests chronic non-payment. If no response in 5 days, recommend initiating pre-eviction process.</div>
+        </div></div>
 
         <!-- 3. Showings Saturday -->
         <div class="inbox-row" data-priority="review" data-toast="Opening applicant review">
+          <button class="row-expand-btn" onclick="event.stopPropagation();toggleDetail(this)">&#9654;</button>
           <div class="priority-dot review"></div>
           <span class="row-agent-icon">&#x1F511;</span>
           <div class="row-content">
@@ -310,9 +339,18 @@
             <a class="btn btn-link" href="communication-center.html">View Conversation &rarr;</a>
           </div>
         </div>
+        <div class="row-detail"><div class="row-detail-inner">
+          <div class="detail-label">Summary</div>
+          <div class="detail-value">Unit #12 listed 18 days. 28 inquiries, 3 qualified leads scheduled for Saturday: 10 AM, 11:30 AM, 1 PM. Pre-screening complete for all three.</div>
+          <div class="detail-label">Flagged Applicant</div>
+          <div class="detail-value">Jennifer Blake — eviction filed Nov 2021 (4 years ago). Credit score 680, income 3.2x rent. Other two applicants are clean.</div>
+          <div class="detail-label">AI Recommendation</div>
+          <div class="detail-value">Proceed with showings. Decline Jennifer per screening rule (no evictions within 5 years). Two remaining candidates meet all criteria.</div>
+        </div></div>
 
         <!-- 4. Robert Garcia counter-offer -->
         <div class="inbox-row" data-priority="review" data-toast="Counter accepted">
+          <button class="row-expand-btn" onclick="event.stopPropagation();toggleDetail(this)">&#9654;</button>
           <div class="priority-dot review"></div>
           <span class="row-agent-icon">&#x1F4CB;</span>
           <div class="row-content">
@@ -329,9 +367,18 @@
             <a class="btn btn-link" href="communication-center.html">View Conversation &rarr;</a>
           </div>
         </div>
+        <div class="row-detail"><div class="row-detail-inner">
+          <div class="detail-label">Summary</div>
+          <div class="detail-value">Current rent $1,800. Agent proposed 2.5% ($1,845). Tenant countered at 1.5% ($1,827). Market average: $1,900.</div>
+          <div class="detail-label">Tenant Profile</div>
+          <div class="detail-value">Robert Garcia — 4-year tenant, occasionally late but good overall. Lease expires Mar 15. Turnover cost estimated at $3,200.</div>
+          <div class="detail-label">AI Recommendation</div>
+          <div class="detail-value">Accept counter at 1.5%. Retention value outweighs the $18/mo difference. Turnover risk is high given 21-day timeline.</div>
+        </div></div>
 
         <!-- 5. Mold reported -->
         <div class="inbox-row" data-priority="review" data-toast="Searching for contractors">
+          <button class="row-expand-btn" onclick="event.stopPropagation();toggleDetail(this)">&#9654;</button>
           <div class="priority-dot review"></div>
           <span class="row-agent-icon">&#x1F527;</span>
           <div class="row-content">
@@ -348,9 +395,18 @@
             <a class="btn btn-link" href="communication-center.html">View Conversation &rarr;</a>
           </div>
         </div>
+        <div class="row-detail"><div class="row-detail-inner">
+          <div class="detail-label">Summary</div>
+          <div class="detail-value">Tenant Patricia Moore reported black mold around bathroom vent. Agent flagged as outside automated scope — mold remediation requires licensed contractors per Florida statute 468.84.</div>
+          <div class="detail-label">Health & Safety</div>
+          <div class="detail-value">Mold near ventilation is a health concern. Tenant advised to keep area ventilated and avoid bleach-based cleaners.</div>
+          <div class="detail-label">AI Recommendation</div>
+          <div class="detail-value">Find licensed mold remediation contractor. Consider contacting property insurance first — mold remediation may be covered under the policy.</div>
+        </div></div>
 
         <!-- 6. Owner statements -->
         <div class="inbox-row" data-priority="fyi" data-toast="Marked as reviewed">
+          <button class="row-expand-btn" onclick="event.stopPropagation();toggleDetail(this)">&#9654;</button>
           <div class="priority-dot fyi"></div>
           <span class="row-agent-icon">&#x1F4CA;</span>
           <div class="row-content">
@@ -365,9 +421,16 @@
             <button class="btn btn-approve" onclick="dismissRow(this, 'Reviewed')">Reviewed &#10003;</button>
           </div>
         </div>
+        <div class="row-detail"><div class="row-detail-inner">
+          <div class="detail-label">Summary</div>
+          <div class="detail-value">Monthly statements for all 12 property owners generated and emailed. Total portfolio: $148,200 collected, $12,400 in expenses, $135,800 net.</div>
+          <div class="detail-label">Flagged Owners</div>
+          <div class="detail-value">David Chen (742 Evergreen) — high maintenance costs this month. Rachel Kim (890 Oak) — vacancy dragging returns.</div>
+        </div></div>
 
         <!-- 7. Angela Davis renewal -->
         <div class="inbox-row" data-priority="fyi" data-toast="Marked as reviewed">
+          <button class="row-expand-btn" onclick="event.stopPropagation();toggleDetail(this)">&#9654;</button>
           <div class="priority-dot fyi"></div>
           <span class="row-agent-icon">&#x1F4CB;</span>
           <div class="row-content">
@@ -382,6 +445,12 @@
             <button class="btn btn-approve" onclick="dismissRow(this, 'Reviewed')">Reviewed &#10003;</button>
           </div>
         </div>
+        <div class="row-detail"><div class="row-detail-inner">
+          <div class="detail-label">Summary</div>
+          <div class="detail-value">Angela Davis signed her lease renewal for Maple Gardens #18. 4% increase accepted — new rent $1,352/mo through Feb 2027. Added $624/yr to portfolio revenue.</div>
+          <div class="detail-label">Tenant Profile</div>
+          <div class="detail-value">3-year tenant, excellent payment history. Signed digitally within 48 hours of offer.</div>
+        </div></div>
 
       </div>
 
@@ -476,6 +545,21 @@ function updateCounter() {
   document.getElementById('countUrgent').textContent = counts.urgent;
   document.getElementById('countReview').textContent = counts.review;
   document.getElementById('countFyi').textContent = counts.fyi;
+}
+
+function toggleDetail(btn) {
+  var row = btn.closest('.inbox-row');
+  var detail = row.nextElementSibling;
+  if (detail && detail.classList.contains('row-detail')) {
+    var isOpen = detail.classList.contains('open');
+    // Close all other open details
+    document.querySelectorAll('.row-detail.open').forEach(function(d) { d.classList.remove('open'); });
+    document.querySelectorAll('.row-expand-btn.open').forEach(function(b) { b.classList.remove('open'); });
+    if (!isOpen) {
+      detail.classList.add('open');
+      btn.classList.add('open');
+    }
+  }
 }
 
 function dismissRow(btnEl, toastMsg) {
