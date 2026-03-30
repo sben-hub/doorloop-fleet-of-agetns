@@ -15,7 +15,7 @@
 
   .app { display: flex; height: calc(100vh - 40px); }
 
-  /* Sidebar — same as main prototype */
+  /* Sidebar */
   .sidebar { width: 56px; background: #1a2b4a; display: flex; flex-direction: column; align-items: center; padding: 12px 0; gap: 8px; flex-shrink: 0; }
   .sidebar .logo { width: 32px; height: 32px; background: #4C6FFF; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px; cursor: pointer; }
   .sidebar .nav-item { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #8896b3; cursor: pointer; transition: all 0.2s; position: relative; }
@@ -32,40 +32,81 @@
   .topbar-title { font-size: 16px; font-weight: 600; }
   .topbar-subtitle { font-size: 13px; color: #6b7a99; }
 
-  /* ===== SMART DAILY BRIEF STYLES ===== */
-
-  /* Scrollable content area */
+  /* ===== INBOX TRIAGE STYLES ===== */
   .content-scroll { flex: 1; overflow-y: auto; }
 
-  /* Section 1: Morning Brief */
-  .brief-section { padding: 28px 28px 0; }
-  .brief-header h2 { font-size: 22px; font-weight: 700; color: #1a2b4a; }
-  .brief-header p { font-size: 13px; color: #6b7a99; margin-top: 4px; }
-  .brief-cards { display: flex; flex-direction: column; gap: 14px; margin-top: 20px; }
+  /* KPI strip */
+  .kpi-strip { background: #f8f9fc; border-bottom: 1px solid #e8ecf1; padding: 8px 28px; display: flex; gap: 24px; align-items: center; }
+  .kpi-item { font-size: 12px; color: #6b7a99; }
+  .kpi-item strong { color: #1a2b4a; font-weight: 600; }
 
-  .brief-card { background: white; border-radius: 10px; padding: 18px 22px; border: 1px solid #e8ecf1; border-left: 4px solid #e8ecf1; transition: box-shadow 0.2s; }
-  .brief-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
-  .brief-card.urgent { border-left-color: #dc2626; }
-  .brief-card.warning { border-left-color: #eab308; }
-  .brief-card.info { border-left-color: #4C6FFF; }
+  /* Triage header */
+  .triage-header { padding: 28px 28px 0; }
+  .triage-greeting { font-size: 22px; font-weight: 700; color: #1a2b4a; }
+  .triage-counter-row { display: flex; align-items: center; gap: 16px; margin-top: 12px; }
+  .triage-counter { font-size: 36px; font-weight: 800; color: #1a2b4a; line-height: 1; transition: all 0.3s ease; }
+  .triage-counter.clear { color: #16a34a; font-size: 32px; }
+  .triage-counter-label { font-size: 15px; color: #6b7a99; }
+  .progress-bar-wrap { margin-top: 14px; height: 6px; background: #e8ecf1; border-radius: 3px; overflow: hidden; max-width: 400px; }
+  .progress-bar-fill { height: 100%; background: #16a34a; border-radius: 3px; transition: width 0.5s ease; }
 
-  .brief-card-meta { font-size: 12px; color: #6b7a99; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
-  .brief-card-meta .emoji { font-size: 14px; }
-  .brief-card-meta .time { margin-left: auto; font-size: 11px; color: #9aa5b8; }
-  .brief-card-title { font-size: 15px; font-weight: 600; color: #1a2b4a; margin-bottom: 6px; }
-  .brief-card-body { font-size: 13px; color: #4a5568; line-height: 1.55; margin-bottom: 14px; }
-  .brief-card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-  .brief-card-actions .btn { padding: 7px 16px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; border: none; transition: all 0.15s; }
-  .brief-card-actions .btn-primary { background: #4C6FFF; color: white; }
-  .brief-card-actions .btn-primary:hover { background: #3a5ae0; }
-  .brief-card-actions .btn-secondary { background: white; color: #1a2b4a; border: 1px solid #e8ecf1; }
-  .brief-card-actions .btn-secondary:hover { border-color: #4C6FFF; color: #4C6FFF; }
+  /* Filter pills */
+  .filter-pills { display: flex; gap: 6px; padding: 16px 28px 0; }
+  .filter-pill { padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid #e8ecf1; background: white; color: #6b7a99; transition: all 0.15s; user-select: none; }
+  .filter-pill:hover { border-color: #4C6FFF; color: #4C6FFF; }
+  .filter-pill.active { background: #4C6FFF; color: white; border-color: #4C6FFF; }
+
+  /* Inbox rows */
+  .inbox-list { padding: 12px 28px 0; }
+  .inbox-row { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: white; border-bottom: 1px solid #f0f2f6; transition: background 0.15s, opacity 0.4s ease, transform 0.4s ease, max-height 0.2s ease 0.4s, padding 0.2s ease 0.4s, margin 0.2s ease 0.4s, border 0.2s ease 0.4s; max-height: 80px; overflow: hidden; }
+  .inbox-row:first-child { border-radius: 10px 10px 0 0; }
+  .inbox-row:last-child { border-radius: 0 0 10px 10px; border-bottom: none; }
+  .inbox-row:only-child { border-radius: 10px; }
+  .inbox-row:hover { background: #f8f9fc; }
+  .inbox-row.dismissing { opacity: 0; transform: translateX(-60px); max-height: 0; padding-top: 0; padding-bottom: 0; margin: 0; border-bottom-width: 0; }
+
+  .priority-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .priority-dot.urgent { background: #dc2626; }
+  .priority-dot.review { background: #eab308; }
+  .priority-dot.fyi { background: #4C6FFF; }
+
+  .row-agent-icon { font-size: 16px; flex-shrink: 0; }
+  .row-content { flex: 1; min-width: 0; }
+  .row-title-line { display: flex; align-items: center; gap: 8px; }
+  .row-priority-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; }
+  .row-priority-label.urgent { background: #fef2f2; color: #dc2626; }
+  .row-priority-label.review { background: #fffbeb; color: #b45309; }
+  .row-priority-label.fyi { background: #eff6ff; color: #2563eb; }
+  .row-title { font-size: 14px; font-weight: 600; color: #1a2b4a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row-meta { font-size: 12px; color: #6b7a99; margin-top: 2px; }
+  .row-time { font-size: 11px; color: #9aa5b8; flex-shrink: 0; min-width: 70px; text-align: right; }
+  .row-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .row-actions .btn { padding: 6px 14px; border-radius: 7px; font-size: 11px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; white-space: nowrap; }
+  .row-actions .btn-primary { background: #4C6FFF; color: white; }
+  .row-actions .btn-primary:hover { background: #3a5ae0; }
+  .row-actions .btn-approve { background: #16a34a; color: white; }
+  .row-actions .btn-approve:hover { background: #15803d; }
+  .row-actions .btn-danger { background: #dc2626; color: white; }
+  .row-actions .btn-danger:hover { background: #b91c1c; }
+  .row-actions .btn-outline { background: white; color: #1a2b4a; border: 1px solid #e8ecf1; }
+  .row-actions .btn-outline:hover { border-color: #4C6FFF; color: #4C6FFF; }
+
+  /* Inbox zero celebration */
+  .inbox-zero { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 60px 28px; text-align: center; }
+  .inbox-zero.visible { display: flex; }
+  .inbox-zero-icon { width: 80px; height: 80px; background: #dcfce7; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; margin-bottom: 20px; animation: celebratePulse 2s ease-in-out infinite; }
+  .inbox-zero h2 { font-size: 28px; font-weight: 800; color: #16a34a; margin-bottom: 8px; }
+  .inbox-zero p { font-size: 14px; color: #6b7a99; max-width: 360px; line-height: 1.6; }
+  @keyframes celebratePulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.2); }
+    50% { transform: scale(1.05); box-shadow: 0 0 0 12px rgba(22, 163, 74, 0); }
+  }
 
   /* Auto-handled section */
-  .auto-handled { margin-top: 20px; padding-bottom: 4px; }
+  .auto-handled { padding: 16px 28px 28px; }
   .auto-handled-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #6b7a99; padding: 10px 0; user-select: none; transition: color 0.15s; }
   .auto-handled-toggle:hover { color: #4C6FFF; }
-  .auto-handled-toggle .arrow { font-size: 10px; transition: transform 0.2s; }
+  .auto-handled-toggle .arrow { font-size: 10px; transition: transform 0.2s; display: inline-block; }
   .auto-handled-toggle.open .arrow { transform: rotate(90deg); }
   .auto-handled-list { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
   .auto-handled-list.open { max-height: 600px; }
@@ -73,149 +114,10 @@
   .auto-handled-list ul li { font-size: 13px; color: #4a5568; padding: 5px 0; display: flex; align-items: flex-start; gap: 8px; line-height: 1.45; }
   .auto-handled-list ul li .check { color: #16a34a; font-weight: 700; flex-shrink: 0; }
 
-  /* Section 2: Agent Dashboard */
-  .agent-dashboard { padding: 24px 28px; }
-  .agent-dashboard-header { font-size: 16px; font-weight: 700; color: #1a2b4a; margin-bottom: 14px; }
-  .agent-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .agent-card { background: white; border-radius: 10px; padding: 16px 18px; border: 1px solid #e8ecf1; cursor: pointer; transition: all 0.2s; }
-  .agent-card:hover { border-color: #4C6FFF; box-shadow: 0 2px 12px rgba(76,111,255,0.1); }
-  .agent-card.selected { border-color: #4C6FFF; box-shadow: 0 0 0 2px rgba(76,111,255,0.2); }
-  .agent-card-top { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-  .agent-card-top .emoji { font-size: 18px; }
-  .agent-card-top .name { font-size: 13px; font-weight: 600; color: #1a2b4a; }
-  .agent-card-number { font-size: 26px; font-weight: 700; color: #1a2b4a; line-height: 1; }
-  .agent-card-number span { font-size: 12px; font-weight: 500; color: #6b7a99; margin-left: 4px; }
-  .agent-card-bar { height: 5px; border-radius: 3px; background: #e8ecf1; margin: 10px 0 8px; overflow: hidden; display: flex; }
-  .agent-card-bar .seg-green { background: #16a34a; }
-  .agent-card-bar .seg-blue { background: #4C6FFF; }
-  .agent-card-bar .seg-red { background: #dc2626; }
-  .agent-card-metric { font-size: 11px; color: #6b7a99; }
-
-  /* Section 3: All Activity */
-  .all-activity { padding: 0 28px 28px; }
-  .all-activity-header { display: flex; align-items: center; gap: 14px; margin-bottom: 0; padding: 12px 0; border-top: 1px solid #e8ecf1; }
-  .all-activity-title { font-size: 16px; font-weight: 700; color: #1a2b4a; }
-  .all-activity-toggle { margin-left: auto; font-size: 12px; color: #4C6FFF; cursor: pointer; font-weight: 600; user-select: none; }
-  .all-activity-toggle:hover { text-decoration: underline; }
-  .filter-pills { display: flex; gap: 6px; }
-  .filter-pill { padding: 5px 14px; border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; border: 1px solid #e8ecf1; background: white; color: #6b7a99; transition: all 0.15s; }
-  .filter-pill:hover { border-color: #4C6FFF; color: #4C6FFF; }
-  .filter-pill.active { background: #4C6FFF; color: white; border-color: #4C6FFF; }
-  .filter-pill .count { margin-left: 4px; }
-
-  .activity-list { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
-  .activity-list.open { max-height: 2000px; }
-  .activity-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f0f2f6; font-size: 13px; }
-  .activity-row:last-child { border-bottom: none; }
-  .activity-row .row-icon { font-size: 16px; flex-shrink: 0; width: 24px; text-align: center; }
-  .activity-row .row-title { flex: 1; color: #1a2b4a; font-weight: 500; }
-  .activity-row .row-prop { color: #6b7a99; font-size: 12px; min-width: 120px; }
-  .activity-row .row-time { color: #9aa5b8; font-size: 11px; min-width: 70px; text-align: right; }
-  .activity-row .row-badge { padding: 3px 10px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; }
-  .activity-row .badge-urgent { background: #fef2f2; color: #dc2626; }
-  .activity-row .badge-progress { background: #eff6ff; color: #2563eb; }
-  .activity-row .badge-resolved { background: #f0fdf4; color: #16a34a; }
-  .activity-row .row-action { padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; border: 1px solid #e8ecf1; background: white; color: #4C6FFF; transition: all 0.15s; }
-  .activity-row .row-action:hover { background: #4C6FFF; color: white; }
-
-  /* Toast notification */
+  /* Toast */
   .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(80px); background: #1a2b4a; color: white; padding: 12px 24px; border-radius: 10px; font-size: 13px; font-weight: 500; box-shadow: 0 8px 24px rgba(0,0,0,0.15); z-index: 100; transition: transform 0.3s ease, opacity 0.3s ease; opacity: 0; display: flex; align-items: center; gap: 8px; pointer-events: none; }
   .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
   .toast .toast-check { width: 20px; height: 20px; background: #16a34a; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; }
-
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
-
-  /* Escalation notification banner */
-  .escalation-banner {
-    background: linear-gradient(135deg, #1e1b4b, #312e81);
-    color: white;
-    padding: 12px 24px;
-    font-size: 14px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    border-radius: 10px;
-    margin-bottom: 0;
-    opacity: 0;
-    transform: translateY(-20px);
-    transition: all 0.4s ease;
-    pointer-events: none;
-    overflow: hidden;
-    max-height: 0;
-  }
-  .escalation-banner.visible {
-    opacity: 1;
-    transform: translateY(0);
-    max-height: 60px;
-    margin-bottom: 16px;
-    pointer-events: auto;
-  }
-  .escalation-banner.dismissing {
-    opacity: 0;
-    transform: translateY(-20px);
-    max-height: 0;
-    margin-bottom: 0;
-    padding-top: 0;
-    padding-bottom: 0;
-  }
-
-  /* New entry slide-in animation */
-  .feed-card.new-entry {
-    animation: slideInFromTop 0.6s ease forwards;
-  }
-  @keyframes slideInFromTop {
-    from { opacity: 0; transform: translateY(-30px); max-height: 0; padding-top: 0; padding-bottom: 0; margin-bottom: 0; }
-    to { opacity: 1; transform: translateY(0); max-height: 800px; padding-top: 20px; padding-bottom: 20px; margin-bottom: 0; }
-  }
-
-  /* Glowing border pulse */
-  .feed-card.new-glow {
-    animation: glowPulse 0.8s ease-in-out 3;
-  }
-  @keyframes glowPulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
-    50% { box-shadow: 0 0 16px 4px rgba(220, 38, 38, 0.35); }
-  }
-
-  /* NEW badge */
-  .new-badge {
-    display: inline-block;
-    background: linear-gradient(135deg, #f97316, #ef4444);
-    color: white;
-    font-size: 9px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 2px 6px;
-    border-radius: 4px;
-    margin-left: 8px;
-    animation: badgePulse 1s ease-in-out 3;
-  }
-  @keyframes badgePulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-  }
-
-  /* Agent question highlight box */
-  .agent-question-box {
-    background: #f0ecff;
-    border: 1px solid #c4b5fd;
-    border-radius: 8px;
-    padding: 14px 16px;
-    margin-bottom: 16px;
-    font-size: 13px;
-    color: #3b2e7e;
-    line-height: 1.65;
-  }
-  .agent-question-box .question-label {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #7c3aed;
-    margin-bottom: 6px;
-  }
 
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -253,261 +155,207 @@
     <!-- Top bar -->
     <div class="topbar">
       <span class="topbar-title">Command Center</span>
-      <span class="topbar-subtitle">Manage your agent team</span>
+      <span class="topbar-subtitle">Inbox Triage</span>
     </div>
 
     <!-- Scrollable content area -->
     <div class="content-scroll">
 
-      <!-- ===== SECTION 1: YOUR MORNING BRIEF ===== -->
-      <div class="brief-section">
-        <div class="brief-header">
-          <h2>Good morning, Sarah</h2>
-          <p>Your agents handled 23 tasks overnight. Here&rsquo;s what needs you:</p>
+      <!-- KPI Strip -->
+      <div class="kpi-strip">
+        <span class="kpi-item"><strong>102</strong> Units</span>
+        <span class="kpi-item"><strong>96.1%</strong> Occupancy</span>
+        <span class="kpi-item"><strong>$148,200</strong> Collected</span>
+        <span class="kpi-item"><strong>7</strong> Open WOs</span>
+      </div>
+
+      <!-- Triage Header -->
+      <div class="triage-header">
+        <div class="triage-greeting">Good morning, Sarah</div>
+        <div class="triage-counter-row">
+          <span class="triage-counter" id="triageCounter">7 items need you</span>
         </div>
-
-        <div class="brief-cards">
-          <!-- Card 1: Urgent maintenance -->
-          <div class="brief-card urgent" id="card1">
-            <div class="brief-card-meta">
-              <span class="emoji">&#x1F527;</span> Maintenance Agent &middot; <span class="time">38 min ago</span>
-            </div>
-            <div class="brief-card-title">Emergency: Water heater failure &mdash; 742 Evergreen 3A</div>
-            <div class="brief-card-body">Quote $2,800 exceeds $500 threshold. Owner approval needed.</div>
-            <div class="brief-card-actions">
-              <button class="btn btn-primary" onclick="showToast('Approved &amp; sent to owner')">Approve &amp; Send to Owner</button>
-              <button class="btn btn-secondary" onclick="showToast('Requesting another quote')">Get Another Quote</button>
-              <button class="btn btn-secondary" onclick="window.location.href='communication-center.html?conv=maria'">View Conversation</button>
-            </div>
-          </div>
-
-          <!-- Card 2: Rent collection -->
-          <div class="brief-card urgent" id="card2">
-            <div class="brief-card-meta">
-              <span class="emoji">&#x1F4B0;</span> Rent Collection &middot; <span class="time">1 hr ago</span>
-            </div>
-            <div class="brief-card-title">James Wilson &mdash; 3rd late payment, no response</div>
-            <div class="brief-card-body">$1,450 is 5 days past due. 2 reminder texts sent, no reply. 3rd time in 6 months.</div>
-            <div class="brief-card-actions">
-              <button class="btn btn-primary" onclick="showToast('Formal notice sent')">Send Formal Notice</button>
-              <button class="btn btn-secondary" onclick="showToast('Payment plan offered')">Offer Payment Plan</button>
-            </div>
-          </div>
-
-          <!-- Card 3: Leasing -->
-          <div class="brief-card warning" id="card3">
-            <div class="brief-card-meta">
-              <span class="emoji">&#x1F511;</span> Leasing &middot; <span class="time">2 hrs ago</span>
-            </div>
-            <div class="brief-card-title">3 showings Saturday &mdash; 890 Oak Ave #12. One applicant flagged.</div>
-            <div class="brief-card-body">28 inquiries, 3 qualified leads. Pre-screening complete. One has 2021 eviction.</div>
-            <div class="brief-card-actions">
-              <button class="btn btn-primary" onclick="showToast('Opening applicant review')">Review Applicants</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Auto-handled items -->
-        <div class="auto-handled">
-          <div class="auto-handled-toggle" id="autoToggle" onclick="toggleAutoHandled()">
-            <span class="arrow">&#9654;</span> &#10024; 20 other items handled automatically
-          </div>
-          <div class="auto-handled-list" id="autoList">
-            <ul>
-              <li><span class="check">&#10003;</span> Renewal offer sent to Angela Davis &mdash; 4% increase accepted (+$624/yr)</li>
-              <li><span class="check">&#10003;</span> Pest control completed at Maple Gardens &mdash; all 24 units, $960 auto-approved</li>
-              <li><span class="check">&#10003;</span> January statements sent to all 12 owners &mdash; $148,200 collected</li>
-              <li><span class="check">&#10003;</span> Vendor dispatched for garbage disposal &mdash; Sunset Villas #3, $185 auto-approved</li>
-              <li><span class="check">&#10003;</span> 97 of 102 rent payments collected via ACH</li>
-              <li><span class="check">&#10003;</span> 3 lease renewal follow-ups sent automatically</li>
-              <li><span class="check">&#10003;</span> Showing confirmations sent to 3 prospects for Saturday</li>
-              <li><span class="check">&#10003;</span> Noise complaint at Sunset Villas resolved &mdash; neighbor notified</li>
-              <li><span class="check">&#10003;</span> Fire extinguisher inspection scheduled &mdash; 3 buildings, April 5</li>
-              <li><span class="check">&#10003;</span> Late fee applied to 5 overdue accounts per lease terms</li>
-              <li><span class="check">&#10003;</span> Move-out inspection report generated &mdash; 200 Pine St #4A</li>
-              <li><span class="check">&#10003;</span> Insurance certificate renewed for Oak Avenue property</li>
-            </ul>
-          </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="progressBar" style="width: 0%"></div>
         </div>
       </div>
 
-      <!-- ===== SECTION 2: AGENT DASHBOARD ===== -->
-      <div class="agent-dashboard" style="background: #f5f7fb;">
-        <div class="agent-dashboard-header">Agent Dashboard</div>
-        <div class="agent-grid">
-          <!-- Maintenance -->
-          <div class="agent-card" data-agent="maintenance" onclick="selectAgent(this, 'maintenance')">
-            <div class="agent-card-top"><span class="emoji">&#x1F527;</span> <span class="name">Maintenance</span></div>
-            <div class="agent-card-number">12 <span>active</span></div>
-            <div class="agent-card-bar"><div class="seg-green" style="width:60%"></div><div class="seg-blue" style="width:30%"></div><div class="seg-red" style="width:10%"></div></div>
-            <div class="agent-card-metric">Avg fix: 2.1 days</div>
-          </div>
-          <!-- Renewal -->
-          <div class="agent-card" data-agent="renewal" onclick="selectAgent(this, 'renewal')">
-            <div class="agent-card-top"><span class="emoji">&#x1F4CB;</span> <span class="name">Renewal</span></div>
-            <div class="agent-card-number">8 <span>active</span></div>
-            <div class="agent-card-bar"><div class="seg-green" style="width:72%"></div><div class="seg-blue" style="width:20%"></div><div class="seg-red" style="width:8%"></div></div>
-            <div class="agent-card-metric">Renewal rate: 72%</div>
-          </div>
-          <!-- Collection -->
-          <div class="agent-card" data-agent="collection" onclick="selectAgent(this, 'collection')">
-            <div class="agent-card-top"><span class="emoji">&#x1F4B0;</span> <span class="name">Collection</span></div>
-            <div class="agent-card-number">3 <span>active</span></div>
-            <div class="agent-card-bar"><div class="seg-green" style="width:97%"></div><div class="seg-red" style="width:3%"></div></div>
-            <div class="agent-card-metric">97% collected</div>
-          </div>
-          <!-- Leasing -->
-          <div class="agent-card" data-agent="leasing" onclick="selectAgent(this, 'leasing')">
-            <div class="agent-card-top"><span class="emoji">&#x1F511;</span> <span class="name">Leasing</span></div>
-            <div class="agent-card-number">5 <span>active</span></div>
-            <div class="agent-card-bar"><div class="seg-green" style="width:40%"></div><div class="seg-blue" style="width:50%"></div><div class="seg-red" style="width:10%"></div></div>
-            <div class="agent-card-metric">3 showings Sat</div>
-          </div>
-          <!-- Reporting -->
-          <div class="agent-card" data-agent="reporting" onclick="selectAgent(this, 'reporting')">
-            <div class="agent-card-top"><span class="emoji">&#x1F4CA;</span> <span class="name">Reporting</span></div>
-            <div class="agent-card-number">0 <span>active</span></div>
-            <div class="agent-card-bar"><div class="seg-green" style="width:100%"></div></div>
-            <div class="agent-card-metric">All sent</div>
-          </div>
-          <!-- Vendor Mgmt -->
-          <div class="agent-card" data-agent="vendor" onclick="selectAgent(this, 'vendor')">
-            <div class="agent-card-top"><span class="emoji">&#x1F3D7;</span> <span class="name">Vendor Mgmt</span></div>
-            <div class="agent-card-number">2 <span>active</span></div>
-            <div class="agent-card-bar"><div class="seg-green" style="width:80%"></div><div class="seg-blue" style="width:20%"></div></div>
-            <div class="agent-card-metric">4.7 avg rating</div>
-          </div>
-        </div>
+      <!-- Filter pills -->
+      <div class="filter-pills">
+        <span class="filter-pill active" data-filter="all" onclick="setFilter(this,'all')">All (<span id="countAll">7</span>)</span>
+        <span class="filter-pill" data-filter="urgent" onclick="setFilter(this,'urgent')">Urgent (<span id="countUrgent">2</span>)</span>
+        <span class="filter-pill" data-filter="review" onclick="setFilter(this,'review')">Review (<span id="countReview">3</span>)</span>
+        <span class="filter-pill" data-filter="fyi" onclick="setFilter(this,'fyi')">FYI (<span id="countFyi">2</span>)</span>
       </div>
 
-      <!-- ===== SECTION 3: ALL ACTIVITY ===== -->
-      <div class="all-activity">
-        <div class="all-activity-header">
-          <span class="all-activity-title">All Activity</span>
-          <div class="filter-pills">
-            <span class="filter-pill active" data-filter="all" onclick="setFilter(this, 'all')">All</span>
-            <span class="filter-pill" data-filter="decision" onclick="setFilter(this, 'decision')">Needs Decision<span class="count">(3)</span></span>
-            <span class="filter-pill" data-filter="progress" onclick="setFilter(this, 'progress')">In Progress</span>
-            <span class="filter-pill" data-filter="resolved" onclick="setFilter(this, 'resolved')">Resolved</span>
+      <!-- Inbox rows -->
+      <div class="inbox-list" id="inboxList">
+
+        <!-- 1. Water heater -->
+        <div class="inbox-row" data-priority="urgent" data-toast="Approved — vendor notified">
+          <div class="priority-dot urgent"></div>
+          <span class="row-agent-icon">&#x1F527;</span>
+          <div class="row-content">
+            <div class="row-title-line">
+              <span class="row-priority-label urgent">Urgent</span>
+              <span class="row-title">Water heater replacement — $2,800 needs approval</span>
+            </div>
+            <div class="row-meta">Maintenance Agent &middot; 742 Evergreen 3A</div>
           </div>
-          <span class="all-activity-toggle" id="activityToggle" onclick="toggleActivity()">Show all</span>
+          <span class="row-time">38 min ago</span>
+          <div class="row-actions">
+            <button class="btn btn-approve" onclick="dismissRow(this, 'Approved — vendor notified')">Approve &#10003;</button>
+            <button class="btn btn-outline" onclick="dismissRow(this, 'Declined')">Decline &#10007;</button>
+            <button class="btn btn-outline" onclick="dismissRow(this, 'Viewing details')">View</button>
+          </div>
         </div>
-        <div class="activity-list" id="activityList">
-          <!-- Decision items -->
-          <div class="activity-row" data-type="decision" data-agent="maintenance">
-            <span class="row-icon">&#x1F527;</span>
-            <span class="row-title">Water heater failure &mdash; owner approval needed</span>
-            <span class="row-prop">742 Evergreen 3A</span>
-            <span class="row-time">38m ago</span>
-            <span class="row-badge badge-urgent">Urgent</span>
-            <button class="row-action" onclick="showToast('Approved')">Approve</button>
+
+        <!-- 2. James Wilson late payment -->
+        <div class="inbox-row" data-priority="urgent" data-toast="Notice sent">
+          <div class="priority-dot urgent"></div>
+          <span class="row-agent-icon">&#x1F4B0;</span>
+          <div class="row-content">
+            <div class="row-title-line">
+              <span class="row-priority-label urgent">Urgent</span>
+              <span class="row-title">James Wilson — 3rd late payment, no response</span>
+            </div>
+            <div class="row-meta">Rent Collection &middot; 155 Pine 7B</div>
           </div>
-          <div class="activity-row" data-type="decision" data-agent="collection">
-            <span class="row-icon">&#x1F4B0;</span>
-            <span class="row-title">James Wilson &mdash; 3rd late payment</span>
-            <span class="row-prop">155 Pine 7B</span>
-            <span class="row-time">1h ago</span>
-            <span class="row-badge badge-urgent">Urgent</span>
-            <button class="row-action" onclick="showToast('Notice sent')">Send Notice</button>
+          <span class="row-time">1 hr ago</span>
+          <div class="row-actions">
+            <button class="btn btn-primary" onclick="dismissRow(this, 'Formal notice sent')">Send Notice</button>
+            <button class="btn btn-outline" onclick="dismissRow(this, 'Payment plan offered')">Payment Plan</button>
+            <button class="btn btn-outline" onclick="dismissRow(this, 'Viewing details')">View</button>
           </div>
-          <div class="activity-row" data-type="decision" data-agent="leasing">
-            <span class="row-icon">&#x1F511;</span>
-            <span class="row-title">Applicant flagged &mdash; 2021 eviction</span>
-            <span class="row-prop">890 Oak Ave #12</span>
-            <span class="row-time">2h ago</span>
-            <span class="row-badge badge-urgent">Review</span>
-            <button class="row-action" onclick="showToast('Opening review')">Review</button>
+        </div>
+
+        <!-- 3. Showings Saturday -->
+        <div class="inbox-row" data-priority="review" data-toast="Opening applicant review">
+          <div class="priority-dot review"></div>
+          <span class="row-agent-icon">&#x1F511;</span>
+          <div class="row-content">
+            <div class="row-title-line">
+              <span class="row-priority-label review">Review</span>
+              <span class="row-title">3 showings Saturday — one applicant flagged (2021 eviction)</span>
+            </div>
+            <div class="row-meta">Leasing Agent &middot; 890 Oak #12</div>
           </div>
-          <!-- In Progress items -->
-          <div class="activity-row" data-type="progress" data-agent="maintenance">
-            <span class="row-icon">&#x1F527;</span>
-            <span class="row-title">HVAC filter replacement &mdash; scheduled Tues</span>
-            <span class="row-prop">Maple Gardens</span>
-            <span class="row-time">3h ago</span>
-            <span class="row-badge badge-progress">In Progress</span>
-            <button class="row-action" onclick="showToast('Viewing details')">View</button>
+          <span class="row-time">2 hrs ago</span>
+          <div class="row-actions">
+            <button class="btn btn-primary" onclick="dismissRow(this, 'Opening applicant review')">Review Applicants</button>
+            <button class="btn btn-outline" onclick="dismissRow(this, 'Viewing details')">View</button>
           </div>
-          <div class="activity-row" data-type="progress" data-agent="leasing">
-            <span class="row-icon">&#x1F511;</span>
-            <span class="row-title">Application processing &mdash; background check pending</span>
-            <span class="row-prop">890 Oak Ave #12</span>
-            <span class="row-time">4h ago</span>
-            <span class="row-badge badge-progress">In Progress</span>
-            <button class="row-action" onclick="showToast('Viewing details')">View</button>
+        </div>
+
+        <!-- 4. Robert Garcia counter-offer -->
+        <div class="inbox-row" data-priority="review" data-toast="Counter accepted">
+          <div class="priority-dot review"></div>
+          <span class="row-agent-icon">&#x1F4CB;</span>
+          <div class="row-content">
+            <div class="row-title-line">
+              <span class="row-priority-label review">Review</span>
+              <span class="row-title">Robert Garcia counter-offered 1.5% on renewal</span>
+            </div>
+            <div class="row-meta">Renewal Agent &middot; 742 Evergreen 1B</div>
           </div>
-          <div class="activity-row" data-type="progress" data-agent="renewal">
-            <span class="row-icon">&#x1F4CB;</span>
-            <span class="row-title">Renewal negotiation &mdash; counter-offer sent</span>
-            <span class="row-prop">200 Pine St #2B</span>
-            <span class="row-time">5h ago</span>
-            <span class="row-badge badge-progress">In Progress</span>
-            <button class="row-action" onclick="showToast('Viewing details')">View</button>
+          <span class="row-time">3 hrs ago</span>
+          <div class="row-actions">
+            <button class="btn btn-approve" onclick="dismissRow(this, 'Counter accepted at 1.5%')">Accept Counter</button>
+            <button class="btn btn-outline" onclick="dismissRow(this, 'Holding at 2.5%')">Hold at 2.5%</button>
+            <button class="btn btn-outline" onclick="dismissRow(this, 'Viewing details')">View</button>
           </div>
-          <div class="activity-row" data-type="progress" data-agent="vendor">
-            <span class="row-icon">&#x1F3D7;</span>
-            <span class="row-title">Landscaping bid review &mdash; 2 quotes received</span>
-            <span class="row-prop">Sunset Villas</span>
-            <span class="row-time">6h ago</span>
-            <span class="row-badge badge-progress">In Progress</span>
-            <button class="row-action" onclick="showToast('Viewing details')">View</button>
+        </div>
+
+        <!-- 5. Mold reported -->
+        <div class="inbox-row" data-priority="review" data-toast="Searching for contractors">
+          <div class="priority-dot review"></div>
+          <span class="row-agent-icon">&#x1F527;</span>
+          <div class="row-content">
+            <div class="row-title-line">
+              <span class="row-priority-label review">Review</span>
+              <span class="row-title">Mold reported in bathroom — requires licensed contractor</span>
+            </div>
+            <div class="row-meta">Maintenance Agent &middot; 456 Oak Ave 2C</div>
           </div>
-          <div class="activity-row" data-type="progress" data-agent="maintenance">
-            <span class="row-icon">&#x1F527;</span>
-            <span class="row-title">Plumbing repair &mdash; vendor en route</span>
-            <span class="row-prop">Sunset Villas #8</span>
-            <span class="row-time">6h ago</span>
-            <span class="row-badge badge-progress">In Progress</span>
-            <button class="row-action" onclick="showToast('Viewing details')">View</button>
+          <span class="row-time">4 hrs ago</span>
+          <div class="row-actions">
+            <button class="btn btn-primary" onclick="dismissRow(this, 'Searching for licensed contractors')">Find Contractors</button>
+            <button class="btn btn-outline" onclick="dismissRow(this, 'Contacting insurance')">Contact Insurance</button>
+            <button class="btn btn-outline" onclick="dismissRow(this, 'Viewing details')">View</button>
           </div>
-          <!-- Resolved items -->
-          <div class="activity-row" data-type="resolved" data-agent="renewal">
-            <span class="row-icon">&#x1F4CB;</span>
-            <span class="row-title">Angela Davis &mdash; renewal signed, 4% increase</span>
-            <span class="row-prop">Maple Gardens #18</span>
-            <span class="row-time">Yesterday</span>
-            <span class="row-badge badge-resolved">Resolved</span>
-            <button class="row-action" onclick="showToast('Viewing details')">View</button>
+        </div>
+
+        <!-- 6. Owner statements -->
+        <div class="inbox-row" data-priority="fyi" data-toast="Marked as reviewed">
+          <div class="priority-dot fyi"></div>
+          <span class="row-agent-icon">&#x1F4CA;</span>
+          <div class="row-content">
+            <div class="row-title-line">
+              <span class="row-priority-label fyi">FYI</span>
+              <span class="row-title">January owner statements sent to all 12 owners</span>
+            </div>
+            <div class="row-meta">Reporting Agent &middot; All properties</div>
           </div>
-          <div class="activity-row" data-type="resolved" data-agent="reporting">
-            <span class="row-icon">&#x1F4CA;</span>
-            <span class="row-title">January statements sent to all 12 owners</span>
-            <span class="row-prop">All properties</span>
-            <span class="row-time">Yesterday</span>
-            <span class="row-badge badge-resolved">Resolved</span>
-            <button class="row-action" onclick="showToast('Viewing details')">View</button>
+          <span class="row-time">Yesterday</span>
+          <div class="row-actions">
+            <button class="btn btn-approve" onclick="dismissRow(this, 'Reviewed')">Reviewed &#10003;</button>
           </div>
-          <div class="activity-row" data-type="resolved" data-agent="maintenance">
-            <span class="row-icon">&#x1F527;</span>
-            <span class="row-title">Garbage disposal replaced &mdash; $185 auto-approved</span>
-            <span class="row-prop">Sunset Villas #3</span>
-            <span class="row-time">Yesterday</span>
-            <span class="row-badge badge-resolved">Resolved</span>
-            <button class="row-action" onclick="showToast('Viewing details')">View</button>
+        </div>
+
+        <!-- 7. Angela Davis renewal -->
+        <div class="inbox-row" data-priority="fyi" data-toast="Marked as reviewed">
+          <div class="priority-dot fyi"></div>
+          <span class="row-agent-icon">&#x1F4CB;</span>
+          <div class="row-content">
+            <div class="row-title-line">
+              <span class="row-priority-label fyi">FYI</span>
+              <span class="row-title">Angela Davis signed renewal — +$624/yr</span>
+            </div>
+            <div class="row-meta">Renewal Agent &middot; Maple Gardens #18</div>
           </div>
-          <div class="activity-row" data-type="resolved" data-agent="collection">
-            <span class="row-icon">&#x1F4B0;</span>
-            <span class="row-title">97 of 102 rent payments collected via ACH</span>
-            <span class="row-prop">All properties</span>
-            <span class="row-time">Yesterday</span>
-            <span class="row-badge badge-resolved">Resolved</span>
-            <button class="row-action" onclick="showToast('Viewing details')">View</button>
+          <span class="row-time">Yesterday</span>
+          <div class="row-actions">
+            <button class="btn btn-approve" onclick="dismissRow(this, 'Reviewed')">Reviewed &#10003;</button>
           </div>
-          <div class="activity-row" data-type="resolved" data-agent="vendor">
-            <span class="row-icon">&#x1F3D7;</span>
-            <span class="row-title">Pest control completed &mdash; 24 units, $960</span>
-            <span class="row-prop">Maple Gardens</span>
-            <span class="row-time">Yesterday</span>
-            <span class="row-badge badge-resolved">Resolved</span>
-            <button class="row-action" onclick="showToast('Viewing details')">View</button>
-          </div>
-          <div class="activity-row" data-type="resolved" data-agent="maintenance">
-            <span class="row-icon">&#x1F527;</span>
-            <span class="row-title">Noise complaint resolved &mdash; neighbor notified</span>
-            <span class="row-prop">Sunset Villas #5</span>
-            <span class="row-time">2 days ago</span>
-            <span class="row-badge badge-resolved">Resolved</span>
-            <button class="row-action" onclick="showToast('Viewing details')">View</button>
-          </div>
+        </div>
+
+      </div>
+
+      <!-- Inbox zero celebration -->
+      <div class="inbox-zero" id="inboxZero">
+        <div class="inbox-zero-icon">&#10003;</div>
+        <h2>All clear! &#10024;</h2>
+        <p>Your agents are handling everything. We'll notify you if anything new comes up.</p>
+      </div>
+
+      <!-- Auto-handled section -->
+      <div class="auto-handled">
+        <div class="auto-handled-toggle" id="autoToggle" onclick="toggleAutoHandled()">
+          <span class="arrow">&#9654;</span> &#10024; 20 items handled automatically today
+        </div>
+        <div class="auto-handled-list" id="autoList">
+          <ul>
+            <li><span class="check">&#10003;</span> Pest control completed at Maple Gardens — all 24 units, $960 auto-approved</li>
+            <li><span class="check">&#10003;</span> Vendor dispatched for garbage disposal — Sunset Villas #3, $185 auto-approved</li>
+            <li><span class="check">&#10003;</span> 97 of 102 rent payments collected via ACH</li>
+            <li><span class="check">&#10003;</span> 3 lease renewal follow-ups sent automatically</li>
+            <li><span class="check">&#10003;</span> Showing confirmations sent to 3 prospects for Saturday</li>
+            <li><span class="check">&#10003;</span> Noise complaint at Sunset Villas resolved — neighbor notified</li>
+            <li><span class="check">&#10003;</span> Fire extinguisher inspection scheduled — 3 buildings, April 5</li>
+            <li><span class="check">&#10003;</span> Late fee applied to 5 overdue accounts per lease terms</li>
+            <li><span class="check">&#10003;</span> Move-out inspection report generated — 200 Pine St #4A</li>
+            <li><span class="check">&#10003;</span> Insurance certificate renewed for Oak Avenue property</li>
+            <li><span class="check">&#10003;</span> HVAC filter replacement scheduled — Maple Gardens, Tuesday</li>
+            <li><span class="check">&#10003;</span> Application processing — background check completed for 890 Oak Ave</li>
+            <li><span class="check">&#10003;</span> Landscaping bid reviewed — 2 quotes received for Sunset Villas</li>
+            <li><span class="check">&#10003;</span> Plumbing repair completed — Sunset Villas #8, $220</li>
+            <li><span class="check">&#10003;</span> Lease violation warning sent — parking policy, 200 Pine #3B</li>
+            <li><span class="check">&#10003;</span> Security deposit refund processed — $1,200, 155 Pine #2A</li>
+            <li><span class="check">&#10003;</span> Utility billing reconciliation completed — all properties</li>
+            <li><span class="check">&#10003;</span> Emergency contact list updated for 742 Evergreen</li>
+            <li><span class="check">&#10003;</span> Tenant satisfaction survey sent — Q1 batch, 102 units</li>
+            <li><span class="check">&#10003;</span> Rent increase notices queued for April renewals (8 units)</li>
+          </ul>
         </div>
       </div>
 
@@ -522,11 +370,105 @@
 </div>
 
 <script>
+var TOTAL_ITEMS = 7;
+var remaining = TOTAL_ITEMS;
+var currentFilter = 'all';
+
 function showToast(msg) {
   var toast = document.getElementById('toast');
   document.getElementById('toastMsg').textContent = msg || 'Action sent';
   toast.classList.add('show');
   setTimeout(function() { toast.classList.remove('show'); }, 2200);
+}
+
+function updateCounter() {
+  var counter = document.getElementById('triageCounter');
+  var bar = document.getElementById('progressBar');
+  var cleared = TOTAL_ITEMS - remaining;
+  var pct = (cleared / TOTAL_ITEMS) * 100;
+  bar.style.width = pct + '%';
+
+  if (remaining <= 0) {
+    counter.textContent = 'All clear! \u2728';
+    counter.classList.add('clear');
+    document.getElementById('inboxZero').classList.add('visible');
+  } else {
+    counter.textContent = remaining + ' item' + (remaining === 1 ? '' : 's') + ' need' + (remaining === 1 ? 's' : '') + ' you';
+    counter.classList.remove('clear');
+    document.getElementById('inboxZero').classList.remove('visible');
+  }
+
+  // Update filter counts
+  var rows = document.querySelectorAll('.inbox-row:not(.dismissing)');
+  var counts = { all: 0, urgent: 0, review: 0, fyi: 0 };
+  rows.forEach(function(r) {
+    if (!r.classList.contains('dismissed')) {
+      counts.all++;
+      var p = r.getAttribute('data-priority');
+      if (counts[p] !== undefined) counts[p]++;
+    }
+  });
+  document.getElementById('countAll').textContent = counts.all;
+  document.getElementById('countUrgent').textContent = counts.urgent;
+  document.getElementById('countReview').textContent = counts.review;
+  document.getElementById('countFyi').textContent = counts.fyi;
+}
+
+function dismissRow(btnEl, toastMsg) {
+  var row = btnEl.closest('.inbox-row');
+  if (row.classList.contains('dismissing') || row.classList.contains('dismissed')) return;
+
+  showToast(toastMsg);
+  row.classList.add('dismissing');
+  row.classList.add('dismissed');
+  remaining--;
+  updateCounter();
+
+  // Remove from DOM after animation
+  setTimeout(function() {
+    row.style.display = 'none';
+    // Fix border radius on remaining visible rows
+    fixRowBorders();
+  }, 600);
+}
+
+function fixRowBorders() {
+  var rows = document.querySelectorAll('.inbox-row:not(.dismissed)');
+  var visible = [];
+  rows.forEach(function(r) {
+    if (r.style.display !== 'none' && !r.classList.contains('filter-hidden')) {
+      visible.push(r);
+    }
+  });
+  // Reset all
+  rows.forEach(function(r) { r.style.borderRadius = '0'; });
+  if (visible.length === 0) return;
+  if (visible.length === 1) {
+    visible[0].style.borderRadius = '10px';
+  } else {
+    visible[0].style.borderRadius = '10px 10px 0 0';
+    visible[visible.length - 1].style.borderRadius = '0 0 10px 10px';
+  }
+}
+
+function setFilter(el, filter) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-pill').forEach(function(p) { p.classList.remove('active'); });
+  el.classList.add('active');
+
+  var rows = document.querySelectorAll('.inbox-row');
+  rows.forEach(function(r) {
+    if (r.classList.contains('dismissed')) return;
+    var priority = r.getAttribute('data-priority');
+    if (filter === 'all' || priority === filter) {
+      r.style.display = 'flex';
+      r.classList.remove('filter-hidden');
+    } else {
+      r.style.display = 'none';
+      r.classList.add('filter-hidden');
+    }
+  });
+  fixRowBorders();
 }
 
 /* Toggle auto-handled list */
@@ -537,151 +479,8 @@ function toggleAutoHandled() {
   list.classList.toggle('open');
 }
 
-/* Agent card selection — expand and filter Section 3 */
-var currentAgent = null;
-function selectAgent(el, agent) {
-  // Toggle selection
-  var cards = document.querySelectorAll('.agent-card');
-  if (currentAgent === agent) {
-    // Deselect
-    cards.forEach(function(c) { c.classList.remove('selected'); });
-    currentAgent = null;
-    filterActivityRows('all');
-    // Reset filter pills
-    document.querySelectorAll('.filter-pill').forEach(function(p) { p.classList.remove('active'); });
-    document.querySelector('.filter-pill[data-filter="all"]').classList.add('active');
-    // Collapse if it was auto-opened
-    return;
-  }
-  cards.forEach(function(c) { c.classList.remove('selected'); });
-  el.classList.add('selected');
-  currentAgent = agent;
-  // Expand activity list
-  var list = document.getElementById('activityList');
-  list.classList.add('open');
-  document.getElementById('activityToggle').textContent = 'Collapse';
-  // Reset filter pills to "All"
-  document.querySelectorAll('.filter-pill').forEach(function(p) { p.classList.remove('active'); });
-  document.querySelector('.filter-pill[data-filter="all"]').classList.add('active');
-  // Filter rows to selected agent
-  filterActivityRows('all', agent);
-  // Scroll to activity section
-  document.querySelector('.all-activity').scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-/* Filter pills */
-function setFilter(el, filter) {
-  document.querySelectorAll('.filter-pill').forEach(function(p) { p.classList.remove('active'); });
-  el.classList.add('active');
-  // Ensure list is open
-  var list = document.getElementById('activityList');
-  list.classList.add('open');
-  document.getElementById('activityToggle').textContent = 'Collapse';
-  filterActivityRows(filter, currentAgent);
-}
-
-function filterActivityRows(filter, agent) {
-  var rows = document.querySelectorAll('.activity-row');
-  rows.forEach(function(row) {
-    var typeMatch = (filter === 'all') || (row.getAttribute('data-type') === filter);
-    var agentMatch = !agent || (row.getAttribute('data-agent') === agent);
-    row.style.display = (typeMatch && agentMatch) ? 'flex' : 'none';
-  });
-}
-
-/* Toggle all activity section */
-function toggleActivity() {
-  var list = document.getElementById('activityList');
-  var toggle = document.getElementById('activityToggle');
-  if (list.classList.contains('open')) {
-    list.classList.remove('open');
-    toggle.textContent = 'Show all';
-    // Deselect agent
-    currentAgent = null;
-    document.querySelectorAll('.agent-card').forEach(function(c) { c.classList.remove('selected'); });
-    // Reset filter
-    document.querySelectorAll('.filter-pill').forEach(function(p) { p.classList.remove('active'); });
-    document.querySelector('.filter-pill[data-filter="all"]').classList.add('active');
-    filterActivityRows('all');
-  } else {
-    list.classList.add('open');
-    toggle.textContent = 'Collapse';
-    filterActivityRows('all', currentAgent);
-  }
-}
-
-/* --- Live escalation after 8 seconds --- */
-function playChime() {
-  try {
-    var ctx = new (window.AudioContext || window.webkitAudioContext)();
-    var o1 = ctx.createOscillator(); var g1 = ctx.createGain();
-    o1.type = 'sine'; o1.frequency.value = 880;
-    g1.gain.setValueAtTime(0.15, ctx.currentTime);
-    g1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
-    o1.connect(g1); g1.connect(ctx.destination);
-    o1.start(ctx.currentTime); o1.stop(ctx.currentTime + 0.2);
-    var o2 = ctx.createOscillator(); var g2 = ctx.createGain();
-    o2.type = 'sine'; o2.frequency.value = 1174.66;
-    g2.gain.setValueAtTime(0.15, ctx.currentTime + 0.15);
-    g2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
-    o2.connect(g2); g2.connect(ctx.destination);
-    o2.start(ctx.currentTime + 0.15); o2.stop(ctx.currentTime + 0.4);
-  } catch (e) {}
-}
-
-function triggerEscalation() {
-  playChime();
-  var briefCards = document.querySelector('.brief-cards');
-  if (!briefCards) return;
-
-  // Create new urgent brief card at top
-  var card = document.createElement('div');
-  card.className = 'brief-card urgent';
-  card.style.opacity = '0'; card.style.transform = 'translateY(-20px)';
-  card.style.transition = 'all 0.5s ease';
-  card.innerHTML = ''
-    + '<div class="brief-card-meta"><span class="emoji">\uD83D\uDD27</span> Maintenance Agent &middot; <span class="time">Just now <span style="background:linear-gradient(135deg,#f97316,#ef4444);color:white;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;margin-left:6px;">NEW</span></span></div>'
-    + '<div class="brief-card-title">Mold reported in bathroom &mdash; 456 Oak Ave, Unit 2C</div>'
-    + '<div class="brief-card-body">Agent flagged: mold remediation requires licensed contractors per Florida statute. Asking for guidance.</div>'
-    + '<div class="brief-card-actions">'
-    + '  <button class="btn btn-primary" onclick="showToast(\'Searching for licensed contractors\')">Find Licensed Contractors</button>'
-    + '  <button class="btn btn-secondary" onclick="showToast(\'Contacting insurance\')">Contact Insurance First</button>'
-    + '  <button class="btn btn-secondary" onclick="showToast(\'Manual handling\')">Handle Manually</button>'
-    + '</div>';
-  briefCards.insertBefore(card, briefCards.firstChild);
-  // Trigger animation
-  requestAnimationFrame(function() {
-    requestAnimationFrame(function() {
-      card.style.opacity = '1'; card.style.transform = 'translateY(0)';
-    });
-  });
-  // Scroll to top
-  document.querySelector('.content-scroll').scrollTop = 0;
-
-  // Update maintenance agent card count
-  var maintCard = document.querySelector('.agent-card[data-agent="maintenance"] .agent-card-number');
-  if (maintCard) maintCard.innerHTML = '13 <span>active</span>';
-}
-
-var pageParams = new URLSearchParams(window.location.search);
-if (!pageParams.get('focus')) {
-  setTimeout(triggerEscalation, 8000);
-}
-
-window.addEventListener('load', function() {
-  var focus = pageParams.get('focus');
-  if (focus) {
-    var card = document.getElementById(focus);
-    if (card) {
-      setTimeout(function() {
-        card.scrollIntoView({ block: 'center', behavior: 'smooth' });
-        card.style.boxShadow = '0 0 0 3px #4C6FFF, 0 4px 16px rgba(76,111,255,0.2)';
-        card.style.transition = 'box-shadow 0.3s ease';
-        setTimeout(function() { card.style.boxShadow = ''; }, 3000);
-      }, 300);
-    }
-  }
-});
+// Initialize
+updateCounter();
 </script>
 <script src="cori.js"></script>
 </body>
