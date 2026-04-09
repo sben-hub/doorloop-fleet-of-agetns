@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DoorLoop — V6: Phase 0 — Concierge Agent</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f5f7fb;
+  color: #1a2b4a;
+  padding-top: 40px;
+  min-height: 100vh;
+}
+
+/* ── Variation Bar ── */
+#unified-var-bar {
+  position: fixed; top: 0; left: 0; right: 0; height: 40px;
+  background: #0f1729; display: flex; align-items: center;
+  justify-content: center; gap: 6px; z-index: 99999;
+  font-family: Inter, -apple-system, sans-serif;
+}
+#unified-var-bar a {
+  font-size: 12px; font-weight: 500; padding: 5px 16px;
+  border-radius: 6px; text-decoration: none; color: #8896b3;
+}
+#unified-var-bar a.active {
+  font-weight: 600; color: white; background: #4C6FFF;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  position: fixed; top: 40px; left: 0; bottom: 0; width: 56px;
+  background: #1a2b4a; display: flex; flex-direction: column;
+  align-items: center; padding: 12px 0; z-index: 9999;
+}
+.sidebar .logo {
+  width: 36px; height: 36px; background: #4C6FFF; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 700; font-size: 18px; margin-bottom: 20px;
+  cursor: default;
+}
+.sidebar .nav-icon {
+  width: 40px; height: 40px; display: flex; align-items: center;
+  justify-content: center; border-radius: 10px; cursor: pointer;
+  margin-bottom: 4px; position: relative; color: #7b8fba;
+  transition: all .15s;
+}
+.sidebar .nav-icon:hover { background: rgba(255,255,255,.08); color: #c5d0e6; }
+.sidebar .nav-icon.active { background: rgba(76,111,255,.25); color: #4C6FFF; }
+.sidebar .nav-icon svg { width: 20px; height: 20px; }
+.sidebar .badge {
+  position: absolute; top: 4px; right: 4px; width: 16px; height: 16px;
+  background: #ff4998; color: white; font-size: 9px; font-weight: 700;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+}
+.sidebar .spacer { flex: 1; }
+
+/* ── Main ── */
+.main { margin-left: 56px; padding: 32px; min-height: calc(100vh - 40px); }
+.screen { display: none; }
+.screen.visible { display: block; }
+
+/* ── Headers ── */
+.page-title { font-size: 24px; font-weight: 700; }
+.page-sub { font-size: 14px; color: #6b7a99; margin-top: 4px; }
+
+/* ── Agent Cards ── */
+.agent-card {
+  background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+  padding: 20px; display: flex; align-items: flex-start; gap: 16px;
+  margin-bottom: 12px; transition: box-shadow .15s;
+}
+.agent-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+.agent-card.featured {
+  border-left: 4px solid transparent;
+  border-image: linear-gradient(180deg, #4C6FFF, #a855f7) 1;
+  padding: 28px 24px;
+}
+.agent-icon {
+  width: 48px; height: 48px; border-radius: 12px; display: flex;
+  align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;
+}
+.agent-icon.purple { background: #ede9fe; }
+.agent-icon.blue { background: #e0e7ff; }
+.agent-icon.green { background: #d1fae5; }
+.agent-icon.amber { background: #fef3c7; }
+.agent-icon.gray { background: #f1f5f9; }
+.agent-card-sm .agent-icon { width: 40px; height: 40px; font-size: 18px; }
+.agent-card-sm { padding: 14px 20px; align-items: center; }
+.agent-info { flex: 1; min-width: 0; }
+.agent-name { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.agent-card.featured .agent-name { font-size: 18px; }
+.agent-desc { font-size: 13px; color: #6b7a99; margin-top: 6px; line-height: 1.5; }
+.badge-active { font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: 20px; background: #d1fae5; color: #059669; }
+.badge-featured { font-size: 10px; font-weight: 700; padding: 2px 10px; border-radius: 20px; background: linear-gradient(135deg,#4C6FFF,#a855f7); color: white; text-transform: uppercase; letter-spacing: .5px; }
+.badge-soon { font-size: 11px; font-weight: 500; padding: 2px 10px; border-radius: 20px; background: #f1f5f9; color: #94a3b8; }
+.btn-blue { background: #4C6FFF; color: white; border: none; padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background .15s; }
+.btn-blue:hover { background: #3b5bdb; }
+.btn-outline { background: transparent; color: #6b7a99; border: 1px solid #e2e8f0; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 500; cursor: pointer; }
+.btn-outline:hover { border-color: #4C6FFF; color: #4C6FFF; }
+.btn-pink { background: #ff4998; color: white; border: none; padding: 9px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.btn-pink:hover { background: #e6357f; }
+
+/* ── Knowledge Base ── */
+.kb-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; }
+.stats-bar { font-size: 13px; color: #6b7a99; margin: 12px 0 20px; display: flex; gap: 8px; align-items: center; }
+.stats-bar span { background: #eef2ff; padding: 3px 10px; border-radius: 6px; font-weight: 500; color: #4C6FFF; font-size: 12px; }
+.scope-tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+.scope-tab {
+  padding: 7px 18px; border-radius: 20px; border: 1px solid #e2e8f0;
+  font-size: 13px; font-weight: 500; cursor: pointer; background: white;
+  color: #6b7a99; transition: all .15s;
+}
+.scope-tab.active { background: #4C6FFF; color: white; border-color: #4C6FFF; }
+.scope-select { margin-bottom: 16px; display: none; }
+.scope-select select {
+  padding: 8px 14px; border-radius: 8px; border: 1px solid #e2e8f0;
+  font-size: 13px; font-family: inherit; color: #1a2b4a; min-width: 240px;
+  background: white;
+}
+.doc-row {
+  background: white; border: 1px solid #e8ecf1; border-radius: 10px;
+  padding: 14px 20px; display: flex; align-items: center; gap: 14px;
+  margin-bottom: 8px; transition: box-shadow .15s;
+}
+.doc-row:hover { box-shadow: 0 1px 8px rgba(0,0,0,.05); }
+.doc-icon { font-size: 20px; flex-shrink: 0; }
+.doc-name { font-weight: 600; font-size: 14px; flex: 1; min-width: 0; }
+.doc-meta { font-size: 12px; color: #94a3b8; white-space: nowrap; }
+.doc-pill { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: #f1f5f9; color: #64748b; text-transform: uppercase; }
+.doc-scope { font-size: 12px; color: #6b7a99; background: #eef2ff; padding: 2px 10px; border-radius: 4px; white-space: nowrap; }
+.toggle-switch {
+  width: 36px; height: 20px; border-radius: 10px; position: relative;
+  cursor: pointer; transition: background .2s; flex-shrink: 0;
+}
+.toggle-switch.on { background: #4C6FFF; }
+.toggle-switch.off { background: #cbd5e1; }
+.toggle-switch::after {
+  content: ''; position: absolute; top: 2px; width: 16px; height: 16px;
+  border-radius: 50%; background: white; transition: left .2s;
+}
+.toggle-switch.on::after { left: 18px; }
+.toggle-switch.off::after { left: 2px; }
+.doc-actions { display: flex; gap: 4px; }
+.doc-actions button {
+  background: none; border: none; color: #94a3b8; cursor: pointer;
+  font-size: 12px; padding: 4px 8px; border-radius: 4px;
+}
+.doc-actions button:hover { background: #f1f5f9; color: #4C6FFF; }
+
+/* ── Upload Modal ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(15,23,41,.5);
+  display: none; align-items: center; justify-content: center; z-index: 100000;
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  background: white; border-radius: 12px; width: 100%; max-width: 560px;
+  max-height: 90vh; overflow-y: auto; position: relative;
+}
+.modal-title-bar {
+  display: flex; align-items: center; padding: 20px 24px 16px;
+  border-bottom: 1px solid #e8ecf1; position: relative;
+}
+.modal-title-bar::before {
+  content: ''; position: absolute; left: 0; top: 12px; bottom: 12px;
+  width: 4px; background: #ff4998; border-radius: 0 4px 4px 0;
+}
+.modal-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+.modal-close {
+  position: absolute; right: 20px; top: 18px; background: none;
+  border: none; font-size: 20px; cursor: pointer; color: #94a3b8;
+  width: 32px; height: 32px; display: flex; align-items: center;
+  justify-content: center; border-radius: 6px;
+}
+.modal-close:hover { background: #f1f5f9; color: #1a2b4a; }
+.modal-body { padding: 20px 24px; }
+.modal-body .section-label {
+  font-size: 13px; font-weight: 600; margin-bottom: 6px; margin-top: 20px;
+}
+.modal-body .section-label:first-child { margin-top: 0; }
+.modal-body .section-hint { font-size: 12px; color: #6b7a99; margin-bottom: 12px; line-height: 1.5; }
+.modal-body .subtitle { font-size: 13px; color: #6b7a99; margin-bottom: 20px; line-height: 1.5; }
+.radio-group { display: flex; gap: 16px; margin-bottom: 12px; }
+.radio-group label {
+  font-size: 13px; display: flex; align-items: center; gap: 6px; cursor: pointer;
+}
+.radio-group input[type="radio"] { accent-color: #4C6FFF; }
+.drop-zone {
+  border: 2px dashed #e8ecf1; border-radius: 8px; padding: 32px;
+  text-align: center; cursor: pointer; transition: border-color .15s;
+}
+.drop-zone:hover { border-color: #4C6FFF; }
+.drop-zone .sparkle { font-size: 28px; margin-bottom: 8px; }
+.drop-zone p { font-size: 13px; color: #6b7a99; }
+.drop-zone .link { color: #4C6FFF; cursor: pointer; }
+.drop-zone .hint { font-size: 11px; color: #94a3b8; margin-top: 8px; }
+.modal-body input[type="text"] {
+  width: 100%; padding: 10px 14px; border: 1px solid #e2e8f0;
+  border-radius: 8px; font-size: 13px; font-family: inherit;
+}
+.modal-body input[type="text"]:focus { outline: none; border-color: #4C6FFF; }
+.modal-body .required { color: #ff4998; }
+.toggle-row {
+  display: flex; align-items: center; gap: 10px; margin-top: 16px;
+  font-size: 13px; color: #6b7a99;
+}
+.modal-footer {
+  display: flex; justify-content: flex-end; gap: 10px;
+  padding: 16px 24px; border-top: 1px solid #e8ecf1;
+}
+.btn-cancel {
+  padding: 9px 20px; border-radius: 8px; border: 1px solid #e2e8f0;
+  background: white; font-size: 13px; font-weight: 500; cursor: pointer;
+  color: #6b7a99;
+}
+.btn-cancel:hover { border-color: #4C6FFF; color: #4C6FFF; }
+
+/* ── Communication Center ── */
+.comm-layout { display: flex; gap: 0; height: calc(100vh - 40px - 64px); }
+.conv-list {
+  width: 340px; flex-shrink: 0; background: white; border-radius: 12px 0 0 12px;
+  border: 1px solid #e2e8f0; overflow-y: auto;
+}
+.conv-list-header {
+  padding: 16px 20px; font-size: 15px; font-weight: 700;
+  border-bottom: 1px solid #e8ecf1;
+}
+.conv-item {
+  padding: 14px 20px; border-bottom: 1px solid #f1f5f9; cursor: pointer;
+  transition: background .1s;
+}
+.conv-item:hover { background: #f8fafc; }
+.conv-item.active { background: #eef2ff; border-left: 3px solid #4C6FFF; }
+.conv-item .conv-name { font-size: 14px; font-weight: 600; }
+.conv-item .conv-preview { font-size: 12px; color: #6b7a99; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.conv-item .conv-time { font-size: 11px; color: #94a3b8; float: right; }
+.chat-area {
+  flex: 1; background: white; border-radius: 0 12px 12px 0;
+  border: 1px solid #e2e8f0; border-left: none;
+  display: flex; flex-direction: column;
+}
+.chat-header {
+  padding: 16px 24px; border-bottom: 1px solid #e8ecf1;
+  display: flex; align-items: center; gap: 12px;
+}
+.chat-header .name { font-size: 15px; font-weight: 600; }
+.chat-header .property { font-size: 12px; color: #6b7a99; }
+.chat-messages { flex: 1; padding: 24px; overflow-y: auto; }
+.msg { margin-bottom: 20px; max-width: 75%; }
+.msg.tenant { margin-right: auto; }
+.msg.agent { margin-left: auto; }
+.msg-bubble {
+  padding: 12px 16px; border-radius: 12px; font-size: 13px; line-height: 1.6;
+}
+.msg.tenant .msg-bubble { background: #f1f5f9; border-bottom-left-radius: 4px; }
+.msg.agent .msg-bubble { background: #ede9fe; border-bottom-right-radius: 4px; }
+.msg-label { font-size: 11px; color: #94a3b8; margin-top: 6px; }
+.msg-source {
+  font-size: 11px; color: #7c3aed; margin-top: 6px; display: flex;
+  align-items: center; gap: 4px;
+}
+.chat-input-bar {
+  padding: 16px 24px; border-top: 1px solid #e8ecf1;
+  display: flex; gap: 10px;
+}
+.chat-input-bar input {
+  flex: 1; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 8px;
+  font-size: 13px; font-family: inherit;
+}
+.chat-input-bar input:focus { outline: none; border-color: #4C6FFF; }
+
+/* ── Audit Log ── */
+.filter-tabs { display: flex; gap: 4px; margin-bottom: 20px; }
+.filter-tab {
+  padding: 6px 16px; border-radius: 20px; border: 1px solid #e2e8f0;
+  font-size: 13px; font-weight: 500; cursor: pointer; background: white;
+  color: #6b7a99;
+}
+.filter-tab.active { background: #4C6FFF; color: white; border-color: #4C6FFF; }
+.audit-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; }
+.audit-table th {
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .5px; color: #94a3b8; text-align: left; padding: 8px 16px;
+}
+.audit-table td {
+  background: white; padding: 14px 16px; font-size: 13px;
+}
+.audit-table tr td:first-child { border-radius: 8px 0 0 8px; }
+.audit-table tr td:last-child { border-radius: 0 8px 8px 0; }
+.audit-table tr { cursor: pointer; }
+.audit-table tr:hover td { background: #f8fafc; }
+.badge-auto { font-size: 11px; padding: 2px 10px; border-radius: 12px; background: #d1fae5; color: #059669; font-weight: 500; }
+.badge-escalated { font-size: 11px; padding: 2px 10px; border-radius: 12px; background: #fee2e2; color: #dc2626; font-weight: 500; }
+.audit-detail {
+  display: none; padding: 12px 16px; background: #f8fafc;
+  border-radius: 8px; margin-top: -2px; margin-bottom: 6px;
+  font-size: 13px; color: #6b7a99; line-height: 1.6;
+}
+.audit-detail.show { display: block; }
+
+/* ── Performance ── */
+.kpi-strip { display: flex; gap: 16px; margin-bottom: 28px; flex-wrap: wrap; }
+.kpi-card {
+  flex: 1; min-width: 160px; background: white; border: 1px solid #e2e8f0;
+  border-radius: 12px; padding: 20px; text-align: center;
+}
+.kpi-value { font-size: 28px; font-weight: 700; color: #4C6FFF; }
+.kpi-label { font-size: 12px; color: #6b7a99; margin-top: 4px; }
+.perf-cols { display: flex; gap: 20px; flex-wrap: wrap; }
+.perf-col {
+  flex: 1; min-width: 300px; background: white; border: 1px solid #e2e8f0;
+  border-radius: 12px; padding: 24px;
+}
+.perf-col h3 { font-size: 15px; font-weight: 600; margin-bottom: 16px; }
+.topic-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.topic-row .label { font-size: 13px; width: 140px; }
+.topic-bar-bg { flex: 1; height: 8px; background: #f1f5f9; border-radius: 4px; overflow: hidden; }
+.topic-bar { height: 100%; background: #4C6FFF; border-radius: 4px; }
+.topic-pct { font-size: 12px; font-weight: 600; color: #4C6FFF; width: 36px; text-align: right; }
+.ref-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
+.ref-rank { font-weight: 700; color: #4C6FFF; width: 24px; }
+
+/* ── Toast ── */
+.toast {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+  background: #1a2b4a; color: white; padding: 12px 28px; border-radius: 10px;
+  font-size: 13px; font-weight: 500; z-index: 200000;
+  opacity: 0; transition: opacity .3s; pointer-events: none;
+}
+.toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- ── Variation Bar ── -->
+<div id="unified-var-bar">
+  <a href="maintenance-agent-prototype.html">V1: Standard</a>
+  <a href="variation-enterprise.html">V2: Enterprise</a>
+  <a href="variation-simple.html">V3: Simple</a>
+  <a href="variation-full.html">V4: Full Vision</a>
+  <a href="variation-mvp.html">V5: MVP</a>
+  <a href="variation-phase0.html" class="active">V6: Phase 0</a>
+</div>
+
+<!-- ── Sidebar ── -->
+<div class="sidebar">
+  <div class="logo">D</div>
+
+  <!-- Layers / AI Agents -->
+  <div class="nav-icon active" id="nav-agents" onclick="switchScreen('agents')" title="AI Agents">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+  </div>
+
+  <!-- Chat / Communication -->
+  <div class="nav-icon" id="nav-comm" onclick="switchScreen('comm')" title="Communication Center">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    <span class="badge">3</span>
+  </div>
+
+  <!-- Document / Audit -->
+  <div class="nav-icon" id="nav-audit" onclick="switchScreen('audit')" title="Audit Log">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+  </div>
+
+  <!-- Grid / Performance -->
+  <div class="nav-icon" id="nav-perf" onclick="switchScreen('perf')" title="Performance">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+  </div>
+
+  <div class="spacer"></div>
+
+  <!-- Settings -->
+  <div class="nav-icon" title="Settings">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+  </div>
+</div>
+
+<!-- ── Main Content ── -->
+<div class="main">
+
+  <!-- ════════════ SCREEN: AI AGENTS ════════════ -->
+  <div class="screen visible" id="screen-agents">
+    <div class="page-title">AI Agents</div>
+    <div class="page-sub">9 agents &middot; 1 active</div>
+
+    <div style="margin-top:24px;">
+      <!-- Featured: Concierge Agent -->
+      <div class="agent-card featured">
+        <div class="agent-icon purple" style="width:52px;height:52px;font-size:24px;">&#129309;</div>
+        <div class="agent-info">
+          <div class="agent-name">
+            Concierge Agent
+            <span class="badge-active">Active</span>
+            <span class="badge-featured">Featured</span>
+          </div>
+          <div class="agent-desc">Answers tenant questions 24/7 using your uploaded documents &mdash; policies, lease terms, property rules, and more.</div>
+          <button class="btn-blue" style="margin-top:12px;" onclick="switchScreen('knowledge')">Manage Knowledge Base &rarr;</button>
+        </div>
+      </div>
+
+      <!-- Standard agents -->
+      <div class="agent-card agent-card-sm">
+        <div class="agent-icon blue">&#128295;</div>
+        <div class="agent-info"><div class="agent-name">Maintenance Agent <span class="badge-active">Active</span></div></div>
+        <button class="btn-outline">Settings</button>
+      </div>
+      <div class="agent-card agent-card-sm">
+        <div class="agent-icon green">&#128176;</div>
+        <div class="agent-info"><div class="agent-name">Rent Collection Agent <span class="badge-active">Active</span></div></div>
+        <button class="btn-outline">Settings</button>
+      </div>
+      <div class="agent-card agent-card-sm">
+        <div class="agent-icon amber">&#128203;</div>
+        <div class="agent-info"><div class="agent-name">Lease Renewal Agent <span class="badge-active">Active</span></div></div>
+        <button class="btn-outline">Settings</button>
+      </div>
+      <div class="agent-card agent-card-sm">
+        <div class="agent-icon gray">&#128273;</div>
+        <div class="agent-info"><div class="agent-name">Leasing Agent <span class="badge-soon">Coming soon</span></div></div>
+      </div>
+      <div class="agent-card agent-card-sm">
+        <div class="agent-icon gray">&#127968;</div>
+        <div class="agent-info"><div class="agent-name">Move-in Agent <span class="badge-soon">Coming soon</span></div></div>
+      </div>
+      <div class="agent-card agent-card-sm">
+        <div class="agent-icon gray">&#128230;</div>
+        <div class="agent-info"><div class="agent-name">Move-out Agent <span class="badge-soon">Coming soon</span></div></div>
+      </div>
+      <div class="agent-card agent-card-sm">
+        <div class="agent-icon gray">&#128184;</div>
+        <div class="agent-info"><div class="agent-name">Delinquency Agent <span class="badge-soon">Coming soon</span></div></div>
+      </div>
+      <div class="agent-card agent-card-sm">
+        <div class="agent-icon gray">&#128202;</div>
+        <div class="agent-info"><div class="agent-name">Owner Reporting <span class="badge-soon">Coming soon</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ SCREEN: KNOWLEDGE BASE ════════════ -->
+  <div class="screen" id="screen-knowledge">
+    <div class="kb-header">
+      <div>
+        <div class="page-title">Concierge Knowledge Base</div>
+        <div class="page-sub">Upload documents to help AI answer tenant questions accurately</div>
+      </div>
+      <button class="btn-pink" onclick="openUploadModal()">+ Upload Document</button>
+    </div>
+
+    <div class="stats-bar">
+      <span>12 documents</span>
+      <span>4 global</span>
+      <span>8 property-specific</span>
+      <span>AI trained on all</span>
+    </div>
+
+    <!-- Scope Tabs -->
+    <div class="scope-tabs">
+      <div class="scope-tab active" onclick="setScope('all')">All Properties</div>
+      <div class="scope-tab" onclick="setScope('property')">By Property</div>
+      <div class="scope-tab" onclick="setScope('unit')">By Unit</div>
+    </div>
+
+    <div class="scope-select" id="scope-property-select">
+      <select id="property-dropdown" onchange="renderDocs()">
+        <option value="742">742 Evergreen Terrace</option>
+        <option value="maple">Maple Gardens</option>
+      </select>
+    </div>
+
+    <div class="scope-select" id="scope-unit-select">
+      <select id="unit-property-dropdown" onchange="renderDocs()" style="margin-right:8px;">
+        <option value="742">742 Evergreen Terrace</option>
+        <option value="maple">Maple Gardens</option>
+      </select>
+      <select id="unit-dropdown">
+        <option>Unit 101</option>
+        <option>Unit 102</option>
+        <option>Unit 201</option>
+      </select>
+    </div>
+
+    <div id="doc-list"></div>
+  </div>
+
+  <!-- ════════════ SCREEN: COMMUNICATION CENTER ════════════ -->
+  <div class="screen" id="screen-comm">
+    <div class="page-title" style="margin-bottom:16px;">Communication Center</div>
+    <div class="comm-layout">
+      <div class="conv-list">
+        <div class="conv-list-header">Conversations</div>
+        <div class="conv-item active" onclick="selectConv(0)">
+          <span class="conv-time">2m ago</span>
+          <div class="conv-name">Emily Smith</div>
+          <div class="conv-preview">What are the quiet hours?</div>
+        </div>
+        <div class="conv-item" onclick="selectConv(1)">
+          <span class="conv-time">15m ago</span>
+          <div class="conv-name">Tom Bradley</div>
+          <div class="conv-preview">Can I have a dog in my unit?</div>
+        </div>
+        <div class="conv-item" onclick="selectConv(2)">
+          <span class="conv-time">1h ago</span>
+          <div class="conv-name">Sarah Johnson</div>
+          <div class="conv-preview">How do I book the pool?</div>
+        </div>
+        <div class="conv-item" onclick="selectConv(3)">
+          <span class="conv-time">3h ago</span>
+          <div class="conv-name">Michael Chen</div>
+          <div class="conv-preview">Where do I take recycling?</div>
+        </div>
+      </div>
+      <div class="chat-area">
+        <div class="chat-header">
+          <div>
+            <div class="name" id="chat-name">Emily Smith</div>
+            <div class="property" id="chat-property">742 Evergreen Terrace &middot; Unit 204</div>
+          </div>
+        </div>
+        <div class="chat-messages" id="chat-messages"></div>
+        <div class="chat-input-bar">
+          <input type="text" placeholder="Type a message...">
+          <button class="btn-blue">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ SCREEN: AUDIT LOG ════════════ -->
+  <div class="screen" id="screen-audit">
+    <div class="page-title">Audit Log</div>
+    <div class="page-sub" style="margin-bottom:20px;">Track every AI interaction and escalation</div>
+
+    <div class="filter-tabs">
+      <div class="filter-tab active" onclick="filterAudit('all',this)">All</div>
+      <div class="filter-tab" onclick="filterAudit('auto',this)">AI Only</div>
+      <div class="filter-tab" onclick="filterAudit('escalated',this)">Escalated</div>
+    </div>
+
+    <table class="audit-table">
+      <thead>
+        <tr><th>Event</th><th>Tenant</th><th>Property</th><th>Status</th><th>Time</th></tr>
+      </thead>
+      <tbody id="audit-body"></tbody>
+    </table>
+  </div>
+
+  <!-- ════════════ SCREEN: PERFORMANCE ════════════ -->
+  <div class="screen" id="screen-perf">
+    <div class="page-title">Performance</div>
+    <div class="page-sub" style="margin-bottom:24px;">Concierge Agent analytics</div>
+
+    <div class="kpi-strip">
+      <div class="kpi-card"><div class="kpi-value">12</div><div class="kpi-label">Documents</div></div>
+      <div class="kpi-card"><div class="kpi-value">34</div><div class="kpi-label">Questions Today</div></div>
+      <div class="kpi-card"><div class="kpi-value">8%</div><div class="kpi-label">Escalation Rate</div></div>
+      <div class="kpi-card"><div class="kpi-value">&lt;5s</div><div class="kpi-label">Avg Response</div></div>
+    </div>
+
+    <div class="perf-cols">
+      <div class="perf-col">
+        <h3>Questions by Topic</h3>
+        <div class="topic-row"><span class="label">Quiet hours</span><div class="topic-bar-bg"><div class="topic-bar" style="width:23%"></div></div><span class="topic-pct">23%</span></div>
+        <div class="topic-row"><span class="label">Pet policy</span><div class="topic-bar-bg"><div class="topic-bar" style="width:18%"></div></div><span class="topic-pct">18%</span></div>
+        <div class="topic-row"><span class="label">Pool access</span><div class="topic-bar-bg"><div class="topic-bar" style="width:15%"></div></div><span class="topic-pct">15%</span></div>
+        <div class="topic-row"><span class="label">Parking</span><div class="topic-bar-bg"><div class="topic-bar" style="width:12%"></div></div><span class="topic-pct">12%</span></div>
+        <div class="topic-row"><span class="label">Lease terms</span><div class="topic-bar-bg"><div class="topic-bar" style="width:10%"></div></div><span class="topic-pct">10%</span></div>
+        <div class="topic-row"><span class="label">Other</span><div class="topic-bar-bg"><div class="topic-bar" style="width:22%;background:#94a3b8"></div></div><span class="topic-pct" style="color:#94a3b8">22%</span></div>
+      </div>
+      <div class="perf-col">
+        <h3>Most Referenced Documents</h3>
+        <div class="ref-row"><span class="ref-rank">1</span> Noise &amp; Quiet Hours <span style="margin-left:auto;color:#94a3b8;font-size:12px">87 refs</span></div>
+        <div class="ref-row"><span class="ref-rank">2</span> Pet Policy <span style="margin-left:auto;color:#94a3b8;font-size:12px">64 refs</span></div>
+        <div class="ref-row"><span class="ref-rank">3</span> Pool &amp; Gym Access Rules <span style="margin-left:auto;color:#94a3b8;font-size:12px">51 refs</span></div>
+        <div class="ref-row"><span class="ref-rank">4</span> Parking Rules <span style="margin-left:auto;color:#94a3b8;font-size:12px">42 refs</span></div>
+        <div class="ref-row"><span class="ref-rank">5</span> Trash &amp; Recycling Schedule <span style="margin-left:auto;color:#94a3b8;font-size:12px">38 refs</span></div>
+        <div class="ref-row"><span class="ref-rank">6</span> Lease Agreement Template <span style="margin-left:auto;color:#94a3b8;font-size:12px">29 refs</span></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- .main -->
+
+<!-- ── Upload Modal ── -->
+<div class="modal-overlay" id="upload-modal">
+  <div class="modal">
+    <div class="modal-title-bar">
+      <div class="modal-title">New Document</div>
+      <button class="modal-close" onclick="closeUploadModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="subtitle">Upload policies, leases, or other documents to help AI answer tenant questions accurately.</div>
+
+      <div class="section-label">Select properties or units</div>
+      <div class="section-hint">AI will use this document for questions related to selected portfolios, properties, or units.</div>
+      <div class="radio-group">
+        <label><input type="radio" name="scope-radio" value="portfolios"> Portfolios</label>
+        <label><input type="radio" name="scope-radio" value="properties" checked> Properties</label>
+        <label><input type="radio" name="scope-radio" value="units"> Units</label>
+      </div>
+      <select style="width:100%;padding:8px 14px;border-radius:8px;border:1px solid #e2e8f0;font-size:13px;font-family:inherit;color:#94a3b8;">
+        <option>Select properties to message</option>
+        <option>742 Evergreen Terrace</option>
+        <option>Maple Gardens</option>
+      </select>
+
+      <div class="section-label" style="margin-top:24px;">Upload document</div>
+      <div class="section-hint">Add documents AI can reference for tenant questions about selected portfolios, properties, or units.</div>
+      <div class="drop-zone">
+        <div class="sparkle">&#10024;</div>
+        <p>Drag files or <span class="link">click here to upload</span></p>
+        <p class="hint">jpg, png, heic, mp4, doc, docx, pdf, xlsx, xls, no larger than 50 MB.</p>
+      </div>
+
+      <div class="section-label" style="margin-top:24px;">Name the document</div>
+      <div class="section-hint">Choose a name that makes this document easy to recognize.</div>
+      <input type="text" placeholder="Name the document">
+      <span class="required" style="margin-left:-24px;position:relative;left:-4px;">*</span>
+
+      <div class="toggle-row">
+        <div class="toggle-switch on" onclick="this.classList.toggle('on');this.classList.toggle('off');"></div>
+        <span>Add this document in the tenants portal "files" for the relevant users</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeUploadModal()">Cancel</button>
+      <button class="btn-pink" onclick="saveDocument()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Toast ── -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── Data ── */
+const docs = {
+  all: [
+    { icon: '&#128196;', name: 'Pet Policy', type: 'PDF', pages: '2 pages', date: 'Uploaded Mar 1', scope: 'All Properties', portal: true },
+    { icon: '&#128196;', name: 'Noise & Quiet Hours', type: 'PDF', pages: '1 page', date: 'Uploaded Mar 1', scope: 'All Properties', portal: true },
+    { icon: '&#128196;', name: 'Emergency Procedures', type: 'PDF', pages: '3 pages', date: 'Uploaded Feb 15', scope: 'All Properties', portal: true },
+    { icon: '&#128196;', name: 'Parking Rules', type: 'DOCX', pages: '1 page', date: 'Uploaded Feb 10', scope: 'All Properties', portal: false },
+  ],
+  '742': [
+    { icon: '&#128196;', name: 'Lease Agreement Template', type: 'PDF', pages: '12 pages', date: 'Uploaded Jan 15', scope: '742 Evergreen Terrace', portal: true },
+    { icon: '&#128196;', name: 'Pool & Gym Access Rules', type: 'PDF', pages: '2 pages', date: 'Uploaded Feb 1', scope: '742 Evergreen Terrace', portal: true },
+    { icon: '&#128196;', name: 'Trash & Recycling Schedule', type: 'PDF', pages: '1 page', date: 'Uploaded Feb 5', scope: '742 Evergreen Terrace', portal: true },
+  ],
+  maple: [
+    { icon: '&#128196;', name: 'Community Garden Rules', type: 'PDF', pages: '1 page', date: 'Uploaded Mar 5', scope: 'Maple Gardens', portal: true },
+    { icon: '&#128196;', name: 'Laundry Room Policy', type: 'DOCX', pages: '1 page', date: 'Uploaded Feb 20', scope: 'Maple Gardens', portal: true },
+  ],
+};
+
+const conversations = [
+  {
+    name: 'Emily Smith', property: '742 Evergreen Terrace \u00b7 Unit 204',
+    messages: [
+      { role: 'tenant', text: 'What are the quiet hours in our building?' },
+      { role: 'agent', text: 'Hi Emily! According to our Noise & Quiet Hours policy, quiet hours are from 10:00 PM to 8:00 AM on weekdays, and 11:00 PM to 9:00 AM on weekends. During these hours, please keep noise to a minimum out of respect for your neighbors. Let me know if you have any other questions!', source: 'Noise & Quiet Hours' },
+    ]
+  },
+  {
+    name: 'Tom Bradley', property: '742 Evergreen Terrace \u00b7 Unit 108',
+    messages: [
+      { role: 'tenant', text: 'Can I have a dog in my unit?' },
+      { role: 'agent', text: 'Hi Tom! According to our Pet Policy, pets are welcome with some guidelines: Dogs under 50 lbs are permitted with a $300 refundable pet deposit and $25/month pet rent. Certain breed restrictions apply \u2014 please check your lease addendum or contact us for the full list. Would you like me to send you the complete pet policy document?', source: 'Pet Policy' },
+    ]
+  },
+  {
+    name: 'Sarah Johnson', property: '742 Evergreen Terrace \u00b7 Unit 312',
+    messages: [
+      { role: 'tenant', text: 'How do I book the pool?' },
+      { role: 'agent', text: 'Hi Sarah! The pool is available to all residents from 7 AM to 10 PM daily. No reservation is needed for general swim. For private pool parties (up to 15 guests), you can book through the front desk at least 48 hours in advance. A $50 refundable cleaning deposit applies for party bookings. The gym is open 24/7 with your key fob. Enjoy!', source: 'Pool & Gym Access Rules' },
+    ]
+  },
+  {
+    name: 'Michael Chen', property: 'Maple Gardens \u00b7 Unit 5B',
+    messages: [
+      { role: 'tenant', text: 'Where do I take recycling?' },
+      { role: 'agent', text: 'Hi Michael! Recycling bins are located at the south end of the parking lot, near the community garden. Recycling pickup is every Tuesday and Friday morning. Please sort items into the blue (paper/cardboard) and green (glass/plastic/metal) bins. Large cardboard boxes should be flattened before disposal. Let me know if you need anything else!', source: 'Trash & Recycling Schedule' },
+    ]
+  },
+];
+
+const auditRows = [
+  { event: 'Answered "quiet hours" question', tenant: 'Emily Smith', property: '742 Evergreen Terrace', status: 'auto', time: '2 min ago', detail: 'Concierge Agent matched query to Noise & Quiet Hours document (confidence: 97%). Response delivered in 3.2 seconds. Tenant marked answer as helpful.' },
+  { event: 'Answered "pet policy" question', tenant: 'Tom Bradley', property: '742 Evergreen Terrace', status: 'escalated', time: '15 min ago', detail: 'Concierge Agent answered initial question from Pet Policy document. Escalated to property manager because breed restriction list was unclear in the uploaded document. Manager notified via email.' },
+  { event: 'Answered "pool booking" question', tenant: 'Sarah Johnson', property: '742 Evergreen Terrace', status: 'auto', time: '1 hour ago', detail: 'Concierge Agent matched query to Pool & Gym Access Rules document (confidence: 94%). Response delivered in 2.8 seconds.' },
+  { event: 'Answered "recycling" question', tenant: 'Michael Chen', property: 'Maple Gardens', status: 'auto', time: '3 hours ago', detail: 'Concierge Agent matched query to Trash & Recycling Schedule document (confidence: 96%). Response delivered in 4.1 seconds.' },
+  { event: 'Escalated "lease termination" question', tenant: 'Kevin Tran', property: 'Maple Gardens', status: 'escalated', time: '5 hours ago', detail: 'Tenant asked about early lease termination fees. Concierge Agent did not find a matching document with sufficient detail. Escalated to property manager for manual response.' },
+];
+
+/* ── Screen Switching ── */
+let currentScope = 'all';
+
+function switchScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('visible'));
+  document.querySelectorAll('.sidebar .nav-icon').forEach(n => n.classList.remove('active'));
+
+  const screenId = id === 'knowledge' ? 'screen-knowledge' : 'screen-' + id;
+  document.getElementById(screenId).classList.add('visible');
+
+  const navMap = { agents: 'nav-agents', knowledge: 'nav-agents', comm: 'nav-comm', audit: 'nav-audit', perf: 'nav-perf' };
+  const navEl = document.getElementById(navMap[id]);
+  if (navEl) navEl.classList.add('active');
+
+  if (id === 'knowledge') renderDocs();
+  if (id === 'comm') renderChat(0);
+  if (id === 'audit') renderAudit();
+}
+
+/* ── Knowledge Base ── */
+function setScope(scope) {
+  currentScope = scope;
+  document.querySelectorAll('.scope-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+
+  document.getElementById('scope-property-select').style.display = scope === 'property' ? 'block' : 'none';
+  document.getElementById('scope-unit-select').style.display = scope === 'unit' ? 'flex' : 'none';
+
+  renderDocs();
+}
+
+function renderDocs() {
+  let list;
+  if (currentScope === 'all') {
+    list = docs.all;
+  } else if (currentScope === 'property') {
+    const val = document.getElementById('property-dropdown').value;
+    list = docs[val] || [];
+  } else {
+    const val = document.getElementById('unit-property-dropdown').value;
+    list = docs[val] || [];
+  }
+
+  const container = document.getElementById('doc-list');
+  container.innerHTML = list.map(d => `
+    <div class="doc-row">
+      <span class="doc-icon">${d.icon}</span>
+      <span class="doc-name">${d.name}</span>
+      <span class="doc-pill">${d.type}</span>
+      <span class="doc-meta">${d.pages}</span>
+      <span class="doc-meta">${d.date}</span>
+      <span class="doc-scope">${d.scope}</span>
+      <div class="toggle-switch ${d.portal ? 'on' : 'off'}" onclick="this.classList.toggle('on');this.classList.toggle('off');" title="Show in tenant portal"></div>
+      <div class="doc-actions">
+        <button title="Edit">Edit</button>
+        <button title="Delete">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ── Upload Modal ── */
+function openUploadModal() {
+  document.getElementById('upload-modal').classList.add('show');
+}
+function closeUploadModal() {
+  document.getElementById('upload-modal').classList.remove('show');
+}
+function saveDocument() {
+  closeUploadModal();
+  showToast('Document uploaded successfully');
+}
+
+/* ── Toast ── */
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+/* ── Communication Center ── */
+function selectConv(idx) {
+  document.querySelectorAll('.conv-item').forEach((c, i) => {
+    c.classList.toggle('active', i === idx);
+  });
+  renderChat(idx);
+}
+
+function renderChat(idx) {
+  const conv = conversations[idx];
+  document.getElementById('chat-name').textContent = conv.name;
+  document.getElementById('chat-property').textContent = conv.property;
+
+  const container = document.getElementById('chat-messages');
+  container.innerHTML = conv.messages.map(m => {
+    if (m.role === 'tenant') {
+      return `<div class="msg tenant">
+        <div class="msg-bubble">${m.text}</div>
+        <div class="msg-label">${conv.name}</div>
+      </div>`;
+    } else {
+      return `<div class="msg agent">
+        <div class="msg-bubble">${m.text}</div>
+        <div class="msg-source">\u{1F4C4} Source: ${m.source}</div>
+        <div class="msg-label" style="text-align:right;">Concierge Agent \u00b7 Auto response</div>
+      </div>`;
+    }
+  }).join('');
+}
+
+/* ── Audit Log ── */
+let auditFilter = 'all';
+
+function filterAudit(filter, el) {
+  auditFilter = filter;
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderAudit();
+}
+
+function renderAudit() {
+  const filtered = auditRows.filter(r => {
+    if (auditFilter === 'all') return true;
+    return r.status === auditFilter;
+  });
+
+  const body = document.getElementById('audit-body');
+  body.innerHTML = filtered.map((r, i) => `
+    <tr onclick="toggleAuditDetail(${i})">
+      <td>${r.event}</td>
+      <td>${r.tenant}</td>
+      <td>${r.property}</td>
+      <td><span class="badge-${r.status}">${r.status === 'auto' ? 'Auto' : 'Escalated'}</span></td>
+      <td style="color:#94a3b8">${r.time}</td>
+    </tr>
+    <tr><td colspan="5" style="padding:0;"><div class="audit-detail" id="audit-detail-${i}">${r.detail}</div></td></tr>
+  `).join('');
+}
+
+function toggleAuditDetail(idx) {
+  const el = document.getElementById('audit-detail-' + idx);
+  el.classList.toggle('show');
+}
+
+/* ── Init ── */
+renderDocs();
+renderChat(0);
+renderAudit();
+</script>
+</body>
+</html>
