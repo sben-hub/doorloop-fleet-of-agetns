@@ -69,15 +69,22 @@ body {
 
 /* ── Agent Cards ── */
 .agent-card {
-  background: white; border: 1px solid #e2e8f0; border-radius: 12px;
-  padding: 20px; display: flex; align-items: flex-start; gap: 16px;
-  margin-bottom: 12px; transition: box-shadow .15s;
+  background: white; border: 1px solid #e2e8f0; border-radius: 16px;
+  padding: 24px; margin-bottom: 16px; transition: box-shadow .15s;
 }
-.agent-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+.agent-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.06); }
 .agent-card.featured {
-  border-left: 4px solid transparent;
-  border-image: linear-gradient(180deg, #4C6FFF, #a855f7) 1;
+  border: 2px solid transparent;
+  background-image: linear-gradient(white, white), linear-gradient(135deg, #4C6FFF, #a855f7);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
   padding: 28px 24px;
+}
+.agent-card-inner {
+  display: flex; align-items: flex-start; gap: 16px;
+}
+.agent-card-body {
+  display: flex; align-items: center; justify-content: space-between; width: 100%;
 }
 .agent-icon {
   width: 48px; height: 48px; border-radius: 12px; display: flex;
@@ -88,20 +95,30 @@ body {
 .agent-icon.green { background: #d1fae5; }
 .agent-icon.amber { background: #fef3c7; }
 .agent-icon.gray { background: #f1f5f9; }
-.agent-card-sm .agent-icon { width: 40px; height: 40px; font-size: 18px; }
-.agent-card-sm { padding: 14px 20px; align-items: center; }
 .agent-info { flex: 1; min-width: 0; }
-.agent-name { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.agent-name { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .agent-card.featured .agent-name { font-size: 18px; }
-.agent-desc { font-size: 13px; color: #6b7a99; margin-top: 6px; line-height: 1.5; }
-.badge-active { font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: 20px; background: #d1fae5; color: #059669; }
-.badge-featured { font-size: 10px; font-weight: 700; padding: 2px 10px; border-radius: 20px; background: linear-gradient(135deg,#4C6FFF,#a855f7); color: white; text-transform: uppercase; letter-spacing: .5px; }
-.badge-soon { font-size: 11px; font-weight: 500; padding: 2px 10px; border-radius: 20px; background: #f1f5f9; color: #94a3b8; }
+.agent-desc { font-size: 13px; color: #6b7a99; margin-top: 6px; line-height: 1.6; }
+.agent-right { display: flex; align-items: center; gap: 14px; flex-shrink: 0; margin-left: 16px; }
+.badge-active { font-size: 11px; font-weight: 600; padding: 3px 12px; border-radius: 20px; background: #d1fae5; color: #059669; }
+.badge-featured { font-size: 10px; font-weight: 700; padding: 3px 12px; border-radius: 20px; background: linear-gradient(135deg,#4C6FFF,#a855f7); color: white; text-transform: uppercase; letter-spacing: .5px; }
+.badge-soon { font-size: 11px; font-weight: 500; padding: 3px 12px; border-radius: 20px; background: #f1f5f9; color: #94a3b8; }
+/* Toggle switch */
+.agent-toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+.agent-toggle input { opacity: 0; width: 0; height: 0; }
+.agent-toggle .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #cbd5e1; border-radius: 24px; transition: .2s; }
+.agent-toggle .slider:before { content: ''; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .2s; box-shadow: 0 1px 3px rgba(0,0,0,.15); }
+.agent-toggle input:checked + .slider { background: #4C6FFF; }
+.agent-toggle input:checked + .slider:before { transform: translateX(20px); }
+.btn-settings { background: #4C6FFF; color: white; border: none; padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background .15s; white-space: nowrap; }
+.btn-settings:hover { background: #3b5bdb; }
 .btn-blue { background: #4C6FFF; color: white; border: none; padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background .15s; }
 .btn-blue:hover { background: #3b5bdb; }
 .btn-outline { background: transparent; color: #6b7a99; border: 1px solid #e2e8f0; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 500; cursor: pointer; }
 .btn-outline:hover { border-color: #4C6FFF; color: #4C6FFF; }
 .btn-pink { background: #ff4998; color: white; border: none; padding: 9px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.agent-card.disabled { opacity: 0.6; }
+.agent-card.disabled:hover { box-shadow: none; }
 .btn-pink:hover { background: #e6357f; }
 
 /* ── Knowledge Base ── */
@@ -385,59 +402,136 @@ body {
   <!-- ════════════ SCREEN: AI AGENTS ════════════ -->
   <div class="screen visible" id="screen-agents">
     <div class="page-title">AI Agents</div>
-    <div class="page-sub">9 agents &middot; 1 active</div>
+    <div class="page-sub">1 active agent &middot; 8 coming soon</div>
 
-    <div style="margin-top:24px;">
+    <div style="margin-top:24px;max-width:900px;">
+
       <!-- Featured: Concierge Agent -->
-      <div class="agent-card featured">
-        <div class="agent-icon purple" style="width:52px;height:52px;font-size:24px;">&#129309;</div>
-        <div class="agent-info">
-          <div class="agent-name">
-            Concierge Agent
-            <span class="badge-active">Active</span>
-            <span class="badge-featured">Featured</span>
+      <div class="agent-card featured" style="cursor:pointer;" onclick="switchScreen('knowledge')">
+        <div class="agent-card-inner">
+          <div class="agent-icon purple" style="width:52px;height:52px;font-size:24px;">&#129309;</div>
+          <div class="agent-card-body">
+            <div class="agent-info">
+              <div class="agent-name">
+                Concierge Agent
+                <span class="badge-active">Active</span>
+                <span class="badge-featured">Featured</span>
+              </div>
+              <div class="agent-desc">Answers tenant questions 24/7 using your uploaded documents &mdash; policies, lease terms, property rules, and more. Tenants get instant answers through the portal or SMS.</div>
+              <button class="btn-blue" style="margin-top:14px;" onclick="event.stopPropagation();switchScreen('knowledge')">Manage Knowledge Base &rarr;</button>
+            </div>
+            <div class="agent-right">
+              <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+              <button class="btn-settings" onclick="event.stopPropagation();">Settings</button>
+            </div>
           </div>
-          <div class="agent-desc">Answers tenant questions 24/7 using your uploaded documents &mdash; policies, lease terms, property rules, and more.</div>
-          <button class="btn-blue" style="margin-top:12px;" onclick="switchScreen('knowledge')">Manage Knowledge Base &rarr;</button>
         </div>
       </div>
 
-      <!-- Standard agents -->
-      <div class="agent-card agent-card-sm">
-        <div class="agent-icon blue">&#128295;</div>
-        <div class="agent-info"><div class="agent-name">Maintenance Agent <span class="badge-active">Active</span></div></div>
-        <button class="btn-outline">Settings</button>
+      <!-- Maintenance Agent — Coming soon -->
+      <div class="agent-card disabled">
+        <div class="agent-card-inner">
+          <div class="agent-icon gray">&#128295;</div>
+          <div class="agent-card-body">
+            <div class="agent-info">
+              <div class="agent-name">Maintenance Agent <span class="badge-soon">Coming soon</span></div>
+              <div class="agent-desc">Handles tenant maintenance requests end-to-end: intake via text, troubleshooting, vendor coordination, quoting, owner approval, and scheduling.</div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="agent-card agent-card-sm">
-        <div class="agent-icon green">&#128176;</div>
-        <div class="agent-info"><div class="agent-name">Rent Collection Agent <span class="badge-active">Active</span></div></div>
-        <button class="btn-outline">Settings</button>
+
+      <!-- Rent Collection Agent — Coming soon -->
+      <div class="agent-card disabled">
+        <div class="agent-card-inner">
+          <div class="agent-icon gray">&#128176;</div>
+          <div class="agent-card-body">
+            <div class="agent-info">
+              <div class="agent-name">Rent Collection Agent <span class="badge-soon">Coming soon</span></div>
+              <div class="agent-desc">Tracks rent due dates, sends payment reminders, processes late notices, and escalates chronic non-payment. Integrates with your payment rails.</div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="agent-card agent-card-sm">
-        <div class="agent-icon amber">&#128203;</div>
-        <div class="agent-info"><div class="agent-name">Lease Renewal Agent <span class="badge-active">Active</span></div></div>
-        <button class="btn-outline">Settings</button>
+
+      <!-- Lease Renewal Agent — Coming soon -->
+      <div class="agent-card disabled">
+        <div class="agent-card-inner">
+          <div class="agent-icon gray">&#128203;</div>
+          <div class="agent-card-body">
+            <div class="agent-info">
+              <div class="agent-name">Lease Renewal Agent <span class="badge-soon">Coming soon</span></div>
+              <div class="agent-desc">Tracks lease expirations, pulls market comps for rent adjustments, drafts renewal offers, sends them to tenants, and follows up on unsigned renewals.</div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="agent-card agent-card-sm">
-        <div class="agent-icon gray">&#128273;</div>
-        <div class="agent-info"><div class="agent-name">Leasing Agent <span class="badge-soon">Coming soon</span></div></div>
+
+      <!-- Leasing Agent — Coming soon -->
+      <div class="agent-card disabled">
+        <div class="agent-card-inner">
+          <div class="agent-icon gray">&#128273;</div>
+          <div class="agent-card-body">
+            <div class="agent-info">
+              <div class="agent-name">Leasing Agent <span class="badge-soon">Coming soon</span></div>
+              <div class="agent-desc">Manages vacancy listings, responds to inquiries, pre-screens applicants, schedules showings, and guides qualified leads through the application process.</div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="agent-card agent-card-sm">
-        <div class="agent-icon gray">&#127968;</div>
-        <div class="agent-info"><div class="agent-name">Move-in Agent <span class="badge-soon">Coming soon</span></div></div>
+
+      <!-- Move-in Agent — Coming soon -->
+      <div class="agent-card disabled">
+        <div class="agent-card-inner">
+          <div class="agent-icon gray">&#127968;</div>
+          <div class="agent-card-body">
+            <div class="agent-info">
+              <div class="agent-name">Move-in Agent <span class="badge-soon">Coming soon</span></div>
+              <div class="agent-desc">Streamlines tenant onboarding &mdash; welcome packets, key handoff scheduling, move-in inspections, and utility setup reminders.</div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="agent-card agent-card-sm">
-        <div class="agent-icon gray">&#128230;</div>
-        <div class="agent-info"><div class="agent-name">Move-out Agent <span class="badge-soon">Coming soon</span></div></div>
+
+      <!-- Move-out Agent — Coming soon -->
+      <div class="agent-card disabled">
+        <div class="agent-card-inner">
+          <div class="agent-icon gray">&#128230;</div>
+          <div class="agent-card-body">
+            <div class="agent-info">
+              <div class="agent-name">Move-out Agent <span class="badge-soon">Coming soon</span></div>
+              <div class="agent-desc">Manages the move-out process &mdash; inspections, deposit calculations, turnover coordination, and final accounting.</div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="agent-card agent-card-sm">
-        <div class="agent-icon gray">&#128184;</div>
-        <div class="agent-info"><div class="agent-name">Delinquency Agent <span class="badge-soon">Coming soon</span></div></div>
+
+      <!-- Delinquency Agent — Coming soon -->
+      <div class="agent-card disabled">
+        <div class="agent-card-inner">
+          <div class="agent-icon gray">&#128184;</div>
+          <div class="agent-card-body">
+            <div class="agent-info">
+              <div class="agent-name">Delinquency Agent <span class="badge-soon">Coming soon</span></div>
+              <div class="agent-desc">Automates rent collection &mdash; payment reminders, late notices, payment plans, and escalation to formal proceedings.</div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="agent-card agent-card-sm">
-        <div class="agent-icon gray">&#128202;</div>
-        <div class="agent-info"><div class="agent-name">Owner Reporting <span class="badge-soon">Coming soon</span></div></div>
+
+      <!-- Owner Reporting — Coming soon -->
+      <div class="agent-card disabled">
+        <div class="agent-card-inner">
+          <div class="agent-icon gray">&#128202;</div>
+          <div class="agent-card-body">
+            <div class="agent-info">
+              <div class="agent-name">Owner Reporting &amp; Distributions <span class="badge-soon">Coming soon</span></div>
+              <div class="agent-desc">Generates monthly owner statements with P&amp;L, calculates and sends owner distributions via Stripe, and handles owner inquiries.</div>
+            </div>
+          </div>
+        </div>
       </div>
+
     </div>
   </div>
 
