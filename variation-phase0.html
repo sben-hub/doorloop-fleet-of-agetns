@@ -32,34 +32,58 @@ body {
 
 /* ── Sidebar ── */
 .sidebar {
-  position: fixed; top: 40px; left: 0; bottom: 0; width: 56px;
-  background: #1a2b4a; display: flex; flex-direction: column;
-  align-items: center; padding: 12px 0; z-index: 9999;
+  position: fixed; top: 40px; left: 0; bottom: 0; width: 240px;
+  background: #2F3E83; display: flex; flex-direction: column;
+  padding: 0; z-index: 9999; overflow-y: auto;
 }
-.sidebar .logo {
-  width: 36px; height: 36px; background: #4C6FFF; border-radius: 10px;
+.sidebar-logo {
+  display: flex; align-items: center; gap: 10px;
+  padding: 18px 20px 18px 20px; cursor: default;
+}
+.sidebar-logo .logo-icon {
+  width: 32px; height: 32px; background: #4C6FFF; border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
-  color: white; font-weight: 700; font-size: 18px; margin-bottom: 20px;
-  cursor: default;
+  color: white; font-weight: 700; font-size: 16px; flex-shrink: 0;
 }
-.sidebar .nav-icon {
-  width: 40px; height: 40px; display: flex; align-items: center;
-  justify-content: center; border-radius: 10px; cursor: pointer;
-  margin-bottom: 4px; position: relative; color: #7b8fba;
-  transition: all .15s;
+.sidebar-logo .logo-text {
+  font-size: 15px; font-weight: 700; color: white; white-space: nowrap;
 }
-.sidebar .nav-icon:hover { background: rgba(255,255,255,.08); color: #c5d0e6; }
-.sidebar .nav-icon.active { background: rgba(76,111,255,.25); color: #4C6FFF; }
-.sidebar .nav-icon svg { width: 20px; height: 20px; }
-.sidebar .badge {
-  position: absolute; top: 4px; right: 4px; width: 16px; height: 16px;
-  background: #ff4998; color: white; font-size: 9px; font-weight: 700;
-  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+.sidebar-nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 20px; cursor: pointer; color: rgba(255,255,255,.7);
+  font-size: 14px; font-weight: 500; transition: all .15s;
+  text-decoration: none; position: relative;
+}
+.sidebar-nav-item:hover { background: rgba(255,255,255,.08); color: #fff; }
+.sidebar-nav-item.active { background: rgba(76,111,255,.3); color: #fff; }
+.sidebar-nav-item .nav-emoji { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+.sidebar-nav-item .nav-badge {
+  position: absolute; right: 16px; min-width: 18px; height: 18px;
+  background: #ff4998; color: white; font-size: 10px; font-weight: 700;
+  border-radius: 9px; display: flex; align-items: center; justify-content: center;
+  padding: 0 5px;
+}
+.sidebar-section {
+  padding: 20px 20px 6px; font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .8px; color: rgba(255,255,255,.35);
 }
 .sidebar .spacer { flex: 1; }
+.sidebar-bottom {
+  border-top: 1px solid rgba(255,255,255,.1);
+  padding: 12px 20px; display: flex; align-items: center; gap: 10px;
+  cursor: default;
+}
+.sidebar-bottom .avatar {
+  width: 32px; height: 32px; background: #4C6FFF; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 11px; font-weight: 700; flex-shrink: 0;
+}
+.sidebar-bottom .user-info { min-width: 0; }
+.sidebar-bottom .user-name { font-size: 13px; font-weight: 600; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sidebar-bottom .user-org { font-size: 11px; color: rgba(255,255,255,.5); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* ── Main ── */
-.main { margin-left: 56px; padding: 32px; min-height: calc(100vh - 40px); }
+.main { margin-left: 240px; padding: 32px; min-height: calc(100vh - 40px); }
 .screen { display: none; }
 .screen.visible { display: block; }
 
@@ -69,8 +93,8 @@ body {
 
 /* ── Agent Cards ── */
 .agent-card {
-  background: white; border: 1px solid #e2e8f0; border-radius: 16px;
-  padding: 24px; margin-bottom: 16px; transition: box-shadow .15s;
+  background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+  padding: 20px 24px; margin-bottom: 12px; transition: box-shadow .15s;
 }
 .agent-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.06); }
 .agent-card.featured {
@@ -78,11 +102,12 @@ body {
   background-image: linear-gradient(white, white), linear-gradient(135deg, #4C6FFF, #a855f7);
   background-origin: border-box;
   background-clip: padding-box, border-box;
-  padding: 28px 24px;
+  padding: 22px 24px;
 }
 .agent-card-inner {
-  display: flex; align-items: flex-start; gap: 16px;
+  display: flex; align-items: center; gap: 16px;
 }
+.agent-card.featured .agent-card-inner { align-items: flex-start; }
 .agent-card-body {
   display: flex; align-items: center; justify-content: space-between; width: 100%;
 }
@@ -365,34 +390,67 @@ body {
 
 <!-- ── Sidebar ── -->
 <div class="sidebar">
-  <div class="logo">D</div>
-
-  <!-- Layers / AI Agents -->
-  <div class="nav-icon active" id="nav-agents" onclick="switchScreen('agents')" title="AI Agents">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+  <div class="sidebar-logo">
+    <div class="logo-icon">D</div>
+    <div class="logo-text">DoorLoop AI</div>
   </div>
 
-  <!-- Chat / Communication -->
-  <div class="nav-icon" id="nav-comm" onclick="switchScreen('comm')" title="Communication Center">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-    <span class="badge">3</span>
+  <div class="sidebar-nav-item" id="nav-perf" onclick="switchScreen('perf')">
+    <span class="nav-emoji">&#9889;</span> Command Center
+  </div>
+  <div class="sidebar-nav-item" id="nav-comm" onclick="switchScreen('comm')">
+    <span class="nav-emoji">&#128172;</span> Conversations
+    <span class="nav-badge">3</span>
   </div>
 
-  <!-- Document / Audit -->
-  <div class="nav-icon" id="nav-audit" onclick="switchScreen('audit')" title="Audit Log">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+  <div class="sidebar-section">Operations</div>
+  <div class="sidebar-nav-item" onclick="showToast('Coming in Phase 1')">
+    <span class="nav-emoji">&#128176;</span> Rent Collection
+  </div>
+  <div class="sidebar-nav-item" onclick="showToast('Coming in Phase 1')">
+    <span class="nav-emoji">&#128273;</span> Leasing
+  </div>
+  <div class="sidebar-nav-item" onclick="showToast('Coming in Phase 1')">
+    <span class="nav-emoji">&#128203;</span> Lease Renewals
+  </div>
+  <div class="sidebar-nav-item" onclick="showToast('Coming in Phase 1')">
+    <span class="nav-emoji">&#129309;</span> Owner Relations
+  </div>
+  <div class="sidebar-nav-item" onclick="showToast('Coming in Phase 1')">
+    <span class="nav-emoji">&#128200;</span> Accounting
+  </div>
+  <div class="sidebar-nav-item" onclick="showToast('Coming in Phase 1')">
+    <span class="nav-emoji">&#128295;</span> Vendors
   </div>
 
-  <!-- Grid / Performance -->
-  <div class="nav-icon" id="nav-perf" onclick="switchScreen('perf')" title="Performance">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+  <div class="sidebar-section">Portfolio</div>
+  <div class="sidebar-nav-item" onclick="showToast('Coming in Phase 1')">
+    <span class="nav-emoji">&#127968;</span> Properties
+  </div>
+  <div class="sidebar-nav-item" onclick="showToast('Coming in Phase 1')">
+    <span class="nav-emoji">&#128101;</span> Tenants
+  </div>
+
+  <div class="sidebar-section">AI Tools</div>
+  <div class="sidebar-nav-item active" id="nav-agents" onclick="switchScreen('agents')">
+    <span class="nav-emoji">&#129302;</span> AI Agents
+  </div>
+  <div class="sidebar-nav-item" id="nav-audit" onclick="switchScreen('audit')">
+    <span class="nav-emoji">&#128196;</span> Activity Log
   </div>
 
   <div class="spacer"></div>
 
-  <!-- Settings -->
-  <div class="nav-icon" title="Settings">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+  <div class="sidebar-nav-item" onclick="showToast('Coming in Phase 1')">
+    <span class="nav-emoji">&#127891;</span> Product Tour
+  </div>
+
+  <div class="sidebar-bottom">
+    <div class="avatar">PM</div>
+    <div class="user-info">
+      <div class="user-name">Sarah Johnson</div>
+      <div class="user-org">Sunrise Properties</div>
+    </div>
   </div>
 </div>
 
@@ -404,12 +462,12 @@ body {
     <div class="page-title">AI Agents</div>
     <div class="page-sub">1 active agent &middot; 8 coming soon</div>
 
-    <div style="margin-top:24px;max-width:900px;">
+    <div style="margin-top:24px;">
 
       <!-- Featured: Concierge Agent -->
-      <div class="agent-card featured" style="cursor:pointer;" onclick="switchScreen('knowledge')">
+      <div class="agent-card featured">
         <div class="agent-card-inner">
-          <div class="agent-icon purple" style="width:52px;height:52px;font-size:24px;">&#129309;</div>
+          <div class="agent-icon purple">&#129309;</div>
           <div class="agent-card-body">
             <div class="agent-info">
               <div class="agent-name">
@@ -794,7 +852,7 @@ let currentScope = 'all';
 
 function switchScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('visible'));
-  document.querySelectorAll('.sidebar .nav-icon').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.sidebar .sidebar-nav-item').forEach(n => n.classList.remove('active'));
 
   const screenId = id === 'knowledge' ? 'screen-knowledge' : 'screen-' + id;
   document.getElementById(screenId).classList.add('visible');
