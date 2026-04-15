@@ -596,7 +596,7 @@ body {
   </div>
 
   <div class="sidebar-nav-item" id="nav-perf" onclick="switchScreen('perf')">
-    <span class="nav-emoji">&#9889;</span> Command Center
+    <span class="nav-emoji">&#9889;</span> Dashboard
   </div>
   <div class="sidebar-nav-item" id="nav-comm" onclick="switchScreen('comm')">
     <span class="nav-emoji">&#128172;</span> Communication Center
@@ -1598,6 +1598,45 @@ body {
         <div class="ref-row"><span class="ref-rank">5</span> Trash &amp; Recycling Schedule <span style="margin-left:auto;color:#94a3b8;font-size:12px">38 refs</span></div>
         <div class="ref-row"><span class="ref-rank">6</span> Lease Agreement Template <span style="margin-left:auto;color:#94a3b8;font-size:12px">29 refs</span></div>
       </div>
+    </div>
+
+    <!-- Needs You box -->
+    <div style="margin-top:24px;background:linear-gradient(135deg,#f0f3ff 0%,#fff 100%);border:1px solid #d4e4f7;border-left:4px solid #ff4998;border-radius:12px;padding:24px;display:flex;align-items:flex-start;gap:20px;">
+      <div style="flex:1;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <span style="font-size:20px;">&#9889;</span>
+          <span style="font-size:17px;font-weight:700;color:#1a2b4a;">3 conversations need you</span>
+          <span style="font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;background:#fee2e2;color:#dc2626;">Escalated</span>
+        </div>
+        <p style="font-size:13px;color:#6b7a99;margin-bottom:16px;">These conversations were escalated by the AI and require your attention.</p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:white;border:1px solid #e8ecf1;border-radius:8px;cursor:pointer;transition:all .15s;" onmouseover="this.style.borderColor='#4C6FFF'" onmouseout="this.style.borderColor='#e8ecf1'" onclick="switchScreen('comm')">
+            <span style="font-size:14px;">&#128172;</span>
+            <div style="flex:1;">
+              <div style="font-size:13px;font-weight:600;color:#1a2b4a;">Tom Bradley — Pet breed restriction unclear</div>
+              <div style="font-size:11px;color:#94a3b8;">Concierge couldn't determine if Rottweilers are allowed · 12 min ago</div>
+            </div>
+            <span style="font-size:11px;color:#4C6FFF;font-weight:600;">View →</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:white;border:1px solid #e8ecf1;border-radius:8px;cursor:pointer;transition:all .15s;" onmouseover="this.style.borderColor='#4C6FFF'" onmouseout="this.style.borderColor='#e8ecf1'" onclick="switchScreen('comm')">
+            <span style="font-size:14px;">&#128172;</span>
+            <div style="flex:1;">
+              <div style="font-size:13px;font-weight:600;color:#1a2b4a;">Sarah Johnson — Lease termination question</div>
+              <div style="font-size:11px;color:#94a3b8;">Tenant asking about early termination penalties · 45 min ago</div>
+            </div>
+            <span style="font-size:11px;color:#4C6FFF;font-weight:600;">View →</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:white;border:1px solid #e8ecf1;border-radius:8px;cursor:pointer;transition:all .15s;" onmouseover="this.style.borderColor='#4C6FFF'" onmouseout="this.style.borderColor='#e8ecf1'" onclick="switchScreen('comm')">
+            <span style="font-size:14px;">&#128172;</span>
+            <div style="flex:1;">
+              <div style="font-size:13px;font-weight:600;color:#1a2b4a;">Michael Chen — Subletting policy unclear</div>
+              <div style="font-size:11px;color:#94a3b8;">No document covers subletting rules for this property · 2 hrs ago</div>
+            </div>
+            <span style="font-size:11px;color:#4C6FFF;font-weight:600;">View →</span>
+          </div>
+        </div>
+      </div>
+      <button onclick="switchScreen('comm')" style="background:#4C6FFF;color:white;border:none;padding:12px 24px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;margin-top:4px;">Open Communication Center →</button>
     </div>
   </div>
 
