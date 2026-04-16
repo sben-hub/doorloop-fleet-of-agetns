@@ -138,6 +138,8 @@ body {
 .agent-toggle input:checked + .slider:before { transform: translateX(20px); }
 .btn-settings { background: #4C6FFF; color: white; border: none; padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background .15s; white-space: nowrap; }
 .btn-settings:hover { background: #3b5bdb; }
+.config-back { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #4C6FFF; background: none; border: none; cursor: pointer; padding: 0; margin-bottom: 16px; font-family: inherit; }
+.config-back:hover { color: #3b5bdb; }
 .btn-blue { background: #4C6FFF; color: white; border: none; padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background .15s; }
 .btn-blue:hover { background: #3b5bdb; }
 .btn-outline { background: transparent; color: #6b7a99; border: 1px solid #e2e8f0; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 500; cursor: pointer; }
@@ -593,6 +595,7 @@ body {
 
   <!-- ════════════ SCREEN: KNOWLEDGE BASE ════════════ -->
   <div class="screen" id="screen-knowledge">
+    <button class="config-back" onclick="switchScreen('agents')">&larr; Back to Agent Settings</button>
     <div class="kb-header">
       <div>
         <div class="page-title">Concierge Knowledge Base</div>
