@@ -7,9 +7,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; background: #f5f7fb; color: #1a2b4a; height: 100vh; overflow: hidden; padding-top: 40px !important; }
+body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; background: #f5f7fb; color: #1a2b4a; height: 100vh; overflow: hidden; padding-top:72px !important; }
 
-.app { display: flex; height: calc(100vh - 40px); }
+.app { display: flex; height: calc(100vh - 72px); }
 
 /* ===== SIDEBAR ===== */
 .sidebar { width: 56px; background: linear-gradient(180deg, #25326b 0%, #2f3e83 100%); display: flex; flex-direction: column; align-items: center; padding: 12px 0; gap: 8px; flex-shrink: 0; }
@@ -175,7 +175,7 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
 /* ===== MORE ACTIONS DRAWER ===== */
 .more-drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 1000; display: none; }
 .more-drawer-overlay.visible { display: block; }
-.more-drawer { position: fixed; top: 40px; right: 0; bottom: 0; width: 380px; background: white; box-shadow: -4px 0 24px rgba(0,0,0,0.1); z-index: 1001; transform: translateX(100%); transition: transform 0.3s; display: flex; flex-direction: column; }
+.more-drawer { position: fixed; top: 72px; right: 0; bottom: 0; width: 380px; background: white; box-shadow: -4px 0 24px rgba(0,0,0,0.1); z-index: 1001; transform: translateX(100%); transition: transform 0.3s; display: flex; flex-direction: column; }
 .more-drawer.visible { transform: translateX(0); }
 .more-drawer-header { padding: 16px 20px; border-bottom: 1px solid #e8ecf1; display: flex; align-items: center; justify-content: space-between; }
 .more-drawer-header h3 { font-size: 15px; font-weight: 700; }
@@ -575,14 +575,7 @@ body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; backg
 <!-- SVG gradient defs -->
 <svg style="position:absolute;width:0;height:0;overflow:hidden"><defs><linearGradient id="aiGrad" x1="0" y1="0" x2="18" y2="22" gradientUnits="userSpaceOnUse"><stop stop-color="#EDB9EC"/><stop offset="1" stop-color="#748AFC"/></linearGradient></defs></svg>
 
-<!-- Variation switcher bar -->
-<div id="unified-var-bar" style="position:fixed;top:0;left:0;right:0;height:40px;background:#0f1729;display:flex;align-items:center;justify-content:center;gap:6px;z-index:99999;font-family:Inter,-apple-system,sans-serif;">
-<a href="maintenance-agent-prototype.html" style="font-size:12px;font-weight:500;padding:5px 16px;border-radius:6px;text-decoration:none;color:#8896b3;">V1: Standard</a>
-<a href="variation-enterprise.html" style="font-size:12px;font-weight:500;padding:5px 16px;border-radius:6px;text-decoration:none;color:#8896b3;">V2: Enterprise</a>
-<a href="variation-simple.html" style="font-size:12px;font-weight:500;padding:5px 16px;border-radius:6px;text-decoration:none;color:#8896b3;">V3: Simple</a>
-<a href="variation-full.html" style="font-size:12px;font-weight:500;padding:5px 16px;border-radius:6px;text-decoration:none;color:#8896b3;">V4: Full Vision</a>
-<a href="variation-mvp.html" style="font-size:12px;font-weight:600;padding:5px 16px;border-radius:6px;text-decoration:none;color:white;background:#4C6FFF;">V5: MVP</a><a href="variation-phase0.html" style="font-size:12px;font-weight:500;padding:5px 16px;border-radius:6px;text-decoration:none;color:#8896b3;">V6: Phase 1</a><a href="variation-phase00.html" style="font-size:12px;font-weight:500;padding:5px 16px;border-radius:6px;text-decoration:none;color:#8896b3;">V7: Phase 0</a>
-</div>
+<div style="position:fixed;top:0;left:0;right:0;z-index:99999;font-family:Inter,-apple-system,sans-serif;"><div style="height:36px;background:#070b14;display:flex;align-items:center;justify-content:center;gap:8px;"><a href="maintenance-agent-prototype.html" style="font-size:12px;font-weight:600;padding:5px 20px;border-radius:6px;text-decoration:none;color:white;background:#4C6FFF;">Playground</a><a href="variation-phase00.html" style="font-size:12px;font-weight:500;padding:5px 20px;border-radius:6px;text-decoration:none;color:#8896b3;">The Plan</a></div><div style="height:36px;background:#0f1729;display:flex;align-items:center;justify-content:center;gap:6px;"><a href="maintenance-agent-prototype.html" style="font-size:12px;font-weight:500;padding:5px 16px;border-radius:6px;text-decoration:none;color:#8896b3;">V1: Standard</a><a href="variation-enterprise.html" style="font-size:12px;font-weight:500;padding:5px 16px;border-radius:6px;text-decoration:none;color:#8896b3;">V2: Enterprise</a><a href="variation-simple.html" style="font-size:12px;font-weight:500;padding:5px 16px;border-radius:6px;text-decoration:none;color:#8896b3;">V3: Simple</a><a href="variation-full.html" style="font-size:12px;font-weight:500;padding:5px 16px;border-radius:6px;text-decoration:none;color:#8896b3;">V4: Full Vision</a><a href="variation-mvp.html" style="font-size:12px;font-weight:600;padding:5px 16px;border-radius:6px;text-decoration:none;color:white;background:#4C6FFF;">V5: MVP</a></div></div>
 
 <div class="app">
   <!-- Sidebar -->
