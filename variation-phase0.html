@@ -399,11 +399,50 @@ body {
 .countdown-val { font-weight: 700; font-variant-numeric: tabular-nums; }
 .resume-divider { width: 1px; height: 24px; background: rgba(255,255,255,0.5); }
 
+/* Resume chevron button & dropdown */
+.resume-chevron-btn { background: none; border: none; padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: background 0.12s; }
+.resume-chevron-btn:hover { background: rgba(255,255,255,0.12); }
+#resumeDropdown { display: none; position: fixed; background: #fff; border-radius: 4px; box-shadow: 0 4px 16px rgba(24,44,76,0.18); min-width: 180px; z-index: 1000; overflow: hidden; }
+#resumeDropdown.open { display: block; }
+.resume-dropdown-item { display: block; width: 100%; padding: 12px 16px; font-family: inherit; font-size: 16px; font-weight: 400; color: #182c4c; text-align: left; background: none; border: none; cursor: pointer; white-space: nowrap; transition: background 0.1s; }
+.resume-dropdown-item:hover { background: #f5f6fa; }
+.resume-dropdown-divider { height: 1px; background: rgba(24,44,76,0.12); margin: 0; }
+
+/* Session bar */
+.chat-session-bar { display: flex; align-items: center; gap: 4px; background: #f0f3fe; padding: 8px 16px; font-size: 12px; font-family: inherit; color: #182c4c; }
+.chat-session-bar .dot2 { width: 3px; height: 3px; border-radius: 50%; background: #182c4c; flex-shrink: 0; }
+
+/* Toggle switch */
+.toggle { width: 48px; height: 28px; background: #c8cdd8; border-radius: 14px; cursor: pointer; position: relative; transition: background 0.25s linear; flex-shrink: 0; }
+.toggle::after { content: ''; position: absolute; width: 22px; height: 22px; background: white; border-radius: 50%; top: 3px; left: 3px; transition: transform 0.25s linear; box-shadow: 0 1px 3px rgba(0,0,0,0.25); }
+.toggle.on { background: #1665d8; }
+.toggle.on::after { transform: translateX(20px); }
+
 /* ===== MORE ACTIONS DRAWER ===== */
 .more-drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 1000; display: none; }
 .more-drawer-overlay.visible { display: block; }
 .more-drawer { position: fixed; top: 72px; right: 0; bottom: 0; width: 380px; background: white; box-shadow: -4px 0 24px rgba(0,0,0,0.1); z-index: 1001; transform: translateX(100%); transition: transform 0.3s; display: flex; flex-direction: column; }
 .more-drawer.visible { transform: translateX(0); }
+.drawer-body { flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; }
+.drawer-divider { height: 1px; background: rgba(24,44,76,0.08); margin: 0 -16px; flex-shrink: 0; }
+.drawer-ai-toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 0; }
+.drawer-ai-toggle-text { display: flex; flex-direction: column; gap: 2px; }
+.drawer-ai-toggle-label { font-size: 13px; font-weight: 700; color: #182c4c; }
+.drawer-ai-toggle-sub { font-size: 11px; color: rgba(24,44,76,0.55); line-height: 1.4; }
+.drawer-assignee-label { font-size: 12px; font-weight: 700; color: rgba(24,44,76,0.5); margin-bottom: 8px; }
+.drawer-assignee-row { display: flex; align-items: center; gap: 10px; padding: 4px 0; }
+.drawer-avatar { width: 28px; height: 28px; border-radius: 50%; background: #e0e4f0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #5a6a8a; flex-shrink: 0; }
+.drawer-assignee-dropdown { flex: 1; display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; border: 1px solid rgba(24,44,76,0.12); border-radius: 6px; font-size: 13px; color: rgba(24,44,76,0.45); cursor: pointer; background: white; transition: border-color 0.12s; }
+.drawer-assignee-dropdown:hover { border-color: rgba(24,44,76,0.28); }
+.drawer-summary-card { background: rgba(170,184,253,0.15); border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+.drawer-summary-header { display: flex; align-items: center; gap: 6px; }
+.drawer-summary-title { font-size: 13px; font-weight: 700; color: #182c4c; }
+.drawer-summary-text { font-size: 12px; color: rgba(24,44,76,0.7); line-height: 1.55; }
+.drawer-section-label { font-size: 12px; font-weight: 700; color: #182c4c; margin-bottom: 4px; }
+.drawer-action-list { display: flex; flex-direction: column; gap: 2px; }
+.drawer-action-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; color: #182c4c; transition: background 0.12s; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.drawer-action-item:hover { background: #f5f6fa; }
+.drawer-action-icon { width: 30px; height: 30px; border-radius: 6px; background: #f0f1f5; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: rgba(24,44,76,0.6); }
 
 /* ===== WORKFLOW DRAWER (RIGHT) ===== */
 #screen-comm .wf-drawer { width: 360px; background: #fafbfd; border-left: 1px solid #e8ecf1; display: flex; flex-direction: column; flex-shrink: 0; overflow: hidden; transition: width 0.3s ease; }
@@ -956,6 +995,20 @@ body {
         </div>
       </div>
 
+      <!-- Session info bar -->
+      <div class="chat-session-bar" id="chatSessionBar">
+        Active session started at 4:23 PM
+        <div class="dot2"></div>
+        Emily Smith is ON
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+          <path d="M8.00002 9.33268C8.7364 9.33268 9.33335 8.73573 9.33335 7.99935C9.33335 7.26297 8.7364 6.66602 8.00002 6.66602C7.26364 6.66602 6.66669 7.26297 6.66669 7.99935C6.66669 8.73573 7.26364 9.33268 8.00002 9.33268Z" stroke="#6C83F9"/>
+          <path d="M5 5.33398C4.33333 6.00065 4 7.00065 4 8.00065C4 9.00065 4.33333 10.0007 5 10.6673" stroke="#6C83F9"/>
+          <path d="M2.99998 4C1.99998 5 1.33331 6.33333 1.33331 8C1.33331 9.66667 1.99998 11 2.99998 12" stroke="#6C83F9"/>
+          <path d="M11 10.6673C11.6667 10.0007 12 9.00065 12 8.00065C12 7.00065 11.6667 6.00065 11 5.33398" stroke="#6C83F9"/>
+          <path d="M13 12C14 11 14.6667 9.66667 14.6667 8C14.6667 6.33333 14 5 13 4" stroke="#6C83F9"/>
+        </svg>
+      </div>
+
       <!-- Messages -->
       <div class="chat-messages ai-active" id="chatMessages">
         <div class="chat-date">Today, Mar 29</div>
@@ -1015,8 +1068,21 @@ body {
           <span>Resume in</span>
           <span class="countdown-val" id="countdownTimer">29:59</span>
           <span class="resume-divider"></span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          <button class="resume-chevron-btn" id="resumeChevronBtn" onclick="toggleResumeDropdown(event)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 9l6 6 6-6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
         </div>
+      </div>
+
+      <!-- Resume time dropdown (positioned dynamically via JS) -->
+      <div id="resumeDropdown">
+        <button class="resume-dropdown-item" onclick="selectResumeTime(1800)">Resume in 30 minutes</button>
+        <button class="resume-dropdown-item" onclick="selectResumeTime(3600)">Resume in 1 hour</button>
+        <button class="resume-dropdown-item" onclick="selectResumeTime(7200)">Resume in 2 hours</button>
+        <div class="resume-dropdown-divider"></div>
+        <button class="resume-dropdown-item" onclick="closeResumeDropdown()">Custom time</button>
       </div>
 
       <!-- Chat input (hidden when AI is active) -->
@@ -1184,11 +1250,97 @@ body {
   <div class="more-drawer-overlay" id="moreOverlay" onclick="toggleMoreDrawer()"></div>
   <div class="more-drawer" id="moreDrawer">
     <div style="padding:16px 20px;border-bottom:1px solid #e8ecf1;display:flex;align-items:center;justify-content:space-between;">
-      <h3 style="font-size:15px;font-weight:700;">More Actions</h3>
+      <h3 style="font-size:15px;font-weight:700;">More actions</h3>
       <button onclick="toggleMoreDrawer()" style="width:30px;height:30px;border:none;background:#f5f7fb;border-radius:6px;cursor:pointer;font-size:16px;color:#6b7a99;display:flex;align-items:center;justify-content:center;">&times;</button>
     </div>
-    <div style="padding:20px;">
-      <p style="font-size:13px;color:#6b7a99;">Additional conversation actions will appear here.</p>
+    <div class="drawer-body">
+      <!-- AI Assistant toggle -->
+      <div class="drawer-ai-toggle-row">
+        <div class="drawer-ai-toggle-text">
+          <div class="drawer-ai-toggle-label">AI Assistant</div>
+          <div class="drawer-ai-toggle-sub">Turn off for this conversation permanently</div>
+        </div>
+        <div class="toggle on" id="drawerAiToggle" onclick="toggleDrawerAI()"></div>
+      </div>
+
+      <div class="drawer-divider"></div>
+
+      <!-- Assignee -->
+      <div>
+        <div class="drawer-assignee-label">Assignee</div>
+        <div class="drawer-assignee-row">
+          <div class="drawer-avatar">&mdash;</div>
+          <div class="drawer-assignee-dropdown">
+            Unassigned
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="drawer-divider"></div>
+
+      <!-- AI Summary -->
+      <div class="drawer-summary-card">
+        <div class="drawer-summary-header">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="aiGrad0" x1="18.9999" y1="3" x2="7.99988" y2="18.5" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#EDB9EC"/><stop offset="1" stop-color="#748AFC"/>
+              </linearGradient>
+              <linearGradient id="aiGrad1" x1="7.99997" y1="2" x2="3.78896" y2="8.95154" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#EDB9EC"/><stop offset="1" stop-color="#748AFC"/>
+              </linearGradient>
+            </defs>
+            <path d="M12.3396 2.67969C12.3396 2.67969 12.7693 7.7286 14.8602 9.81944C16.951 11.9103 21.9999 12.34 21.9999 12.34C21.9999 12.34 16.951 12.7698 14.8602 14.8606C12.7693 16.9515 12.3396 22.0004 12.3396 22.0004C12.3396 22.0004 11.9098 16.9515 9.81895 14.8606C7.72811 12.7698 2.6792 12.34 2.6792 12.34C2.6792 12.34 7.72811 11.9103 9.81895 9.81944C11.9098 7.7286 12.3396 2.67969 12.3396 2.67969Z" fill="url(#aiGrad0)"/>
+            <path d="M5.7313 2C5.7313 2 5.56531 3.95016 4.75771 4.75775C3.95012 5.56535 1.99996 5.73134 1.99996 5.73134C1.99996 5.73134 3.95012 5.89734 4.75771 6.70493C5.56531 7.51253 5.7313 9.46269 5.7313 9.46269C5.7313 9.46269 5.8973 7.51253 6.70489 6.70493C7.51249 5.89734 9.46265 5.73134 9.46265 5.73134C9.46265 5.73134 7.51249 5.56535 6.70489 4.75775C5.8973 3.95016 5.7313 2 5.7313 2Z" fill="url(#aiGrad1)"/>
+          </svg>
+          <span class="drawer-summary-title">AI Summary</span>
+        </div>
+        <p class="drawer-summary-text">Tenant reported a leaking kitchen sink. Maintenance scheduled for tomorrow, 9&ndash;11 AM.</p>
+        <p class="drawer-summary-text">Flickering bathroom light added to the same visit. Dishwasher noise flagged as a separate request.</p>
+      </div>
+
+      <div class="drawer-divider"></div>
+
+      <!-- Quick actions -->
+      <div>
+        <div class="drawer-section-label">Quick actions</div>
+        <div class="drawer-action-list">
+          <div class="drawer-action-item">
+            <div class="drawer-action-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="2" width="6" height="4" rx="1"/><path d="M5 4h-1a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1"/>
+                <line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="12" y2="16"/>
+              </svg>
+            </div>
+            Create task
+          </div>
+          <div class="drawer-action-item">
+            <div class="drawer-action-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+            </div>
+            Create Maintenance Request
+          </div>
+          <div class="drawer-action-item">
+            <div class="drawer-action-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+            </div>
+            Mark as unread
+          </div>
+          <div class="drawer-action-item">
+            <div class="drawer-action-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+            </div>
+            Export conversation
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -2533,12 +2685,56 @@ function switchWfTab(tab, btn) {
   document.getElementById(tab === 'maintenance' ? 'wfMaintenance' : 'wfRenewal').classList.add('active');
 }
 
+// ===== RESUME TIME DROPDOWN =====
+function toggleResumeDropdown(e) {
+  e.stopPropagation();
+  var dd = document.getElementById('resumeDropdown');
+  var isOpen = dd.classList.contains('open');
+  if (isOpen) { dd.classList.remove('open'); return; }
+  var btn = document.getElementById('resumeChevronBtn');
+  var rect = btn.getBoundingClientRect();
+  dd.style.right = (window.innerWidth - rect.right) + 'px';
+  dd.style.bottom = (window.innerHeight - rect.top + 6) + 'px';
+  dd.classList.add('open');
+}
+function closeResumeDropdown() {
+  document.getElementById('resumeDropdown').classList.remove('open');
+}
+function selectResumeTime(seconds) {
+  closeResumeDropdown();
+  if (countdownInterval) clearInterval(countdownInterval);
+  countdownSeconds = seconds;
+  updateCountdown();
+  countdownInterval = setInterval(function() {
+    countdownSeconds--;
+    if (countdownSeconds <= 0) { resumeAI(); return; }
+    updateCountdown();
+  }, 1000);
+}
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#resumeDropdown') && !e.target.closest('#resumeChevronBtn')) {
+    closeResumeDropdown();
+  }
+});
+
 // ===== MORE ACTIONS DRAWER =====
 function toggleMoreDrawer() {
   var overlay = document.getElementById('moreOverlay');
   var drawer = document.getElementById('moreDrawer');
   overlay.classList.toggle('visible');
   drawer.classList.toggle('visible');
+}
+
+// ===== DRAWER AI TOGGLE =====
+function toggleDrawerAI() {
+  var t = document.getElementById('drawerAiToggle');
+  var isOn = t.classList.toggle('on');
+  var sub = document.querySelector('.drawer-ai-toggle-sub');
+  if (sub) {
+    sub.textContent = isOn
+      ? 'Turn off for this conversation permanently'
+      : 'AI Assistant is disabled for this conversation';
+  }
 }
 
 /* ── Audit Log (V1 match) ── */
