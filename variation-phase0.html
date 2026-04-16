@@ -574,6 +574,98 @@ body {
   opacity: 0; transition: opacity .3s; pointer-events: none;
 }
 .toast.show { opacity: 1; }
+
+/* ── Agent Config Screens ── */
+.config-back {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600;
+  color: #4C6FFF; cursor: pointer; background: none; border: none; padding: 0;
+  margin-bottom: 20px; font-family: inherit;
+}
+.config-back:hover { color: #3b5bdb; }
+.config-header {
+  display: flex; align-items: center; gap: 16px; margin-bottom: 8px;
+}
+.config-header .agent-icon { width: 52px; height: 52px; font-size: 24px; }
+.config-header-info { flex: 1; }
+.config-header-info h1 { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.config-desc { font-size: 14px; color: #6b7a99; line-height: 1.6; margin-bottom: 28px; }
+
+.config-section {
+  background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+  padding: 24px; margin-bottom: 20px;
+}
+.config-section-title {
+  font-size: 16px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+}
+.config-section-title .section-icon { font-size: 18px; }
+
+/* Workflow pills */
+.workflow-steps {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+}
+.workflow-pill {
+  display: inline-flex; align-items: center; padding: 7px 14px; border-radius: 20px;
+  font-size: 12px; font-weight: 600; background: #eef2ff; color: #4338ca; white-space: nowrap;
+}
+.workflow-arrow { color: #94a3b8; font-size: 14px; flex-shrink: 0; }
+
+/* Sliders */
+.config-slider-row {
+  display: flex; align-items: center; gap: 16px; margin-bottom: 16px;
+}
+.config-slider-label {
+  font-size: 14px; font-weight: 600; min-width: 200px;
+}
+.config-slider-wrap {
+  flex: 1; display: flex; align-items: center; gap: 12px;
+}
+.config-slider-wrap input[type="range"] {
+  flex: 1; -webkit-appearance: none; appearance: none; height: 6px; border-radius: 3px;
+  background: #e2e8f0; outline: none; cursor: pointer;
+}
+.config-slider-wrap input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none; width: 20px; height: 20px;
+  border-radius: 50%; background: #4C6FFF; border: 3px solid white;
+  box-shadow: 0 1px 4px rgba(0,0,0,.2); cursor: pointer;
+}
+.config-slider-value {
+  font-size: 14px; font-weight: 700; color: #4C6FFF; min-width: 56px; text-align: right;
+}
+
+/* Setting rows with toggles */
+.config-setting {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 12px 0; border-bottom: 1px solid #f1f5f9;
+}
+.config-setting:last-child { border-bottom: none; }
+.config-setting-info { flex: 1; min-width: 0; }
+.config-setting-name { font-size: 14px; font-weight: 600; }
+.config-setting-desc { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+
+/* Vendor rows */
+.vendor-row {
+  display: flex; align-items: center; gap: 14px; padding: 12px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+.vendor-row:last-child { border-bottom: none; }
+.vendor-avatar {
+  width: 40px; height: 40px; border-radius: 10px; background: #f1f5f9;
+  display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;
+}
+.vendor-info { flex: 1; min-width: 0; }
+.vendor-name { font-size: 14px; font-weight: 600; }
+.vendor-type { font-size: 12px; color: #94a3b8; }
+.vendor-rating { font-size: 13px; font-weight: 600; color: #f59e0b; white-space: nowrap; }
+
+/* Screening criteria */
+.criteria-row {
+  display: flex; align-items: center; gap: 12px; padding: 10px 0;
+  border-bottom: 1px solid #f1f5f9; font-size: 14px;
+}
+.criteria-row:last-child { border-bottom: none; }
+.criteria-icon { font-size: 16px; flex-shrink: 0; }
+.criteria-label { font-weight: 600; }
+.criteria-value { margin-left: auto; color: #4C6FFF; font-weight: 600; }
 </style>
 </head>
 <body>
@@ -672,7 +764,7 @@ body {
             </div>
             <div class="agent-right">
               <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
-              <button class="btn-settings">Settings</button>
+              <button class="btn-settings" onclick="event.stopPropagation();switchScreen('config-maintenance');">Settings</button>
             </div>
           </div>
         </div>
@@ -689,7 +781,7 @@ body {
             </div>
             <div class="agent-right">
               <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
-              <button class="btn-settings">Settings</button>
+              <button class="btn-settings" onclick="event.stopPropagation();switchScreen('config-leasing');">Settings</button>
             </div>
           </div>
         </div>
@@ -706,7 +798,7 @@ body {
             </div>
             <div class="agent-right">
               <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
-              <button class="btn-settings">Settings</button>
+              <button class="btn-settings" onclick="event.stopPropagation();switchScreen('config-delinquency');">Settings</button>
             </div>
           </div>
         </div>
@@ -723,7 +815,7 @@ body {
             </div>
             <div class="agent-right">
               <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
-              <button class="btn-settings">Settings</button>
+              <button class="btn-settings" onclick="event.stopPropagation();switchScreen('config-moveinout');">Settings</button>
             </div>
           </div>
         </div>
@@ -1697,6 +1789,402 @@ body {
     </div>
   </div>
 
+  <!-- ════════════ SCREEN: CONFIG — MAINTENANCE AGENT ════════════ -->
+  <div class="screen" id="screen-config-maintenance">
+    <button class="config-back" onclick="switchScreen('agents')">&larr; Back to Agent Settings</button>
+    <div class="config-header">
+      <div class="agent-icon blue">&#128295;</div>
+      <div class="config-header-info">
+        <h1>Maintenance Agent <span class="badge-active">Active</span></h1>
+      </div>
+    </div>
+    <div class="config-desc">Handles tenant maintenance requests end-to-end: intake via text, troubleshooting, vendor coordination, quoting, owner approval, and scheduling.</div>
+
+    <!-- Workflow -->
+    <div class="config-section">
+      <div class="config-section-title"><span class="section-icon">&#9881;</span> Workflow</div>
+      <div class="workflow-steps">
+        <span class="workflow-pill">Tenant texts issue</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">AI troubleshoots</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Contact vendor</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Get quote</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Approve / escalate</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Schedule &amp; close</span>
+      </div>
+    </div>
+
+    <!-- Auto-Approval Threshold -->
+    <div class="config-section">
+      <div class="config-section-title"><span class="section-icon">&#128176;</span> Auto-Approval Threshold</div>
+      <div class="config-slider-row">
+        <div class="config-slider-label">Max auto-approve amount</div>
+        <div class="config-slider-wrap">
+          <span style="font-size:12px;color:#94a3b8;">$0</span>
+          <input type="range" min="0" max="2000" value="500" step="50" oninput="this.parentElement.querySelector('.config-slider-value').textContent='$'+this.value">
+          <span style="font-size:12px;color:#94a3b8;">$2,000</span>
+          <span class="config-slider-value">$500</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Behavior Settings -->
+    <div class="config-section">
+      <div class="config-section-title"><span class="section-icon">&#9881;</span> Behavior Settings</div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Auto-approve recurring vendor invoices</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Always notify owner above threshold</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Handle after-hours emergencies</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Use preferred vendors first</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Follow up with tenant after completion</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Require photos from vendors</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Dispatch non-emergency on weekends</div></div>
+        <label class="agent-toggle"><input type="checkbox"><span class="slider"></span></label>
+      </div>
+    </div>
+
+    <!-- Preferred Vendors -->
+    <div class="config-section">
+      <div class="config-section-title"><span class="section-icon">&#128736;</span> Preferred Vendors</div>
+      <div class="vendor-row">
+        <div class="vendor-avatar">&#128295;</div>
+        <div class="vendor-info"><div class="vendor-name">ABC Plumbing</div><div class="vendor-type">Plumbing</div></div>
+        <div class="vendor-rating">&#11088; 4.8</div>
+      </div>
+      <div class="vendor-row">
+        <div class="vendor-avatar">&#128030;</div>
+        <div class="vendor-info"><div class="vendor-name">GreenShield Pest Control</div><div class="vendor-type">Pest Control</div></div>
+        <div class="vendor-rating">&#11088; 4.6</div>
+      </div>
+      <div class="vendor-row">
+        <div class="vendor-avatar">&#9889;</div>
+        <div class="vendor-info"><div class="vendor-name">Bright Electric</div><div class="vendor-type">Electrical</div></div>
+        <div class="vendor-rating">&#11088; 4.9</div>
+      </div>
+      <div class="vendor-row">
+        <div class="vendor-avatar">&#128296;</div>
+        <div class="vendor-info"><div class="vendor-name">Quick Fix Handyman</div><div class="vendor-type">General Handyman</div></div>
+        <div class="vendor-rating">&#11088; 4.5</div>
+      </div>
+      <div class="vendor-row">
+        <div class="vendor-avatar">&#10052;</div>
+        <div class="vendor-info"><div class="vendor-name">CoolAir HVAC</div><div class="vendor-type">HVAC</div></div>
+        <div class="vendor-rating">&#11088; 4.7</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ SCREEN: CONFIG — LEASING AGENT ════════════ -->
+  <div class="screen" id="screen-config-leasing">
+    <button class="config-back" onclick="switchScreen('agents')">&larr; Back to Agent Settings</button>
+    <div class="config-header">
+      <div class="agent-icon amber">&#128273;</div>
+      <div class="config-header-info">
+        <h1>Leasing Agent <span class="badge-active">Active</span></h1>
+      </div>
+    </div>
+    <div class="config-desc">Manages vacancy listings, responds to inquiries, pre-screens applicants, schedules showings, and guides qualified leads through the application process.</div>
+
+    <!-- Workflow -->
+    <div class="config-section">
+      <div class="config-section-title"><span class="section-icon">&#9881;</span> Workflow</div>
+      <div class="workflow-steps">
+        <span class="workflow-pill">Vacancy detected</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Generate listing</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Syndicate</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Respond to inquiries</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Pre-screen</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Schedule showings</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Collect applications</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Screen applicants</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">PM approves</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Send lease</span>
+      </div>
+    </div>
+
+    <!-- Pricing Strategy -->
+    <div class="config-section">
+      <div class="config-section-title"><span class="section-icon">&#128200;</span> Pricing Strategy</div>
+      <div class="config-slider-row">
+        <div class="config-slider-label">Days on market before price drop suggestion</div>
+        <div class="config-slider-wrap">
+          <span style="font-size:12px;color:#94a3b8;">7d</span>
+          <input type="range" min="7" max="30" value="14" step="1" oninput="this.parentElement.querySelector('.config-slider-value').textContent=this.value+' days'">
+          <span style="font-size:12px;color:#94a3b8;">30d</span>
+          <span class="config-slider-value">14 days</span>
+        </div>
+      </div>
+      <div class="config-slider-row">
+        <div class="config-slider-label">Max auto price reduction</div>
+        <div class="config-slider-wrap">
+          <span style="font-size:12px;color:#94a3b8;">0%</span>
+          <input type="range" min="0" max="10" value="3" step="1" oninput="this.parentElement.querySelector('.config-slider-value').textContent=this.value+'%'">
+          <span style="font-size:12px;color:#94a3b8;">10%</span>
+          <span class="config-slider-value">3%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screening Criteria -->
+    <div class="config-section">
+      <div class="config-section-title"><span class="section-icon">&#128203;</span> Screening Criteria</div>
+      <div class="criteria-row">
+        <span class="criteria-icon">&#128179;</span>
+        <span class="criteria-label">Minimum credit score</span>
+        <span class="criteria-value">620</span>
+      </div>
+      <div class="criteria-row">
+        <span class="criteria-icon">&#128176;</span>
+        <span class="criteria-label">Income requirement</span>
+        <span class="criteria-value">3x rent</span>
+      </div>
+      <div class="criteria-row">
+        <span class="criteria-icon">&#128683;</span>
+        <span class="criteria-label">No evictions</span>
+        <span class="criteria-value">5 years</span>
+      </div>
+      <div class="criteria-row">
+        <span class="criteria-icon">&#128270;</span>
+        <span class="criteria-label">Criminal background check</span>
+        <span class="criteria-value">Required</span>
+      </div>
+      <div class="criteria-row">
+        <span class="criteria-icon">&#128221;</span>
+        <span class="criteria-label">Rental references</span>
+        <span class="criteria-value">2 required</span>
+      </div>
+    </div>
+
+    <!-- Behavior Settings -->
+    <div class="config-section">
+      <div class="config-section-title"><span class="section-icon">&#9881;</span> Behavior Settings</div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Auto-generate listings</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Auto-respond to inquiries</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Pre-screen before scheduling</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Auto-schedule showings</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Syndicate to listing sites</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Enable self-showings</div></div>
+        <label class="agent-toggle"><input type="checkbox"><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Auto-decline unqualified</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Collect application fee upfront</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ SCREEN: CONFIG — DELINQUENCY AGENT ════════════ -->
+  <div class="screen" id="screen-config-delinquency">
+    <button class="config-back" onclick="switchScreen('agents')">&larr; Back to Agent Settings</button>
+    <div class="config-header">
+      <div class="agent-icon green">&#128184;</div>
+      <div class="config-header-info">
+        <h1>Delinquency Agent <span class="badge-active">Active</span></h1>
+      </div>
+    </div>
+    <div class="config-desc">Automates rent collection &mdash; payment reminders, late notices, payment plans, and escalation to formal proceedings.</div>
+
+    <!-- Workflow -->
+    <div class="config-section">
+      <div class="config-section-title"><span class="section-icon">&#9881;</span> Workflow</div>
+      <div class="workflow-steps">
+        <span class="workflow-pill">Due date arrives</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Monitor payments</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Friendly reminder (Day 3)</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Firmer follow-up (Day 5)</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Late fee applied</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Formal notice</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Escalate to PM</span>
+      </div>
+    </div>
+
+    <!-- Late Fee Settings -->
+    <div class="config-section">
+      <div class="config-section-title"><span class="section-icon">&#128176;</span> Late Fee Settings</div>
+      <div class="config-slider-row">
+        <div class="config-slider-label">Grace period</div>
+        <div class="config-slider-wrap">
+          <span style="font-size:12px;color:#94a3b8;">1 day</span>
+          <input type="range" min="1" max="15" value="5" step="1" oninput="this.parentElement.querySelector('.config-slider-value').textContent=this.value+(this.value==='1'?' day':' days')">
+          <span style="font-size:12px;color:#94a3b8;">15 days</span>
+          <span class="config-slider-value">5 days</span>
+        </div>
+      </div>
+      <div class="config-slider-row">
+        <div class="config-slider-label">Late fee amount</div>
+        <div class="config-slider-wrap">
+          <span style="font-size:12px;color:#94a3b8;">$0</span>
+          <input type="range" min="0" max="200" value="50" step="5" oninput="this.parentElement.querySelector('.config-slider-value').textContent='$'+this.value">
+          <span style="font-size:12px;color:#94a3b8;">$200</span>
+          <span class="config-slider-value">$50</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Behavior Settings -->
+    <div class="config-section">
+      <div class="config-section-title"><span class="section-icon">&#9881;</span> Behavior Settings</div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Send automatic payment reminders</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Auto-apply late fees</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Offer payment plans for hardship</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Escalate repeat late payers</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Auto-retry failed ACH payments</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Send payment confirmations</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Notify owner of late payments</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Send reminders on weekends</div></div>
+        <label class="agent-toggle"><input type="checkbox"><span class="slider"></span></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ SCREEN: CONFIG — MOVE-IN / MOVE-OUT AGENT ════════════ -->
+  <div class="screen" id="screen-config-moveinout">
+    <button class="config-back" onclick="switchScreen('agents')">&larr; Back to Agent Settings</button>
+    <div class="config-header">
+      <div class="agent-icon" style="background:#fef3c7;">&#127968;</div>
+      <div class="config-header-info">
+        <h1>Move-in / Move-out Agent <span style="font-size:11px;font-weight:600;padding:3px 12px;border-radius:20px;background:#fef3c7;color:#b45309;">Beta</span></h1>
+      </div>
+    </div>
+    <div class="config-desc">Streamlines tenant onboarding and move-out process &mdash; welcome packets, inspections, deposit calculations, turnover coordination, and utility setup.</div>
+
+    <!-- Workflow -->
+    <div class="config-section">
+      <div class="config-section-title"><span class="section-icon">&#9881;</span> Workflow</div>
+      <div class="workflow-steps">
+        <span class="workflow-pill">Event triggers</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Schedule with tenant</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Conduct inspection</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Generate report</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Compare baseline</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Flag damages</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Create work orders</span>
+      </div>
+    </div>
+
+    <!-- Behavior Settings -->
+    <div class="config-section">
+      <div class="config-section-title"><span class="section-icon">&#9881;</span> Behavior Settings</div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Move-in inspection</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Move-out inspection</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Annual property inspection</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Photo documentation required</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Tenant must be present</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Auto-compare move-in vs move-out</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Auto-calculate security deposit deductions</div></div>
+        <label class="agent-toggle"><input type="checkbox"><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Seasonal maintenance checks</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+    </div>
+  </div>
+
 </div><!-- .main -->
 
 <!-- ── Upload Modal ── -->
@@ -1790,7 +2278,7 @@ function switchScreen(id) {
   const screenId = id === 'knowledge' ? 'screen-knowledge' : 'screen-' + id;
   document.getElementById(screenId).classList.add('visible');
 
-  const navMap = { agents: 'nav-agents', knowledge: 'nav-agents', comm: 'nav-comm', convos: 'nav-convos', audit: 'nav-audit', perf: 'nav-perf' };
+  const navMap = { agents: 'nav-agents', knowledge: 'nav-agents', 'config-maintenance': 'nav-agents', 'config-leasing': 'nav-agents', 'config-delinquency': 'nav-agents', 'config-moveinout': 'nav-agents', comm: 'nav-comm', convos: 'nav-convos', audit: 'nav-audit', perf: 'nav-perf' };
   const navEl = document.getElementById(navMap[id]);
   if (navEl) navEl.classList.add('active');
 
