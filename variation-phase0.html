@@ -665,7 +665,7 @@ body {
     <div class="logo-text">DoorLoop AI</div>
   </div>
 
-  <div class="sidebar-nav-item" id="nav-perf" onclick="switchScreen('perf')">
+  <div class="sidebar-nav-item active" id="nav-perf" onclick="switchScreen('perf')">
     <span class="nav-emoji">&#9889;</span> Dashboard
   </div>
   <div class="sidebar-nav-item" id="nav-comm" onclick="switchScreen('comm')">
@@ -678,7 +678,7 @@ body {
   </div>
 
   <div class="sidebar-section">AI Tools</div>
-  <div class="sidebar-nav-item active" id="nav-agents" onclick="switchScreen('agents')">
+  <div class="sidebar-nav-item" id="nav-agents" onclick="switchScreen('agents')">
     <span class="nav-emoji">&#129302;</span> Agent Settings
   </div>
   <div class="sidebar-nav-item" id="nav-audit" onclick="switchScreen('audit')">
@@ -686,10 +686,6 @@ body {
   </div>
 
   <div class="spacer"></div>
-
-  <div class="sidebar-nav-item" onclick="showToast('Coming in Phase 1')">
-    <span class="nav-emoji">&#127891;</span> Product Tour
-  </div>
 
   <div class="sidebar-bottom">
     <div class="avatar">PM</div>
@@ -704,7 +700,7 @@ body {
 <div class="main">
 
   <!-- ════════════ SCREEN: AI AGENTS ════════════ -->
-  <div class="screen visible" id="screen-agents">
+  <div class="screen" id="screen-agents">
     <div class="page-title">Agent Settings</div>
     <div class="page-sub">1 active agent &middot; 8 coming soon</div>
 
@@ -985,7 +981,6 @@ body {
         <div class="chat-header-actions">
           <button class="btn-danger" id="btnEscalate" onclick="escalateConversation()">Escalate to team</button>
           <button id="btnResolve" onclick="resolveConversation()">Mark as resolved</button>
-          <button onclick="toggleWfDrawer()">Workflow</button>
           <button class="btn-more" onclick="toggleMoreDrawer()">&#8943;</button>
         </div>
       </div>
@@ -1072,7 +1067,7 @@ body {
     </div>
 
     <!-- ===== RIGHT: Workflow Progress Drawer ===== -->
-    <div class="wf-drawer" id="wfDrawer">
+    <div class="wf-drawer collapsed" id="wfDrawer">
       <div class="wf-drawer-header">
         <h3>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4C6FFF" stroke-width="2"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
@@ -1603,7 +1598,7 @@ body {
   </div>
 
   <!-- ════════════ SCREEN: PERFORMANCE ════════════ -->
-  <div class="screen" id="screen-perf">
+  <div class="screen visible" id="screen-perf">
     <div class="page-title">Performance</div>
     <div class="page-sub" style="margin-bottom:24px;">Concierge Agent analytics</div>
 
