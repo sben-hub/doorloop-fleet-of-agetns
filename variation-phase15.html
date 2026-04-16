@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DoorLoop — V6: Phase 1 — Concierge Agent</title>
+<title>DoorLoop — V8: Phase 1.5 — Concierge Agent</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -484,6 +484,44 @@ body {
   color: #6b7a99;
 }
 .filter-tab.active { background: #4C6FFF; color: white; border-color: #4C6FFF; }
+/* ── Audit Log (V1 match) ── */
+.al-toolbar { display: flex; align-items: center; gap: 8px; margin: 16px 0 12px; flex-wrap: wrap; }
+.al-search { flex: 0 1 260px; padding: 7px 14px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 13px; font-family: inherit; outline: none; }
+.al-search:focus { border-color: #4C6FFF; }
+.al-filter-btn { padding: 6px 16px; border: 1px solid #e2e8f0; border-radius: 8px; background: white; font-size: 12px; font-weight: 500; color: #6b7a99; cursor: pointer; font-family: inherit; transition: all .15s; }
+.al-filter-btn:hover { border-color: #4C6FFF; color: #4C6FFF; }
+.al-filter-btn.active { background: #4C6FFF; color: white; border-color: #4C6FFF; }
+.al-meta { margin-left: auto; font-size: 12px; color: #94a3b8; white-space: nowrap; }
+.al-table-wrap { background: white; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
+.al-table { width: 100%; border-collapse: collapse; }
+.al-table thead tr { border-bottom: 1px solid #e2e8f0; }
+.al-table th { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: #94a3b8; text-align: left; padding: 12px 16px; background: #fafbfc; }
+.al-table td { padding: 14px 16px; font-size: 13px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+.al-row { cursor: pointer; transition: background .1s; }
+.al-row:hover { background: #f8fafc; }
+.al-odd { background: #fafbfc; }
+.al-odd:hover { background: #f1f5f9; }
+.al-time { color: #94a3b8; white-space: nowrap; font-family: monospace; font-size: 12px; }
+.al-agent { white-space: nowrap; }
+.al-prop { color: #6b7a99; white-space: nowrap; }
+.al-arrow { display: inline-block; font-size: 10px; color: #94a3b8; transition: transform .2s; }
+.al-arrow.open { transform: rotate(90deg); }
+.al-badge-by { display: inline-block; padding: 2px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+.al-badge-by.ai { background: #e0e7ff; color: #4338ca; }
+.al-badge-by.human { background: #d1fae5; color: #059669; }
+.al-badge-result { display: inline-block; padding: 2px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+.al-badge-result.approved { background: #d1fae5; color: #059669; }
+.al-badge-result.auto { background: #e0e7ff; color: #4338ca; }
+.al-badge-result.escalated { background: #fef3c7; color: #b45309; }
+.al-badge-result.resolved { background: #d1fae5; color: #059669; }
+.al-detail { display: none; }
+.al-detail.open { display: table-row; }
+.al-detail td { background: #f0f5ff; padding: 16px 20px 16px 46px; border-bottom: 1px solid #e2e8f0; }
+.al-detail-content { font-size: 13px; color: #1a2b4a; line-height: 1.7; }
+.al-detail-content strong { font-weight: 600; }
+.al-link { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; color: #4C6FFF; text-decoration: none; margin-top: 8px; }
+.al-link:hover { text-decoration: underline; }
+
 /* legacy (keep for other screens) */
 .audit-detail {
   display: none; padding: 12px 16px; background: #f8fafc;
@@ -618,7 +656,7 @@ body {
 </head>
 <body>
 
-<div style="position:fixed;top:0;left:0;right:0;z-index:99999;font-family:Inter,-apple-system,sans-serif;"><div style="height:36px;background:#070b14;display:flex;align-items:center;justify-content:center;gap:8px;"><a href="maintenance-agent-prototype.html" style="font-size:12px;font-weight:500;padding:5px 20px;border-radius:6px;text-decoration:none;color:#8896b3;">Playground</a><a href="variation-phase00.html" style="font-size:12px;font-weight:600;padding:5px 20px;border-radius:6px;text-decoration:none;color:white;background:#4C6FFF;">The Plan</a></div><div style="height:36px;background:#0f1729;display:flex;align-items:center;justify-content:center;gap:6px;"><a href="variation-phase00.html" style="font-size:12px;font-weight:500;padding:5px 16px;border-radius:6px;text-decoration:none;color:#8896b3;">Phase 0</a><a href="variation-phase0.html" style="font-size:12px;font-weight:600;padding:5px 16px;border-radius:6px;text-decoration:none;color:white;background:#4C6FFF;">Phase 1</a><a href="variation-phase15.html" style="font-size:12px;font-weight:500;padding:5px 16px;border-radius:6px;text-decoration:none;color:#8896b3;">Phase 1.5</a></div></div>
+<div style="position:fixed;top:0;left:0;right:0;z-index:99999;font-family:Inter,-apple-system,sans-serif;"><div style="height:36px;background:#070b14;display:flex;align-items:center;justify-content:center;gap:8px;"><a href="maintenance-agent-prototype.html" style="font-size:12px;font-weight:500;padding:5px 20px;border-radius:6px;text-decoration:none;color:#8896b3;">Playground</a><a href="variation-phase00.html" style="font-size:12px;font-weight:600;padding:5px 20px;border-radius:6px;text-decoration:none;color:white;background:#4C6FFF;">The Plan</a></div><div style="height:36px;background:#0f1729;display:flex;align-items:center;justify-content:center;gap:6px;"><a href="variation-phase00.html" style="font-size:12px;font-weight:500;padding:5px 16px;border-radius:6px;text-decoration:none;color:#8896b3;">Phase 0</a><a href="variation-phase0.html" style="font-size:12px;font-weight:500;padding:5px 16px;border-radius:6px;text-decoration:none;color:#8896b3;">Phase 1</a><a href="variation-phase15.html" style="font-size:12px;font-weight:600;padding:5px 16px;border-radius:6px;text-decoration:none;color:white;background:#4C6FFF;">Phase 1.5</a></div></div>
 
 <!-- ── Sidebar ── -->
 <div class="sidebar">
@@ -643,6 +681,10 @@ body {
   <div class="sidebar-nav-item" id="nav-agents" onclick="switchScreen('agents')">
     <span class="nav-emoji">&#129302;</span> Agent Settings
   </div>
+  <div class="sidebar-nav-item" id="nav-audit" onclick="switchScreen('audit')">
+    <span class="nav-emoji">&#128196;</span> Audit Log
+  </div>
+
   <div class="spacer"></div>
 
   <div class="sidebar-bottom">
@@ -1169,6 +1211,7 @@ body {
       </div>
 
       <div class="wf-links">
+        <a href="#" onclick="switchScreen('audit');return false;">View in Audit Log</a>
         <a href="#" onclick="switchScreen('perf');return false;">View in Command Center</a>
       </div>
       <div class="wf-footer">
@@ -1408,6 +1451,166 @@ body {
     </div>
   </div>
 
+  <!-- ════════════ SCREEN: AUDIT LOG (V1 match) ════════════ -->
+  <div class="screen" id="screen-audit">
+    <div style="display:flex;align-items:baseline;gap:16px;margin-bottom:4px;">
+      <div class="page-title" style="margin-bottom:0;">Audit Log</div>
+      <div class="page-sub" style="margin:0;">Every decision &mdash; human and AI &mdash; logged, timestamped, and searchable.</div>
+    </div>
+
+    <div class="al-toolbar">
+      <input class="al-search" type="text" placeholder="Search decisions, agents, properties..." oninput="filterAuditRows()">
+      <button class="al-filter-btn active" onclick="setAuditFilter(this)" data-filter="all">All</button>
+      <button class="al-filter-btn" onclick="setAuditFilter(this)" data-filter="ai">AI only</button>
+      <button class="al-filter-btn" onclick="setAuditFilter(this)" data-filter="human">Human only</button>
+      <button class="al-filter-btn" onclick="setAuditFilter(this)" data-filter="escalated">Escalated</button>
+      <div class="al-meta"><span id="al-count">Showing 6 of 47 decisions today</span> &middot; <span style="color:#4C6FFF;cursor:pointer;">Export CSV</span> &middot; <span style="color:#4C6FFF;cursor:pointer;">Filter by date range</span></div>
+    </div>
+
+    <div class="al-table-wrap">
+      <table class="al-table">
+        <thead>
+          <tr>
+            <th style="width:30px;"></th>
+            <th>Time</th>
+            <th>Agent</th>
+            <th>Property</th>
+            <th>Decision</th>
+            <th>By</th>
+            <th>Result</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Row 1 -->
+          <tr class="al-row" data-by="human" data-result="approved" onclick="toggleAuditDetail('d1')">
+            <td><span class="al-arrow" id="arrow-d1">&#9654;</span></td>
+            <td class="al-time">8:02 AM</td>
+            <td><span class="al-agent">&#128295; Maintenance</span></td>
+            <td class="al-prop">742 Evergreen 3A</td>
+            <td>Owner David Chen approved $2,800 water heater replacement</td>
+            <td><span class="al-badge-by human">Human</span></td>
+            <td><span class="al-badge-result approved">Approved</span></td>
+          </tr>
+          <tr class="al-detail" id="d1">
+            <td colspan="7">
+              <div class="al-detail-content">
+                <strong>Approved by David Chen (owner)</strong> at 8:02 AM via SMS.<br>
+                <strong>Context:</strong> Unit installed 2014, 1 prior repair Sept 2024, tenant in good standing 5 yrs.<br>
+                <strong>Quote from ABC Plumbing:</strong> $2,800. Threshold exceeded: $500.<br>
+                <strong>Outcome:</strong> ABC Plumbing dispatched 8:05 AM. Job scheduled 2&ndash;4 PM.<br>
+                <a class="al-link" href="#" onclick="event.preventDefault();event.stopPropagation();switchScreen('comm');">View owner conversation &rarr;</a>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Row 2 -->
+          <tr class="al-row" data-by="ai" data-result="auto" onclick="toggleAuditDetail('d2')">
+            <td><span class="al-arrow" id="arrow-d2">&#9654;</span></td>
+            <td class="al-time">8:05 AM</td>
+            <td><span class="al-agent">&#128295; Maintenance</span></td>
+            <td class="al-prop">742 Evergreen 3A</td>
+            <td>Dispatched ABC Plumbing for 2&ndash;4 PM slot. Tenant confirmed.</td>
+            <td><span class="al-badge-by ai">AI</span></td>
+            <td><span class="al-badge-result auto">Auto</span></td>
+          </tr>
+          <tr class="al-detail" id="d2">
+            <td colspan="7">
+              <div class="al-detail-content">
+                <strong>Rule applied:</strong> Preferred vendor rule: ABC Plumbing (plumbing specialty, rating 4.8). Availability confirmed via SMS at 8:04 AM.<br>
+                <strong>Outcome:</strong> Tenant Maria Lopez confirmed 2&ndash;4 PM window at 7:52 AM. No further action needed.<br>
+                <a class="al-link" href="#" onclick="event.preventDefault();event.stopPropagation();switchScreen('comm');">View vendor conversation &rarr;</a>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Row 3 -->
+          <tr class="al-row al-odd" data-by="ai" data-result="escalated" onclick="toggleAuditDetail('d3')">
+            <td><span class="al-arrow" id="arrow-d3">&#9654;</span></td>
+            <td class="al-time">7:46 AM</td>
+            <td><span class="al-agent">&#128295; Maintenance</span></td>
+            <td class="al-prop">742 Evergreen 3A</td>
+            <td>Quote $2,800 exceeds $500 threshold &mdash; escalated to owner</td>
+            <td><span class="al-badge-by ai">AI</span></td>
+            <td><span class="al-badge-result escalated">Escalated</span></td>
+          </tr>
+          <tr class="al-detail" id="d3">
+            <td colspan="7">
+              <div class="al-detail-content">
+                <strong>Escalated by Maintenance Agent</strong> to Sarah Johnson (PM) &rarr; David Chen (owner).<br>
+                <strong>Why:</strong> Rule &mdash; any quote exceeding property auto-approval threshold ($500) requires owner approval.<br>
+                <strong>Context surfaced:</strong> Unit history, tenant profile, vendor rating, and urgency note (no hot water).<br>
+                <strong>Resolved by:</strong> David Chen approved via SMS at 8:02 AM.<br>
+                <a class="al-link" href="#" onclick="event.preventDefault();event.stopPropagation();switchScreen('comm');">View escalation thread &rarr;</a>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Row 4 -->
+          <tr class="al-row" data-by="ai" data-result="escalated" onclick="toggleAuditDetail('d4')">
+            <td><span class="al-arrow" id="arrow-d4">&#9654;</span></td>
+            <td class="al-time">8:00 AM</td>
+            <td><span class="al-agent">&#128176; Rent</span></td>
+            <td class="al-prop">155 Pine 7B</td>
+            <td>3rd late reminder sent to James Wilson &mdash; no response, escalated to PM</td>
+            <td><span class="al-badge-by ai">AI</span></td>
+            <td><span class="al-badge-result escalated">Escalated</span></td>
+          </tr>
+          <tr class="al-detail" id="d4">
+            <td colspan="7">
+              <div class="al-detail-content">
+                <strong>Escalated by Rent Collection Agent</strong> to Sarah Johnson (PM).<br>
+                <strong>Why:</strong> Rule &mdash; after 3 reminders with no response, escalate to PM. Also flagged: 3rd late payment in 6 months.<br>
+                <strong>Context:</strong> Texts sent Feb 3 9:00 AM, Feb 5 8:00 AM. Neither opened within 24h.<br>
+                <strong>Resolved by:</strong> Awaiting PM action.<br>
+                <a class="al-link" href="#" onclick="event.preventDefault();event.stopPropagation();switchScreen('comm');">View communication thread &rarr;</a>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Row 5 -->
+          <tr class="al-row al-odd" data-by="ai" data-result="auto" onclick="toggleAuditDetail('d5')">
+            <td><span class="al-arrow" id="arrow-d5">&#9654;</span></td>
+            <td class="al-time">9:15 AM</td>
+            <td><span class="al-agent">&#128273; Leasing</span></td>
+            <td class="al-prop">890 Oak #12</td>
+            <td>Applicant rejected: prior eviction 2021 (rule: no evictions &lt;5 yrs)</td>
+            <td><span class="al-badge-by ai">AI</span></td>
+            <td><span class="al-badge-result auto">Auto</span></td>
+          </tr>
+          <tr class="al-detail" id="d5">
+            <td colspan="7">
+              <div class="al-detail-content">
+                <strong>Rule applied:</strong> Screening rule &mdash; no evictions within 5 years. Applicant has eviction filed Nov 2021 (3 yrs 4 months ago).<br>
+                <strong>Outcome:</strong> Decline notice sent automatically per Fair Housing template. Logged for compliance.<br>
+                <a class="al-link" href="#" onclick="event.preventDefault();event.stopPropagation();switchScreen('comm');">View screening report &rarr;</a>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Row 6 -->
+          <tr class="al-row" data-by="ai" data-result="resolved" onclick="toggleAuditDetail('d6')">
+            <td><span class="al-arrow" id="arrow-d6">&#9654;</span></td>
+            <td class="al-time">7:30 AM</td>
+            <td><span class="al-agent">&#128176; Rent</span></td>
+            <td class="al-prop">155 Pine 14A</td>
+            <td>Payment plan offered to Patricia Moore &mdash; accepted, confirmed</td>
+            <td><span class="al-badge-by ai">AI</span></td>
+            <td><span class="al-badge-result resolved">Resolved</span></td>
+          </tr>
+          <tr class="al-detail" id="d6">
+            <td colspan="7">
+              <div class="al-detail-content">
+                <strong>Rule applied:</strong> Hardship language detected. Rule &mdash; offer standard 3-installment plan if under $3,000.<br>
+                <strong>Outcome:</strong> Tenant accepted: $550 on Feb 7, $550 on Feb 14, $550 on Feb 21. Late fee waived per plan policy.<br>
+                <a class="al-link" href="#" onclick="event.preventDefault();event.stopPropagation();switchScreen('comm');">View conversation &rarr;</a>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
   <!-- ════════════ SCREEN: PERFORMANCE ════════════ -->
   <div class="screen visible" id="screen-perf">
     <div class="page-title">Performance</div>
@@ -1448,44 +1651,68 @@ body {
           </div>
           <div style="font-size:11px;color:#6b7a99;">Avg response: <strong style="color:#1a2b4a;">&lt;5 sec</strong></div>
         </div>
-        <!-- Maintenance — Not configured -->
-        <div style="background:white;border:1px solid #e2e8f0;border-radius:14px;padding:20px;opacity:0.7;">
+        <!-- Maintenance -->
+        <div style="background:white;border:1px solid #e2e8f0;border-radius:14px;padding:20px;cursor:pointer;transition:all .2s;" onmouseover="this.style.borderColor='#4C6FFF';this.style.boxShadow='0 4px 16px rgba(76,111,255,0.08)'" onmouseout="this.style.borderColor='#e2e8f0';this.style.boxShadow='none'" onclick="switchScreen('config-maintenance')">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
             <div style="display:flex;align-items:center;gap:10px;">
-              <div style="width:38px;height:38px;border-radius:10px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:18px;">&#128295;</div>
+              <div style="width:38px;height:38px;border-radius:10px;background:#e0e7ff;display:flex;align-items:center;justify-content:center;font-size:18px;">&#128295;</div>
               <span style="font-size:14px;font-weight:700;">Maintenance</span>
             </div>
-            <span style="font-size:10px;font-weight:600;padding:2px 10px;border-radius:20px;background:#f1f5f9;color:#94a3b8;">Not configured</span>
+            <span style="font-size:10px;font-weight:600;padding:2px 10px;border-radius:20px;background:#d1fae5;color:#059669;">Active</span>
           </div>
-          <div style="margin-bottom:10px;"><span style="font-size:24px;font-weight:700;color:#94a3b8;">0</span> <span style="font-size:12px;color:#94a3b8;">workflows</span></div>
-          <div style="height:5px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:8px;"></div>
-          <div style="font-size:11px;color:#94a3b8;">Coming soon</div>
+          <div style="margin-bottom:10px;"><span style="font-size:24px;font-weight:700;">12</span> <span style="font-size:12px;color:#6b7a99;">active workflows</span></div>
+          <div style="height:5px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:8px;">
+            <div style="display:flex;height:100%;"><div style="width:42%;background:#4C6FFF;"></div><div style="width:25%;background:#fbbf24;"></div><div style="width:25%;background:#22c55e;"></div><div style="width:8%;background:#ef4444;"></div></div>
+          </div>
+          <div style="display:flex;gap:8px;font-size:9px;color:#6b7a99;flex-wrap:wrap;margin-bottom:8px;">
+            <span><span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#4C6FFF;margin-right:3px;"></span>5 In Progress</span>
+            <span><span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#fbbf24;margin-right:3px;"></span>3 Waiting</span>
+            <span><span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#22c55e;margin-right:3px;"></span>3 Completed</span>
+            <span><span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#ef4444;margin-right:3px;"></span>1 Escalated</span>
+          </div>
+          <div style="font-size:11px;color:#6b7a99;">Avg fix time: <strong style="color:#1a2b4a;">2.1 days</strong></div>
         </div>
-        <!-- Leasing — Not configured -->
-        <div style="background:white;border:1px solid #e2e8f0;border-radius:14px;padding:20px;opacity:0.7;">
+        <!-- Leasing -->
+        <div style="background:white;border:1px solid #e2e8f0;border-radius:14px;padding:20px;cursor:pointer;transition:all .2s;" onmouseover="this.style.borderColor='#4C6FFF';this.style.boxShadow='0 4px 16px rgba(76,111,255,0.08)'" onmouseout="this.style.borderColor='#e2e8f0';this.style.boxShadow='none'" onclick="switchScreen('config-leasing')">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
             <div style="display:flex;align-items:center;gap:10px;">
-              <div style="width:38px;height:38px;border-radius:10px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:18px;">&#128273;</div>
+              <div style="width:38px;height:38px;border-radius:10px;background:#fef3c7;display:flex;align-items:center;justify-content:center;font-size:18px;">&#128273;</div>
               <span style="font-size:14px;font-weight:700;">Leasing</span>
             </div>
-            <span style="font-size:10px;font-weight:600;padding:2px 10px;border-radius:20px;background:#f1f5f9;color:#94a3b8;">Not configured</span>
+            <span style="font-size:10px;font-weight:600;padding:2px 10px;border-radius:20px;background:#d1fae5;color:#059669;">Active</span>
           </div>
-          <div style="margin-bottom:10px;"><span style="font-size:24px;font-weight:700;color:#94a3b8;">0</span> <span style="font-size:12px;color:#94a3b8;">workflows</span></div>
-          <div style="height:5px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:8px;"></div>
-          <div style="font-size:11px;color:#94a3b8;">Coming soon</div>
+          <div style="margin-bottom:10px;"><span style="font-size:24px;font-weight:700;">5</span> <span style="font-size:12px;color:#6b7a99;">active vacancies</span></div>
+          <div style="height:5px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:8px;">
+            <div style="display:flex;height:100%;"><div style="width:40%;background:#4C6FFF;"></div><div style="width:30%;background:#fbbf24;"></div><div style="width:20%;background:#22c55e;"></div><div style="width:10%;background:#ef4444;"></div></div>
+          </div>
+          <div style="display:flex;gap:8px;font-size:9px;color:#6b7a99;flex-wrap:wrap;margin-bottom:8px;">
+            <span><span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#4C6FFF;margin-right:3px;"></span>2 Showings</span>
+            <span><span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#fbbf24;margin-right:3px;"></span>2 Applications</span>
+            <span><span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#22c55e;margin-right:3px;"></span>1 Signed</span>
+            <span><span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#ef4444;margin-right:3px;"></span>1 Flagged</span>
+          </div>
+          <div style="font-size:11px;color:#6b7a99;">Avg days to fill: <strong style="color:#1a2b4a;">24 days</strong></div>
         </div>
-        <!-- Delinquency — Not configured -->
-        <div style="background:white;border:1px solid #e2e8f0;border-radius:14px;padding:20px;opacity:0.7;">
+        <!-- Delinquency -->
+        <div style="background:white;border:1px solid #e2e8f0;border-radius:14px;padding:20px;cursor:pointer;transition:all .2s;" onmouseover="this.style.borderColor='#4C6FFF';this.style.boxShadow='0 4px 16px rgba(76,111,255,0.08)'" onmouseout="this.style.borderColor='#e2e8f0';this.style.boxShadow='none'" onclick="switchScreen('config-delinquency')">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
             <div style="display:flex;align-items:center;gap:10px;">
-              <div style="width:38px;height:38px;border-radius:10px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:18px;">&#128184;</div>
+              <div style="width:38px;height:38px;border-radius:10px;background:#d1fae5;display:flex;align-items:center;justify-content:center;font-size:18px;">&#128184;</div>
               <span style="font-size:14px;font-weight:700;">Delinquency</span>
             </div>
-            <span style="font-size:10px;font-weight:600;padding:2px 10px;border-radius:20px;background:#f1f5f9;color:#94a3b8;">Not configured</span>
+            <span style="font-size:10px;font-weight:600;padding:2px 10px;border-radius:20px;background:#d1fae5;color:#059669;">Active</span>
           </div>
-          <div style="margin-bottom:10px;"><span style="font-size:24px;font-weight:700;color:#94a3b8;">0</span> <span style="font-size:12px;color:#94a3b8;">workflows</span></div>
-          <div style="height:5px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:8px;"></div>
-          <div style="font-size:11px;color:#94a3b8;">Coming soon</div>
+          <div style="margin-bottom:10px;"><span style="font-size:24px;font-weight:700;">7</span> <span style="font-size:12px;color:#6b7a99;">late payments</span></div>
+          <div style="height:5px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:8px;">
+            <div style="display:flex;height:100%;"><div style="width:30%;background:#4C6FFF;"></div><div style="width:15%;background:#fbbf24;"></div><div style="width:40%;background:#22c55e;"></div><div style="width:15%;background:#ef4444;"></div></div>
+          </div>
+          <div style="display:flex;gap:8px;font-size:9px;color:#6b7a99;flex-wrap:wrap;margin-bottom:8px;">
+            <span><span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#4C6FFF;margin-right:3px;"></span>2 Reminded</span>
+            <span><span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#fbbf24;margin-right:3px;"></span>1 Plan</span>
+            <span><span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#22c55e;margin-right:3px;"></span>3 Collected</span>
+            <span><span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#ef4444;margin-right:3px;"></span>1 Escalated</span>
+          </div>
+          <div style="font-size:11px;color:#6b7a99;">Collection rate: <strong style="color:#1a2b4a;">89%</strong></div>
         </div>
         <!-- Move-in -->
         <div style="background:white;border:1px solid #e2e8f0;border-radius:14px;padding:20px;cursor:pointer;transition:all .2s;" onmouseover="this.style.borderColor='#4C6FFF';this.style.boxShadow='0 4px 16px rgba(76,111,255,0.08)'" onmouseout="this.style.borderColor='#e2e8f0';this.style.boxShadow='none'" onclick="switchScreen('config-moveinout')">
@@ -1526,32 +1753,6 @@ body {
             <span><span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#22c55e;margin-right:3px;"></span>0 Complete</span>
           </div>
           <div style="font-size:11px;color:#6b7a99;">Avg turnover: <strong style="color:#1a2b4a;">5 days</strong></div>
-        </div>
-        <!-- Rent Reminder — Not configured -->
-        <div style="background:white;border:1px solid #e2e8f0;border-radius:14px;padding:20px;opacity:0.7;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-            <div style="display:flex;align-items:center;gap:10px;">
-              <div style="width:38px;height:38px;border-radius:10px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:18px;">&#128176;</div>
-              <span style="font-size:14px;font-weight:700;">Rent Reminder</span>
-            </div>
-            <span style="font-size:10px;font-weight:600;padding:2px 10px;border-radius:20px;background:#f1f5f9;color:#94a3b8;">Not configured</span>
-          </div>
-          <div style="margin-bottom:10px;"><span style="font-size:24px;font-weight:700;color:#94a3b8;">0</span> <span style="font-size:12px;color:#94a3b8;">workflows</span></div>
-          <div style="height:5px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:8px;"></div>
-          <div style="font-size:11px;color:#94a3b8;">Coming soon</div>
-        </div>
-        <!-- Listing — Not configured -->
-        <div style="background:white;border:1px solid #e2e8f0;border-radius:14px;padding:20px;opacity:0.7;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-            <div style="display:flex;align-items:center;gap:10px;">
-              <div style="width:38px;height:38px;border-radius:10px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:18px;">&#128203;</div>
-              <span style="font-size:14px;font-weight:700;">Listing</span>
-            </div>
-            <span style="font-size:10px;font-weight:600;padding:2px 10px;border-radius:20px;background:#f1f5f9;color:#94a3b8;">Not configured</span>
-          </div>
-          <div style="margin-bottom:10px;"><span style="font-size:24px;font-weight:700;color:#94a3b8;">0</span> <span style="font-size:12px;color:#94a3b8;">workflows</span></div>
-          <div style="height:5px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:8px;"></div>
-          <div style="font-size:11px;color:#94a3b8;">Coming soon</div>
         </div>
       </div>
     </div><!-- /Agent Overview -->
@@ -2077,7 +2278,7 @@ function switchScreen(id) {
   const screenId = id === 'knowledge' ? 'screen-knowledge' : 'screen-' + id;
   document.getElementById(screenId).classList.add('visible');
 
-  const navMap = { agents: 'nav-agents', knowledge: 'nav-agents', 'config-maintenance': 'nav-agents', 'config-leasing': 'nav-agents', 'config-delinquency': 'nav-agents', 'config-moveinout': 'nav-agents', comm: 'nav-comm', convos: 'nav-convos', perf: 'nav-perf' };
+  const navMap = { agents: 'nav-agents', knowledge: 'nav-agents', 'config-maintenance': 'nav-agents', 'config-leasing': 'nav-agents', 'config-delinquency': 'nav-agents', 'config-moveinout': 'nav-agents', comm: 'nav-comm', convos: 'nav-convos', audit: 'nav-audit', perf: 'nav-perf' };
   const navEl = document.getElementById(navMap[id]);
   if (navEl) navEl.classList.add('active');
 
@@ -2569,6 +2770,56 @@ function toggleMoreDrawer() {
 }
 
 /* ── Audit Log (V1 match) ── */
+let alCurrentFilter = 'all';
+let alCurrentOpen = null;
+
+function toggleAuditDetail(id) {
+  const row = document.getElementById(id);
+  const arrow = document.getElementById('arrow-' + id);
+  if (alCurrentOpen && alCurrentOpen !== id) {
+    document.getElementById(alCurrentOpen).classList.remove('open');
+    document.getElementById('arrow-' + alCurrentOpen).classList.remove('open');
+  }
+  if (row.classList.contains('open')) {
+    row.classList.remove('open');
+    arrow.classList.remove('open');
+    alCurrentOpen = null;
+  } else {
+    row.classList.add('open');
+    arrow.classList.add('open');
+    alCurrentOpen = id;
+  }
+}
+
+function setAuditFilter(btn) {
+  document.querySelectorAll('.al-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  alCurrentFilter = btn.dataset.filter;
+  filterAuditRows();
+}
+
+function filterAuditRows() {
+  const search = (document.querySelector('.al-search')?.value || '').toLowerCase();
+  let visible = 0;
+  document.querySelectorAll('.al-row').forEach(row => {
+    const by = row.dataset.by;
+    const result = row.dataset.result;
+    const text = row.textContent.toLowerCase();
+    let show = true;
+    if (alCurrentFilter === 'ai' && by !== 'ai') show = false;
+    if (alCurrentFilter === 'human' && by !== 'human') show = false;
+    if (alCurrentFilter === 'escalated' && result !== 'escalated') show = false;
+    if (search && !text.includes(search)) show = false;
+    row.style.display = show ? '' : 'none';
+    // Also hide/show the detail row
+    const detailId = row.querySelector('.al-arrow')?.id?.replace('arrow-','');
+    if (detailId) document.getElementById(detailId).style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+  const countEl = document.getElementById('al-count');
+  if (countEl) countEl.textContent = `Showing ${visible} of 47 decisions today`;
+}
+
 /* ── Init ── */
 renderDocs();
 
