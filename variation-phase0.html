@@ -690,6 +690,38 @@ body {
 .criteria-icon { font-size: 16px; flex-shrink: 0; }
 .criteria-label { font-weight: 600; }
 .criteria-value { margin-left: auto; color: #4C6FFF; font-weight: 600; }
+
+/* ── Editor mode toggle (Guided / Full) ── */
+.mode-toggle { display: inline-flex; gap: 4px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px; padding: 3px; margin-left: auto; flex-shrink: 0; }
+.mode-pill { font-family: inherit; font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 6px; border: none; background: transparent; color: #64748b; cursor: pointer; transition: all .15s; }
+.mode-pill:hover { color: #1e293b; }
+.mode-pill.active { background: white; color: #4C6FFF; box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+
+/* ── Wizard breadcrumb ── */
+.wizard-breadcrumb { display: flex; align-items: center; gap: 12px; margin: 4px 0 24px; padding: 14px 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; }
+.wizard-step-pill { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #94a3b8; cursor: pointer; user-select: none; padding: 4px 6px; border-radius: 6px; transition: all .15s; }
+.wizard-step-pill:hover { color: #1e293b; }
+.wizard-step-pill .num { width: 24px; height: 24px; border-radius: 50%; background: #e2e8f0; color: #64748b; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.wizard-step-pill.active { color: #0f172a; }
+.wizard-step-pill.active .num { background: #FF6A36; color: white; }
+.wizard-step-pill.completed .num { background: #4C6FFF; color: white; }
+.wizard-step-connector { flex: 1; height: 1px; background: #e2e8f0; min-width: 24px; }
+
+/* ── Wizard step pane ── */
+.wizard-step-pane { display: none; }
+.wizard-step-pane.active { display: block; }
+.wizard-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+.wizard-btn { font-family: inherit; font-size: 13px; font-weight: 600; padding: 9px 18px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #475569; cursor: pointer; transition: all .15s; }
+.wizard-btn:hover:not(:disabled) { border-color: #cbd5e1; color: #1e293b; }
+.wizard-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.wizard-btn.primary { background: #4C6FFF; color: white; border-color: #4C6FFF; }
+.wizard-btn.primary:hover { background: #3b5bdb; border-color: #3b5bdb; }
+
+/* ── Mode visibility ── */
+.config-screen.guided > .config-full-sections { display: none; }
+.config-screen.full > .wizard-breadcrumb { display: none; }
+.config-screen.full > .wizard-step-pane { display: none; }
+.config-screen.full > .config-full-sections { display: block; }
 </style>
 </head>
 <body>
@@ -792,7 +824,7 @@ body {
             </div>
             <div class="agent-right">
               <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
-              <button class="btn-settings" onclick="event.stopPropagation();showToast('Renewal agent settings coming soon');">Settings</button>
+              <button class="btn-settings" onclick="event.stopPropagation();switchScreen('config-renewal');">Settings</button>
             </div>
           </div>
         </div>
@@ -867,9 +899,133 @@ body {
     </div>
   </div>
 
-  <!-- ════════════ SCREEN: KNOWLEDGE BASE ════════════ -->
-  <div class="screen" id="screen-knowledge">
+  <!-- ════════════ SCREEN: KNOWLEDGE BASE (Concierge Agent settings) ════════════ -->
+  <div class="screen config-screen guided" id="screen-knowledge">
     <button class="config-back" onclick="switchScreen('agents')">&larr; Back to Agent Settings</button>
+    <div class="config-header">
+      <div class="agent-icon" style="background:#fce7f3;">&#129309;</div>
+      <div class="config-header-info">
+        <h1>Concierge Agent <span class="badge-active">Active</span></h1>
+      </div>
+      <div class="mode-toggle">
+        <button class="mode-pill active" onclick="setEditMode(this,'screen-knowledge','guided')">Guided</button>
+        <button class="mode-pill" onclick="setEditMode(this,'screen-knowledge','full')">Full editor</button>
+      </div>
+    </div>
+    <div class="config-desc">Answers tenant questions 24/7 using your uploaded documents &mdash; policies, lease terms, property rules, and more.</div>
+
+    <!-- Guided wizard breadcrumb -->
+    <div class="wizard-breadcrumb">
+      <div class="wizard-step-pill active" onclick="setWizardStep('screen-knowledge',1)"><span class="num">1</span> Behavior</div>
+      <div class="wizard-step-connector"></div>
+      <div class="wizard-step-pill" onclick="setWizardStep('screen-knowledge',2)"><span class="num">2</span> Knowledge</div>
+      <div class="wizard-step-connector"></div>
+      <div class="wizard-step-pill" onclick="setWizardStep('screen-knowledge',3)"><span class="num">3</span> Escalation</div>
+    </div>
+
+    <!-- Guided: Step 1 — Behavior -->
+    <div class="wizard-step-pane active" data-step="1">
+      <div class="config-section">
+        <div class="config-section-title"><span class="section-icon">&#9881;</span> Behavior</div>
+        <div class="config-setting">
+          <div class="config-setting-info"><div class="config-setting-name">AI Active</div></div>
+          <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+        <div class="config-setting">
+          <div class="config-setting-info"><div class="config-setting-name">Default response language</div></div>
+          <select style="font-size:13px;padding:6px 10px;border-radius:6px;border:1px solid #e2e8f0;font-family:inherit;">
+            <option>English</option>
+            <option>Spanish</option>
+          </select>
+        </div>
+      </div>
+      <div class="wizard-nav">
+        <button class="wizard-btn" disabled>&larr; Back</button>
+        <button class="wizard-btn primary" onclick="setWizardStep('screen-knowledge',2)">Next &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Guided: Step 2 — Knowledge -->
+    <div class="wizard-step-pane" data-step="2">
+      <div class="config-section">
+        <div class="config-section-title"><span class="section-icon">&#128218;</span> Knowledge Base</div>
+        <div class="stats-bar" style="margin-bottom:14px;">
+          <span>12 documents</span>
+          <span>4 global</span>
+          <span>8 property-specific</span>
+          <span>AI trained on all</span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn-pink" onclick="openUploadModal()">+ Upload Document</button>
+          <span style="font-size:12px;color:#94a3b8;">Switch to Full editor to browse and manage all documents.</span>
+        </div>
+      </div>
+      <div class="wizard-nav">
+        <button class="wizard-btn" onclick="setWizardStep('screen-knowledge',1)">&larr; Back</button>
+        <button class="wizard-btn primary" onclick="setWizardStep('screen-knowledge',3)">Next &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Guided: Step 3 — Escalation -->
+    <div class="wizard-step-pane" data-step="3">
+      <div class="config-section">
+        <div class="config-section-title"><span class="section-icon">&#128276;</span> Escalation</div>
+        <div class="config-slider-row">
+          <div class="config-slider-label">Escalate after N unanswered AI replies</div>
+          <div class="config-slider-wrap">
+            <span style="font-size:12px;color:#94a3b8;">1</span>
+            <input type="range" min="1" max="5" value="3" step="1" oninput="this.parentElement.querySelector('.config-slider-value').textContent=this.value">
+            <span style="font-size:12px;color:#94a3b8;">5</span>
+            <span class="config-slider-value">3</span>
+          </div>
+        </div>
+        <div class="config-setting" style="margin-top:16px;">
+          <div class="config-setting-info"><div class="config-setting-name">Notify channel</div></div>
+          <select style="font-size:13px;padding:6px 10px;border-radius:6px;border:1px solid #e2e8f0;font-family:inherit;">
+            <option>SMS</option>
+            <option>Email</option>
+            <option>Both</option>
+          </select>
+        </div>
+      </div>
+      <div class="wizard-nav">
+        <button class="wizard-btn" onclick="setWizardStep('screen-knowledge',2)">&larr; Back</button>
+        <button class="wizard-btn primary" onclick="showToast('Concierge Agent settings saved')">Save</button>
+      </div>
+    </div>
+
+    <!-- Full editor: all sections -->
+    <div class="config-full-sections">
+
+    <!-- Behavior (full) -->
+    <div class="config-section">
+      <div class="config-section-title"><span class="section-icon">&#9881;</span> Behavior</div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">AI Active</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Reply on SMS</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Reply in tenant portal</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Reply on email</div></div>
+        <label class="agent-toggle"><input type="checkbox"><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Default response language</div></div>
+        <select style="font-size:13px;padding:6px 10px;border-radius:6px;border:1px solid #e2e8f0;font-family:inherit;">
+          <option>English</option>
+          <option>Spanish</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Knowledge Base (existing layout, preserved) -->
     <div class="kb-header">
       <div>
         <div class="page-title">Concierge Knowledge Base</div>
@@ -912,6 +1068,34 @@ body {
     </div>
 
     <div id="doc-list"></div>
+
+    <!-- Escalation (full) -->
+    <div class="config-section" style="margin-top:24px;">
+      <div class="config-section-title"><span class="section-icon">&#128276;</span> Escalation</div>
+      <div class="config-slider-row">
+        <div class="config-slider-label">Escalate after N unanswered AI replies</div>
+        <div class="config-slider-wrap">
+          <span style="font-size:12px;color:#94a3b8;">1</span>
+          <input type="range" min="1" max="5" value="3" step="1" oninput="this.parentElement.querySelector('.config-slider-value').textContent=this.value">
+          <span style="font-size:12px;color:#94a3b8;">5</span>
+          <span class="config-slider-value">3</span>
+        </div>
+      </div>
+      <div class="config-setting" style="margin-top:16px;">
+        <div class="config-setting-info"><div class="config-setting-name">Notify channel</div></div>
+        <select style="font-size:13px;padding:6px 10px;border-radius:6px;border:1px solid #e2e8f0;font-family:inherit;">
+          <option>SMS</option>
+          <option>Email</option>
+          <option>Both</option>
+        </select>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Notify owner on escalation</div></div>
+        <label class="agent-toggle"><input type="checkbox"><span class="slider"></span></label>
+      </div>
+    </div>
+
+    </div><!-- /.config-full-sections -->
   </div>
 
   <!-- ════════════ SCREEN: COMMUNICATION CENTER (V5 full) ════════════ -->
@@ -1836,7 +2020,7 @@ body {
           <div style="font-size:11px;color:#6b7a99;">Avg turnover: <strong style="color:#1a2b4a;">5 days</strong></div>
         </div>
         <!-- Renewal — Active -->
-        <div style="background:white;border:1px solid #e2e8f0;border-radius:14px;padding:20px;cursor:pointer;transition:all .2s;" onmouseover="this.style.borderColor='#4C6FFF';this.style.boxShadow='0 4px 16px rgba(76,111,255,0.08)'" onmouseout="this.style.borderColor='#e2e8f0';this.style.boxShadow='none'" onclick="showToast('Renewal agent settings coming soon')">
+        <div style="background:white;border:1px solid #e2e8f0;border-radius:14px;padding:20px;cursor:pointer;transition:all .2s;" onmouseover="this.style.borderColor='#4C6FFF';this.style.boxShadow='0 4px 16px rgba(76,111,255,0.08)'" onmouseout="this.style.borderColor='#e2e8f0';this.style.boxShadow='none'" onclick="switchScreen('config-renewal')">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
             <div style="display:flex;align-items:center;gap:10px;">
               <div style="width:38px;height:38px;border-radius:10px;background:#d1fae5;display:flex;align-items:center;justify-content:center;font-size:18px;">&#128196;</div>
@@ -1952,15 +2136,101 @@ body {
   </div>
 
   <!-- ════════════ SCREEN: CONFIG — MAINTENANCE AGENT ════════════ -->
-  <div class="screen" id="screen-config-maintenance">
+  <div class="screen config-screen guided" id="screen-config-maintenance">
     <button class="config-back" onclick="switchScreen('agents')">&larr; Back to Agent Settings</button>
     <div class="config-header">
       <div class="agent-icon blue">&#128295;</div>
       <div class="config-header-info">
         <h1>Maintenance Agent <span class="badge-active">Active</span></h1>
       </div>
+      <div class="mode-toggle">
+        <button class="mode-pill active" onclick="setEditMode(this,'screen-config-maintenance','guided')">Guided</button>
+        <button class="mode-pill" onclick="setEditMode(this,'screen-config-maintenance','full')">Full editor</button>
+      </div>
     </div>
     <div class="config-desc">Handles tenant maintenance requests end-to-end: intake via text, troubleshooting, vendor coordination, quoting, owner approval, and scheduling.</div>
+
+    <!-- Guided wizard breadcrumb -->
+    <div class="wizard-breadcrumb">
+      <div class="wizard-step-pill active" onclick="setWizardStep('screen-config-maintenance',1)"><span class="num">1</span> Behavior</div>
+      <div class="wizard-step-connector"></div>
+      <div class="wizard-step-pill" onclick="setWizardStep('screen-config-maintenance',2)"><span class="num">2</span> Limits</div>
+      <div class="wizard-step-connector"></div>
+      <div class="wizard-step-pill" onclick="setWizardStep('screen-config-maintenance',3)"><span class="num">3</span> Vendors</div>
+    </div>
+
+    <!-- Guided: Step 1 — Behavior -->
+    <div class="wizard-step-pane active" data-step="1">
+      <div class="config-section">
+        <div class="config-section-title"><span class="section-icon">&#9881;</span> Behavior</div>
+        <div class="config-setting">
+          <div class="config-setting-info"><div class="config-setting-name">Use preferred vendors first</div></div>
+          <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+        <div class="config-setting">
+          <div class="config-setting-info"><div class="config-setting-name">Handle after-hours emergencies</div></div>
+          <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+      </div>
+      <div class="wizard-nav">
+        <button class="wizard-btn" disabled>&larr; Back</button>
+        <button class="wizard-btn primary" onclick="setWizardStep('screen-config-maintenance',2)">Next &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Guided: Step 2 — Limits -->
+    <div class="wizard-step-pane" data-step="2">
+      <div class="config-section">
+        <div class="config-section-title"><span class="section-icon">&#128176;</span> Auto-Approval Threshold</div>
+        <div class="config-slider-row">
+          <div class="config-slider-label">Max auto-approve amount</div>
+          <div class="config-slider-wrap">
+            <span style="font-size:12px;color:#94a3b8;">$0</span>
+            <input type="range" min="0" max="2000" value="500" step="50" oninput="this.parentElement.querySelector('.config-slider-value').textContent='$'+this.value">
+            <span style="font-size:12px;color:#94a3b8;">$2,000</span>
+            <span class="config-slider-value">$500</span>
+          </div>
+        </div>
+        <div class="config-setting" style="margin-top:16px;">
+          <div class="config-setting-info"><div class="config-setting-name">Always notify owner above threshold</div></div>
+          <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+      </div>
+      <div class="wizard-nav">
+        <button class="wizard-btn" onclick="setWizardStep('screen-config-maintenance',1)">&larr; Back</button>
+        <button class="wizard-btn primary" onclick="setWizardStep('screen-config-maintenance',3)">Next &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Guided: Step 3 — Vendors -->
+    <div class="wizard-step-pane" data-step="3">
+      <div class="config-section">
+        <div class="config-section-title"><span class="section-icon">&#128736;</span> Top Vendors</div>
+        <div class="vendor-row">
+          <div class="vendor-avatar">&#128295;</div>
+          <div class="vendor-info"><div class="vendor-name">ABC Plumbing</div><div class="vendor-type">Plumbing</div></div>
+          <div class="vendor-rating">&#11088; 4.8</div>
+        </div>
+        <div class="vendor-row">
+          <div class="vendor-avatar">&#9889;</div>
+          <div class="vendor-info"><div class="vendor-name">Bright Electric</div><div class="vendor-type">Electrical</div></div>
+          <div class="vendor-rating">&#11088; 4.9</div>
+        </div>
+        <div class="vendor-row">
+          <div class="vendor-avatar">&#10052;</div>
+          <div class="vendor-info"><div class="vendor-name">CoolAir HVAC</div><div class="vendor-type">HVAC</div></div>
+          <div class="vendor-rating">&#11088; 4.7</div>
+        </div>
+        <div style="font-size:12px;color:#94a3b8;margin-top:12px;">Switch to Full editor to manage the complete vendor list.</div>
+      </div>
+      <div class="wizard-nav">
+        <button class="wizard-btn" onclick="setWizardStep('screen-config-maintenance',2)">&larr; Back</button>
+        <button class="wizard-btn primary" onclick="showToast('Maintenance Agent settings saved')">Save</button>
+      </div>
+    </div>
+
+    <!-- Full editor: all sections -->
+    <div class="config-full-sections">
 
     <!-- Workflow -->
     <div class="config-section">
@@ -2056,18 +2326,106 @@ body {
         <div class="vendor-rating">&#11088; 4.7</div>
       </div>
     </div>
+
+    </div><!-- /.config-full-sections -->
   </div>
 
   <!-- ════════════ SCREEN: CONFIG — LEASING AGENT ════════════ -->
-  <div class="screen" id="screen-config-leasing">
+  <div class="screen config-screen guided" id="screen-config-leasing">
     <button class="config-back" onclick="switchScreen('agents')">&larr; Back to Agent Settings</button>
     <div class="config-header">
       <div class="agent-icon amber">&#128273;</div>
       <div class="config-header-info">
         <h1>Leasing Agent <span class="badge-active">Active</span></h1>
       </div>
+      <div class="mode-toggle">
+        <button class="mode-pill active" onclick="setEditMode(this,'screen-config-leasing','guided')">Guided</button>
+        <button class="mode-pill" onclick="setEditMode(this,'screen-config-leasing','full')">Full editor</button>
+      </div>
     </div>
     <div class="config-desc">Manages vacancy listings, responds to inquiries, pre-screens applicants, schedules showings, and guides qualified leads through the application process.</div>
+
+    <!-- Guided wizard breadcrumb -->
+    <div class="wizard-breadcrumb">
+      <div class="wizard-step-pill active" onclick="setWizardStep('screen-config-leasing',1)"><span class="num">1</span> Behavior</div>
+      <div class="wizard-step-connector"></div>
+      <div class="wizard-step-pill" onclick="setWizardStep('screen-config-leasing',2)"><span class="num">2</span> Pricing</div>
+      <div class="wizard-step-connector"></div>
+      <div class="wizard-step-pill" onclick="setWizardStep('screen-config-leasing',3)"><span class="num">3</span> Criteria</div>
+    </div>
+
+    <!-- Guided: Step 1 — Behavior -->
+    <div class="wizard-step-pane active" data-step="1">
+      <div class="config-section">
+        <div class="config-section-title"><span class="section-icon">&#9881;</span> Behavior</div>
+        <div class="config-setting">
+          <div class="config-setting-info"><div class="config-setting-name">Auto-respond to inquiries</div></div>
+          <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+        <div class="config-setting">
+          <div class="config-setting-info"><div class="config-setting-name">Pre-screen before scheduling</div></div>
+          <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+      </div>
+      <div class="wizard-nav">
+        <button class="wizard-btn" disabled>&larr; Back</button>
+        <button class="wizard-btn primary" onclick="setWizardStep('screen-config-leasing',2)">Next &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Guided: Step 2 — Pricing -->
+    <div class="wizard-step-pane" data-step="2">
+      <div class="config-section">
+        <div class="config-section-title"><span class="section-icon">&#128200;</span> Pricing Strategy</div>
+        <div class="config-slider-row">
+          <div class="config-slider-label">Days on market before price drop suggestion</div>
+          <div class="config-slider-wrap">
+            <span style="font-size:12px;color:#94a3b8;">7d</span>
+            <input type="range" min="7" max="30" value="14" step="1" oninput="this.parentElement.querySelector('.config-slider-value').textContent=this.value+' days'">
+            <span style="font-size:12px;color:#94a3b8;">30d</span>
+            <span class="config-slider-value">14 days</span>
+          </div>
+        </div>
+        <div class="config-slider-row">
+          <div class="config-slider-label">Max auto price reduction</div>
+          <div class="config-slider-wrap">
+            <span style="font-size:12px;color:#94a3b8;">0%</span>
+            <input type="range" min="0" max="10" value="3" step="1" oninput="this.parentElement.querySelector('.config-slider-value').textContent=this.value+'%'">
+            <span style="font-size:12px;color:#94a3b8;">10%</span>
+            <span class="config-slider-value">3%</span>
+          </div>
+        </div>
+      </div>
+      <div class="wizard-nav">
+        <button class="wizard-btn" onclick="setWizardStep('screen-config-leasing',1)">&larr; Back</button>
+        <button class="wizard-btn primary" onclick="setWizardStep('screen-config-leasing',3)">Next &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Guided: Step 3 — Criteria -->
+    <div class="wizard-step-pane" data-step="3">
+      <div class="config-section">
+        <div class="config-section-title"><span class="section-icon">&#128203;</span> Screening Criteria</div>
+        <div class="criteria-row">
+          <span class="criteria-icon">&#128179;</span>
+          <span class="criteria-label">Minimum credit score</span>
+          <span class="criteria-value">620</span>
+        </div>
+        <div class="criteria-row">
+          <span class="criteria-icon">&#128176;</span>
+          <span class="criteria-label">Income requirement</span>
+          <span class="criteria-value">3x rent</span>
+        </div>
+        <div style="font-size:12px;color:#94a3b8;margin-top:12px;">Switch to Full editor to manage the complete criteria list.</div>
+      </div>
+      <div class="wizard-nav">
+        <button class="wizard-btn" onclick="setWizardStep('screen-config-leasing',2)">&larr; Back</button>
+        <button class="wizard-btn primary" onclick="showToast('Leasing Agent settings saved')">Save</button>
+      </div>
+    </div>
+
+    <!-- Full editor: all sections -->
+    <div class="config-full-sections">
 
     <!-- Workflow -->
     <div class="config-section">
@@ -2184,18 +2542,103 @@ body {
         <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
       </div>
     </div>
+
+    </div><!-- /.config-full-sections -->
   </div>
 
   <!-- ════════════ SCREEN: CONFIG — DELINQUENCY AGENT ════════════ -->
-  <div class="screen" id="screen-config-delinquency">
+  <div class="screen config-screen guided" id="screen-config-delinquency">
     <button class="config-back" onclick="switchScreen('agents')">&larr; Back to Agent Settings</button>
     <div class="config-header">
       <div class="agent-icon green">&#128184;</div>
       <div class="config-header-info">
         <h1>Delinquency Agent <span class="badge-active">Active</span></h1>
       </div>
+      <div class="mode-toggle">
+        <button class="mode-pill active" onclick="setEditMode(this,'screen-config-delinquency','guided')">Guided</button>
+        <button class="mode-pill" onclick="setEditMode(this,'screen-config-delinquency','full')">Full editor</button>
+      </div>
     </div>
     <div class="config-desc">Automates rent collection &mdash; payment reminders, late notices, payment plans, and escalation to formal proceedings.</div>
+
+    <!-- Guided wizard breadcrumb -->
+    <div class="wizard-breadcrumb">
+      <div class="wizard-step-pill active" onclick="setWizardStep('screen-config-delinquency',1)"><span class="num">1</span> Behavior</div>
+      <div class="wizard-step-connector"></div>
+      <div class="wizard-step-pill" onclick="setWizardStep('screen-config-delinquency',2)"><span class="num">2</span> Late fees</div>
+      <div class="wizard-step-connector"></div>
+      <div class="wizard-step-pill" onclick="setWizardStep('screen-config-delinquency',3)"><span class="num">3</span> Escalation</div>
+    </div>
+
+    <!-- Guided: Step 1 — Behavior -->
+    <div class="wizard-step-pane active" data-step="1">
+      <div class="config-section">
+        <div class="config-section-title"><span class="section-icon">&#9881;</span> Behavior</div>
+        <div class="config-setting">
+          <div class="config-setting-info"><div class="config-setting-name">Send automatic payment reminders</div></div>
+          <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+        <div class="config-setting">
+          <div class="config-setting-info"><div class="config-setting-name">Offer payment plans for hardship</div></div>
+          <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+      </div>
+      <div class="wizard-nav">
+        <button class="wizard-btn" disabled>&larr; Back</button>
+        <button class="wizard-btn primary" onclick="setWizardStep('screen-config-delinquency',2)">Next &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Guided: Step 2 — Late fees -->
+    <div class="wizard-step-pane" data-step="2">
+      <div class="config-section">
+        <div class="config-section-title"><span class="section-icon">&#128176;</span> Late Fee Settings</div>
+        <div class="config-slider-row">
+          <div class="config-slider-label">Grace period</div>
+          <div class="config-slider-wrap">
+            <span style="font-size:12px;color:#94a3b8;">1 day</span>
+            <input type="range" min="1" max="15" value="5" step="1" oninput="this.parentElement.querySelector('.config-slider-value').textContent=this.value+(this.value==='1'?' day':' days')">
+            <span style="font-size:12px;color:#94a3b8;">15 days</span>
+            <span class="config-slider-value">5 days</span>
+          </div>
+        </div>
+        <div class="config-slider-row">
+          <div class="config-slider-label">Late fee amount</div>
+          <div class="config-slider-wrap">
+            <span style="font-size:12px;color:#94a3b8;">$0</span>
+            <input type="range" min="0" max="200" value="50" step="5" oninput="this.parentElement.querySelector('.config-slider-value').textContent='$'+this.value">
+            <span style="font-size:12px;color:#94a3b8;">$200</span>
+            <span class="config-slider-value">$50</span>
+          </div>
+        </div>
+      </div>
+      <div class="wizard-nav">
+        <button class="wizard-btn" onclick="setWizardStep('screen-config-delinquency',1)">&larr; Back</button>
+        <button class="wizard-btn primary" onclick="setWizardStep('screen-config-delinquency',3)">Next &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Guided: Step 3 — Escalation -->
+    <div class="wizard-step-pane" data-step="3">
+      <div class="config-section">
+        <div class="config-section-title"><span class="section-icon">&#128276;</span> Escalation</div>
+        <div class="config-setting">
+          <div class="config-setting-info"><div class="config-setting-name">Auto-apply late fees</div></div>
+          <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+        <div class="config-setting">
+          <div class="config-setting-info"><div class="config-setting-name">Notify owner of late payments</div></div>
+          <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+      </div>
+      <div class="wizard-nav">
+        <button class="wizard-btn" onclick="setWizardStep('screen-config-delinquency',2)">&larr; Back</button>
+        <button class="wizard-btn primary" onclick="showToast('Delinquency Agent settings saved')">Save</button>
+      </div>
+    </div>
+
+    <!-- Full editor: all sections -->
+    <div class="config-full-sections">
 
     <!-- Workflow -->
     <div class="config-section">
@@ -2276,18 +2719,93 @@ body {
         <label class="agent-toggle"><input type="checkbox"><span class="slider"></span></label>
       </div>
     </div>
+
+    </div><!-- /.config-full-sections -->
   </div>
 
   <!-- ════════════ SCREEN: CONFIG — MOVE-IN / MOVE-OUT AGENT ════════════ -->
-  <div class="screen" id="screen-config-moveinout">
+  <div class="screen config-screen guided" id="screen-config-moveinout">
     <button class="config-back" onclick="switchScreen('agents')">&larr; Back to Agent Settings</button>
     <div class="config-header">
       <div class="agent-icon" style="background:#fef3c7;">&#127968;</div>
       <div class="config-header-info">
         <h1>Move-in / Move-out Agent <span style="font-size:11px;font-weight:600;padding:3px 12px;border-radius:20px;background:#fef3c7;color:#b45309;">Beta</span></h1>
       </div>
+      <div class="mode-toggle">
+        <button class="mode-pill active" onclick="setEditMode(this,'screen-config-moveinout','guided')">Guided</button>
+        <button class="mode-pill" onclick="setEditMode(this,'screen-config-moveinout','full')">Full editor</button>
+      </div>
     </div>
     <div class="config-desc">Streamlines tenant onboarding and move-out process &mdash; welcome packets, inspections, deposit calculations, turnover coordination, and utility setup.</div>
+
+    <!-- Guided wizard breadcrumb -->
+    <div class="wizard-breadcrumb">
+      <div class="wizard-step-pill active" onclick="setWizardStep('screen-config-moveinout',1)"><span class="num">1</span> Inspections</div>
+      <div class="wizard-step-connector"></div>
+      <div class="wizard-step-pill" onclick="setWizardStep('screen-config-moveinout',2)"><span class="num">2</span> Documentation</div>
+      <div class="wizard-step-connector"></div>
+      <div class="wizard-step-pill" onclick="setWizardStep('screen-config-moveinout',3)"><span class="num">3</span> Workflow</div>
+    </div>
+
+    <!-- Guided: Step 1 — Inspections -->
+    <div class="wizard-step-pane active" data-step="1">
+      <div class="config-section">
+        <div class="config-section-title"><span class="section-icon">&#9881;</span> Inspections</div>
+        <div class="config-setting">
+          <div class="config-setting-info"><div class="config-setting-name">Move-in inspection</div></div>
+          <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+        <div class="config-setting">
+          <div class="config-setting-info"><div class="config-setting-name">Move-out inspection</div></div>
+          <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+      </div>
+      <div class="wizard-nav">
+        <button class="wizard-btn" disabled>&larr; Back</button>
+        <button class="wizard-btn primary" onclick="setWizardStep('screen-config-moveinout',2)">Next &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Guided: Step 2 — Documentation -->
+    <div class="wizard-step-pane" data-step="2">
+      <div class="config-section">
+        <div class="config-section-title"><span class="section-icon">&#128247;</span> Documentation</div>
+        <div class="config-setting">
+          <div class="config-setting-info"><div class="config-setting-name">Photo documentation required</div></div>
+          <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+        <div class="config-setting">
+          <div class="config-setting-info"><div class="config-setting-name">Tenant must be present</div></div>
+          <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+      </div>
+      <div class="wizard-nav">
+        <button class="wizard-btn" onclick="setWizardStep('screen-config-moveinout',1)">&larr; Back</button>
+        <button class="wizard-btn primary" onclick="setWizardStep('screen-config-moveinout',3)">Next &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Guided: Step 3 — Workflow -->
+    <div class="wizard-step-pane" data-step="3">
+      <div class="config-section">
+        <div class="config-section-title"><span class="section-icon">&#128202;</span> Workflow</div>
+        <div class="config-setting">
+          <div class="config-setting-info"><div class="config-setting-name">Auto-compare move-in vs move-out</div></div>
+          <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+        <div class="config-setting">
+          <div class="config-setting-info"><div class="config-setting-name">Auto-calculate security deposit deductions</div></div>
+          <label class="agent-toggle"><input type="checkbox"><span class="slider"></span></label>
+        </div>
+      </div>
+      <div class="wizard-nav">
+        <button class="wizard-btn" onclick="setWizardStep('screen-config-moveinout',2)">&larr; Back</button>
+        <button class="wizard-btn primary" onclick="showToast('Move-in / Move-out Agent settings saved')">Save</button>
+      </div>
+    </div>
+
+    <!-- Full editor: all sections -->
+    <div class="config-full-sections">
 
     <!-- Workflow -->
     <div class="config-section">
@@ -2345,6 +2863,212 @@ body {
         <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
       </div>
     </div>
+
+    </div><!-- /.config-full-sections -->
+  </div>
+
+  <!-- ════════════ SCREEN: CONFIG — LEASE RENEWAL AGENT ════════════ -->
+  <div class="screen config-screen guided" id="screen-config-renewal">
+    <button class="config-back" onclick="switchScreen('agents')">&larr; Back to Agent Settings</button>
+    <div class="config-header">
+      <div class="agent-icon" style="background:#d1fae5;">&#128196;</div>
+      <div class="config-header-info">
+        <h1>Lease Renewal Agent <span class="badge-active">Active</span></h1>
+      </div>
+      <div class="mode-toggle">
+        <button class="mode-pill active" onclick="setEditMode(this,'screen-config-renewal','guided')">Guided</button>
+        <button class="mode-pill" onclick="setEditMode(this,'screen-config-renewal','full')">Full editor</button>
+      </div>
+    </div>
+    <div class="config-desc">Manages lease renewals end-to-end &mdash; identifies expiring leases, pulls market comps, drafts renewal offers, sends them to tenants, and follows up on unsigned renewals.</div>
+
+    <!-- Guided wizard breadcrumb -->
+    <div class="wizard-breadcrumb">
+      <div class="wizard-step-pill active" onclick="setWizardStep('screen-config-renewal',1)"><span class="num">1</span> Behavior</div>
+      <div class="wizard-step-connector"></div>
+      <div class="wizard-step-pill" onclick="setWizardStep('screen-config-renewal',2)"><span class="num">2</span> Terms</div>
+      <div class="wizard-step-connector"></div>
+      <div class="wizard-step-pill" onclick="setWizardStep('screen-config-renewal',3)"><span class="num">3</span> Follow-up</div>
+    </div>
+
+    <!-- Guided: Step 1 — Behavior -->
+    <div class="wizard-step-pane active" data-step="1">
+      <div class="config-section">
+        <div class="config-section-title"><span class="section-icon">&#9881;</span> Behavior</div>
+        <div class="config-setting">
+          <div class="config-setting-info"><div class="config-setting-name">Auto-draft renewal offers</div></div>
+          <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+        <div class="config-setting">
+          <div class="config-setting-info"><div class="config-setting-name">Auto-send offer to tenant</div></div>
+          <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+      </div>
+      <div class="wizard-nav">
+        <button class="wizard-btn" disabled>&larr; Back</button>
+        <button class="wizard-btn primary" onclick="setWizardStep('screen-config-renewal',2)">Next &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Guided: Step 2 — Terms -->
+    <div class="wizard-step-pane" data-step="2">
+      <div class="config-section">
+        <div class="config-section-title"><span class="section-icon">&#128197;</span> Renewal Terms</div>
+        <div class="config-slider-row">
+          <div class="config-slider-label">Days before expiration to start</div>
+          <div class="config-slider-wrap">
+            <span style="font-size:12px;color:#94a3b8;">30d</span>
+            <input type="range" min="30" max="180" value="90" step="5" oninput="this.parentElement.querySelector('.config-slider-value').textContent=this.value+' days'">
+            <span style="font-size:12px;color:#94a3b8;">180d</span>
+            <span class="config-slider-value">90 days</span>
+          </div>
+        </div>
+        <div class="config-slider-row">
+          <div class="config-slider-label">Max auto rent increase</div>
+          <div class="config-slider-wrap">
+            <span style="font-size:12px;color:#94a3b8;">0%</span>
+            <input type="range" min="0" max="10" value="4" step="1" oninput="this.parentElement.querySelector('.config-slider-value').textContent=this.value+'%'">
+            <span style="font-size:12px;color:#94a3b8;">10%</span>
+            <span class="config-slider-value">4%</span>
+          </div>
+        </div>
+      </div>
+      <div class="wizard-nav">
+        <button class="wizard-btn" onclick="setWizardStep('screen-config-renewal',1)">&larr; Back</button>
+        <button class="wizard-btn primary" onclick="setWizardStep('screen-config-renewal',3)">Next &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Guided: Step 3 — Follow-up -->
+    <div class="wizard-step-pane" data-step="3">
+      <div class="config-section">
+        <div class="config-section-title"><span class="section-icon">&#128276;</span> Follow-up</div>
+        <div class="config-setting">
+          <div class="config-setting-info"><div class="config-setting-name">Auto-send reminder if unsigned</div></div>
+          <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+        <div class="config-setting">
+          <div class="config-setting-info"><div class="config-setting-name">Notify owner on tenant decline</div></div>
+          <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+      </div>
+      <div class="wizard-nav">
+        <button class="wizard-btn" onclick="setWizardStep('screen-config-renewal',2)">&larr; Back</button>
+        <button class="wizard-btn primary" onclick="showToast('Lease Renewal Agent settings saved')">Save</button>
+      </div>
+    </div>
+
+    <!-- Full editor: all sections -->
+    <div class="config-full-sections">
+
+    <!-- Workflow -->
+    <div class="config-section">
+      <div class="config-section-title"><span class="section-icon">&#9881;</span> Workflow</div>
+      <div class="workflow-steps">
+        <span class="workflow-pill">Expiration detected</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Pull market comps</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Draft offer</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Send to tenant</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Track response</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Follow up</span>
+        <span class="workflow-arrow">&#8594;</span>
+        <span class="workflow-pill">Escalate to PM</span>
+      </div>
+    </div>
+
+    <!-- Renewal Terms -->
+    <div class="config-section">
+      <div class="config-section-title"><span class="section-icon">&#128197;</span> Renewal Terms</div>
+      <div class="config-slider-row">
+        <div class="config-slider-label">Days before expiration to start</div>
+        <div class="config-slider-wrap">
+          <span style="font-size:12px;color:#94a3b8;">30d</span>
+          <input type="range" min="30" max="180" value="90" step="5" oninput="this.parentElement.querySelector('.config-slider-value').textContent=this.value+' days'">
+          <span style="font-size:12px;color:#94a3b8;">180d</span>
+          <span class="config-slider-value">90 days</span>
+        </div>
+      </div>
+      <div class="config-slider-row">
+        <div class="config-slider-label">Max auto rent increase</div>
+        <div class="config-slider-wrap">
+          <span style="font-size:12px;color:#94a3b8;">0%</span>
+          <input type="range" min="0" max="10" value="4" step="1" oninput="this.parentElement.querySelector('.config-slider-value').textContent=this.value+'%'">
+          <span style="font-size:12px;color:#94a3b8;">10%</span>
+          <span class="config-slider-value">4%</span>
+        </div>
+      </div>
+      <div class="config-setting" style="margin-top:16px;">
+        <div class="config-setting-info"><div class="config-setting-name">Default lease term</div></div>
+        <select style="font-size:13px;padding:6px 10px;border-radius:6px;border:1px solid #e2e8f0;font-family:inherit;">
+          <option>12 months</option>
+          <option>6 months</option>
+          <option>24 months</option>
+          <option>Month-to-month</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Behavior Settings -->
+    <div class="config-section">
+      <div class="config-section-title"><span class="section-icon">&#9881;</span> Behavior Settings</div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Auto-draft renewal offers</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Auto-send offer to tenant</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Use market comps when setting rent</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Skip month-to-month leases</div></div>
+        <label class="agent-toggle"><input type="checkbox"><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Include lease addendum updates</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Convert to month-to-month if declined</div></div>
+        <label class="agent-toggle"><input type="checkbox"><span class="slider"></span></label>
+      </div>
+    </div>
+
+    <!-- Follow-up -->
+    <div class="config-section">
+      <div class="config-section-title"><span class="section-icon">&#128276;</span> Follow-up</div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Auto-send reminder if unsigned</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Notify owner on tenant decline</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-slider-row" style="margin-top:8px;">
+        <div class="config-slider-label">Reminder cadence (days)</div>
+        <div class="config-slider-wrap">
+          <span style="font-size:12px;color:#94a3b8;">3d</span>
+          <input type="range" min="3" max="14" value="7" step="1" oninput="this.parentElement.querySelector('.config-slider-value').textContent=this.value+' days'">
+          <span style="font-size:12px;color:#94a3b8;">14d</span>
+          <span class="config-slider-value">7 days</span>
+        </div>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Escalate to PM after final reminder</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+    </div>
+
+    </div><!-- /.config-full-sections -->
   </div>
 
 </div><!-- .main -->
@@ -2401,6 +3125,33 @@ body {
 <div class="toast" id="toast"></div>
 
 <script>
+/* ── Editor mode toggle (Guided / Full editor) ── */
+function setEditMode(btn, screenId, mode) {
+  var screen = document.getElementById(screenId);
+  if (!screen) { return; }
+  screen.classList.remove('guided', 'full');
+  screen.classList.add(mode);
+  var pills = screen.querySelectorAll('.mode-toggle .mode-pill');
+  for (var i = 0; i < pills.length; i++) { pills[i].classList.remove('active'); }
+  btn.classList.add('active');
+  if (mode === 'guided') { setWizardStep(screenId, 1); }
+}
+function setWizardStep(screenId, idx) {
+  var screen = document.getElementById(screenId);
+  if (!screen) { return; }
+  var pills = screen.querySelectorAll('.wizard-step-pill');
+  for (var i = 0; i < pills.length; i++) {
+    pills[i].classList.remove('active', 'completed');
+    if (i + 1 === idx) { pills[i].classList.add('active'); }
+    if (i + 1 < idx) { pills[i].classList.add('completed'); }
+  }
+  var panes = screen.querySelectorAll('.wizard-step-pane');
+  for (var j = 0; j < panes.length; j++) {
+    var step = parseInt(panes[j].getAttribute('data-step'), 10);
+    panes[j].classList.toggle('active', step === idx);
+  }
+}
+
 /* ── Data ── */
 const docs = {
   all: [

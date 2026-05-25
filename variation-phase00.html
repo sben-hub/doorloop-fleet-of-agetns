@@ -478,6 +478,59 @@ body {
   opacity: 0; transition: opacity .3s; pointer-events: none;
 }
 .toast.show { opacity: 1; }
+
+/* ── Agent config sections (shared with phase1/phase1.5) ── */
+.config-header { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
+.config-header .agent-icon { width: 52px; height: 52px; font-size: 24px; }
+.config-header-info { flex: 1; }
+.config-header-info h1 { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.config-desc { font-size: 14px; color: #6b7a99; line-height: 1.6; margin-bottom: 28px; }
+.config-section { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+.config-section-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.config-section-title .section-icon { font-size: 18px; }
+.config-slider-row { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+.config-slider-label { font-size: 14px; font-weight: 600; min-width: 200px; }
+.config-slider-wrap { flex: 1; display: flex; align-items: center; gap: 12px; }
+.config-slider-wrap input[type="range"] { flex: 1; -webkit-appearance: none; appearance: none; height: 6px; border-radius: 3px; background: #e2e8f0; outline: none; cursor: pointer; }
+.config-slider-wrap input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #4C6FFF; border: 3px solid white; box-shadow: 0 1px 4px rgba(0,0,0,.2); cursor: pointer; }
+.config-slider-value { font-size: 14px; font-weight: 700; color: #4C6FFF; min-width: 56px; text-align: right; }
+.config-setting { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+.config-setting:last-child { border-bottom: none; }
+.config-setting-info { flex: 1; min-width: 0; }
+.config-setting-name { font-size: 14px; font-weight: 600; }
+.config-setting-desc { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+
+/* ── Editor mode toggle (Guided / Full) ── */
+.mode-toggle { display: inline-flex; gap: 4px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px; padding: 3px; margin-left: auto; flex-shrink: 0; }
+.mode-pill { font-family: inherit; font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 6px; border: none; background: transparent; color: #64748b; cursor: pointer; transition: all .15s; }
+.mode-pill:hover { color: #1e293b; }
+.mode-pill.active { background: white; color: #4C6FFF; box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+
+/* ── Wizard breadcrumb ── */
+.wizard-breadcrumb { display: flex; align-items: center; gap: 12px; margin: 4px 0 24px; padding: 14px 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; }
+.wizard-step-pill { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #94a3b8; cursor: pointer; user-select: none; padding: 4px 6px; border-radius: 6px; transition: all .15s; }
+.wizard-step-pill:hover { color: #1e293b; }
+.wizard-step-pill .num { width: 24px; height: 24px; border-radius: 50%; background: #e2e8f0; color: #64748b; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.wizard-step-pill.active { color: #0f172a; }
+.wizard-step-pill.active .num { background: #FF6A36; color: white; }
+.wizard-step-pill.completed .num { background: #4C6FFF; color: white; }
+.wizard-step-connector { flex: 1; height: 1px; background: #e2e8f0; min-width: 24px; }
+
+/* ── Wizard step pane ── */
+.wizard-step-pane { display: none; }
+.wizard-step-pane.active { display: block; }
+.wizard-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+.wizard-btn { font-family: inherit; font-size: 13px; font-weight: 600; padding: 9px 18px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #475569; cursor: pointer; transition: all .15s; }
+.wizard-btn:hover:not(:disabled) { border-color: #cbd5e1; color: #1e293b; }
+.wizard-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.wizard-btn.primary { background: #4C6FFF; color: white; border-color: #4C6FFF; }
+.wizard-btn.primary:hover { background: #3b5bdb; border-color: #3b5bdb; }
+
+/* ── Mode visibility ── */
+.config-screen.guided > .config-full-sections { display: none; }
+.config-screen.full > .wizard-breadcrumb { display: none; }
+.config-screen.full > .wizard-step-pane { display: none; }
+.config-screen.full > .config-full-sections { display: block; }
 </style>
 </head>
 <body>
@@ -570,9 +623,133 @@ body {
     </div>
   </div>
 
-  <!-- ════════════ SCREEN: KNOWLEDGE BASE ════════════ -->
-  <div class="screen" id="screen-knowledge">
+  <!-- ════════════ SCREEN: KNOWLEDGE BASE (Concierge Agent settings) ════════════ -->
+  <div class="screen config-screen guided" id="screen-knowledge">
     <button class="config-back" onclick="switchScreen('agents')">&larr; Back to Agent Settings</button>
+    <div class="config-header">
+      <div class="agent-icon" style="background:#fce7f3;">&#129309;</div>
+      <div class="config-header-info">
+        <h1>Concierge Agent <span class="badge-active">Active</span></h1>
+      </div>
+      <div class="mode-toggle">
+        <button class="mode-pill active" onclick="setEditMode(this,'screen-knowledge','guided')">Guided</button>
+        <button class="mode-pill" onclick="setEditMode(this,'screen-knowledge','full')">Full editor</button>
+      </div>
+    </div>
+    <div class="config-desc">Answers tenant questions 24/7 using your uploaded documents &mdash; policies, lease terms, property rules, and more.</div>
+
+    <!-- Guided wizard breadcrumb -->
+    <div class="wizard-breadcrumb">
+      <div class="wizard-step-pill active" onclick="setWizardStep('screen-knowledge',1)"><span class="num">1</span> Behavior</div>
+      <div class="wizard-step-connector"></div>
+      <div class="wizard-step-pill" onclick="setWizardStep('screen-knowledge',2)"><span class="num">2</span> Knowledge</div>
+      <div class="wizard-step-connector"></div>
+      <div class="wizard-step-pill" onclick="setWizardStep('screen-knowledge',3)"><span class="num">3</span> Escalation</div>
+    </div>
+
+    <!-- Guided: Step 1 — Behavior -->
+    <div class="wizard-step-pane active" data-step="1">
+      <div class="config-section">
+        <div class="config-section-title"><span class="section-icon">&#9881;</span> Behavior</div>
+        <div class="config-setting">
+          <div class="config-setting-info"><div class="config-setting-name">AI Active</div></div>
+          <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+        <div class="config-setting">
+          <div class="config-setting-info"><div class="config-setting-name">Default response language</div></div>
+          <select style="font-size:13px;padding:6px 10px;border-radius:6px;border:1px solid #e2e8f0;font-family:inherit;">
+            <option>English</option>
+            <option>Spanish</option>
+          </select>
+        </div>
+      </div>
+      <div class="wizard-nav">
+        <button class="wizard-btn" disabled>&larr; Back</button>
+        <button class="wizard-btn primary" onclick="setWizardStep('screen-knowledge',2)">Next &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Guided: Step 2 — Knowledge -->
+    <div class="wizard-step-pane" data-step="2">
+      <div class="config-section">
+        <div class="config-section-title"><span class="section-icon">&#128218;</span> Knowledge Base</div>
+        <div class="stats-bar" style="margin-bottom:14px;">
+          <span>12 documents</span>
+          <span>4 global</span>
+          <span>8 property-specific</span>
+          <span>AI trained on all</span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn-pink" onclick="openUploadModal()">+ Upload Document</button>
+          <span style="font-size:12px;color:#94a3b8;">Switch to Full editor to browse and manage all documents.</span>
+        </div>
+      </div>
+      <div class="wizard-nav">
+        <button class="wizard-btn" onclick="setWizardStep('screen-knowledge',1)">&larr; Back</button>
+        <button class="wizard-btn primary" onclick="setWizardStep('screen-knowledge',3)">Next &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Guided: Step 3 — Escalation -->
+    <div class="wizard-step-pane" data-step="3">
+      <div class="config-section">
+        <div class="config-section-title"><span class="section-icon">&#128276;</span> Escalation</div>
+        <div class="config-slider-row">
+          <div class="config-slider-label">Escalate after N unanswered AI replies</div>
+          <div class="config-slider-wrap">
+            <span style="font-size:12px;color:#94a3b8;">1</span>
+            <input type="range" min="1" max="5" value="3" step="1" oninput="this.parentElement.querySelector('.config-slider-value').textContent=this.value">
+            <span style="font-size:12px;color:#94a3b8;">5</span>
+            <span class="config-slider-value">3</span>
+          </div>
+        </div>
+        <div class="config-setting" style="margin-top:16px;">
+          <div class="config-setting-info"><div class="config-setting-name">Notify channel</div></div>
+          <select style="font-size:13px;padding:6px 10px;border-radius:6px;border:1px solid #e2e8f0;font-family:inherit;">
+            <option>SMS</option>
+            <option>Email</option>
+            <option>Both</option>
+          </select>
+        </div>
+      </div>
+      <div class="wizard-nav">
+        <button class="wizard-btn" onclick="setWizardStep('screen-knowledge',2)">&larr; Back</button>
+        <button class="wizard-btn primary" onclick="showToast('Concierge Agent settings saved')">Save</button>
+      </div>
+    </div>
+
+    <!-- Full editor: all sections -->
+    <div class="config-full-sections">
+
+    <!-- Behavior (full) -->
+    <div class="config-section">
+      <div class="config-section-title"><span class="section-icon">&#9881;</span> Behavior</div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">AI Active</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Reply on SMS</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Reply in tenant portal</div></div>
+        <label class="agent-toggle"><input type="checkbox" checked><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Reply on email</div></div>
+        <label class="agent-toggle"><input type="checkbox"><span class="slider"></span></label>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Default response language</div></div>
+        <select style="font-size:13px;padding:6px 10px;border-radius:6px;border:1px solid #e2e8f0;font-family:inherit;">
+          <option>English</option>
+          <option>Spanish</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Knowledge Base (existing layout, preserved) -->
     <div class="kb-header">
       <div>
         <div class="page-title">Concierge Knowledge Base</div>
@@ -615,6 +792,34 @@ body {
     </div>
 
     <div id="doc-list"></div>
+
+    <!-- Escalation (full) -->
+    <div class="config-section" style="margin-top:24px;">
+      <div class="config-section-title"><span class="section-icon">&#128276;</span> Escalation</div>
+      <div class="config-slider-row">
+        <div class="config-slider-label">Escalate after N unanswered AI replies</div>
+        <div class="config-slider-wrap">
+          <span style="font-size:12px;color:#94a3b8;">1</span>
+          <input type="range" min="1" max="5" value="3" step="1" oninput="this.parentElement.querySelector('.config-slider-value').textContent=this.value">
+          <span style="font-size:12px;color:#94a3b8;">5</span>
+          <span class="config-slider-value">3</span>
+        </div>
+      </div>
+      <div class="config-setting" style="margin-top:16px;">
+        <div class="config-setting-info"><div class="config-setting-name">Notify channel</div></div>
+        <select style="font-size:13px;padding:6px 10px;border-radius:6px;border:1px solid #e2e8f0;font-family:inherit;">
+          <option>SMS</option>
+          <option>Email</option>
+          <option>Both</option>
+        </select>
+      </div>
+      <div class="config-setting">
+        <div class="config-setting-info"><div class="config-setting-name">Notify owner on escalation</div></div>
+        <label class="agent-toggle"><input type="checkbox"><span class="slider"></span></label>
+      </div>
+    </div>
+
+    </div><!-- /.config-full-sections -->
   </div>
 
   <!-- ════════════ SCREEN: COMMUNICATION CENTER (V5 full) ════════════ -->
@@ -1044,6 +1249,33 @@ body {
 <div class="toast" id="toast"></div>
 
 <script>
+/* ── Editor mode toggle (Guided / Full editor) ── */
+function setEditMode(btn, screenId, mode) {
+  var screen = document.getElementById(screenId);
+  if (!screen) { return; }
+  screen.classList.remove('guided', 'full');
+  screen.classList.add(mode);
+  var pills = screen.querySelectorAll('.mode-toggle .mode-pill');
+  for (var i = 0; i < pills.length; i++) { pills[i].classList.remove('active'); }
+  btn.classList.add('active');
+  if (mode === 'guided') { setWizardStep(screenId, 1); }
+}
+function setWizardStep(screenId, idx) {
+  var screen = document.getElementById(screenId);
+  if (!screen) { return; }
+  var pills = screen.querySelectorAll('.wizard-step-pill');
+  for (var i = 0; i < pills.length; i++) {
+    pills[i].classList.remove('active', 'completed');
+    if (i + 1 === idx) { pills[i].classList.add('active'); }
+    if (i + 1 < idx) { pills[i].classList.add('completed'); }
+  }
+  var panes = screen.querySelectorAll('.wizard-step-pane');
+  for (var j = 0; j < panes.length; j++) {
+    var step = parseInt(panes[j].getAttribute('data-step'), 10);
+    panes[j].classList.toggle('active', step === idx);
+  }
+}
+
 /* ── Data ── */
 const docs = {
   all: [
